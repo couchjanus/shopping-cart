@@ -1,0 +1,157 @@
+ <!DOCTYPE html>
+  <html> 
+    <head>
+      <meta charset="utf-8">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <link rel="icon" href="./favicon.ico">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+      <title>Shopaholic Template</title>
+
+      <link href="./css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+      
+      <link href="./css/styles.css" rel="stylesheet">
+    
+      <link href='http://fonts.googleapis.com/css?family=Lato:400,300' rel='stylesheet' type='text/css'>
+      <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,500' rel='stylesheet' type='text/css'>
+    </head>
+
+<body data-spy="scroll" data-target=".navbar-fixed-top">
+
+<div class="product-items">
+  
+</div>
+
+<script id="productTemplate" type="text/template">
+
+  <div class="contentItem text-center" productId="">
+    <div class="singleMember">
+          <p class="product-name">Very&nbsp;Nice&nbsp;Cat</p>
+          <div class="icon">
+            <div class="icon_bg"></div>
+            <i class="fa fa-shopping-cart fa-2x"></i>
+          </div>
+          <div class="image">
+            <img src="images/1.jpg" alt="image" width="260" />
+          </div>
+          <div class="menu">
+            <div class="price product-price">
+              $9.99
+            </div>
+            <div class="buy">
+              Buy now!
+            </div>
+            <div class="detail">
+              Detail
+            </div>
+
+            <div class="howmany">
+              <div class="quantity-input">
+                <input class="minus btn" type="button" value="-">
+                <input class="input-text quantity text" value="3" size="4">
+                <input class="plus btn" type="button" value="+">
+              </div>
+            </div>
+            <div class="cancel">
+              Cancel
+            </div>
+            <div class="addcart">
+              Add to Cart!
+            </div>
+          </div>
+     </div>
+     <div class="card_back">
+          <i class="fa fa-check fa-4x"></i>
+          <p>Success!</p>
+     </div>
+  </div>  <!-- item wrapper end -->
+</script>
+    
+ <script src="./js/jquery.min.js"></script>
+
+ <script src="js/data.js"></script>
+
+ <script type="text/javascript">
+
+    function makeItem($template, product, picture='cats'){
+
+      $template.find('.contentItem').attr('productId', product["id"]);
+
+
+      $template.find('.product-name').text(product.name.replace(/ /g, '\u00a0')).attr('productName', product["name"]);
+
+      $template.find('img').attr('src', "images/" + product.picture);
+
+      $template.find('.product-price').text('$' + product["price"]).attr('productPrice', product["price"]);
+
+      return $template;
+    }
+
+
+   $(function() {
+
+
+    for (var i=0; i<Object.keys(data).length; i++){
+        var $template = $($('#productTemplate').html());
+
+        $(".product-items").append(makeItem($template, data[i]));
+    }
+  
+  $('body').on('click', '.buy', function() {
+
+        $(this).parents('.singleMember').find('.singleMember p').slideUp();
+        $(this).parents('.singleMember').find('.menu').css('top', '40%');
+        $(this).parents('.singleMember').find('.icon').css('display', 'none'); 
+        $(this).parents('.singleMember').find('.buy').css('display', 'none'); 
+        $(this).parents('.singleMember').find('.detail').css('display', 'block'); 
+        
+      });
+    
+      $('.cancel').click(function() {
+        $('.singleMember p').slideDown();
+        $('.menu').css('top', '80%');
+        $('.singleMember .icon').css('display', 'block'); 
+        $('.singleMember .buy').css('display', 'block'); 
+        $('.singleMember .detail').css('display', 'none'); 
+      });
+    
+      $('.addcart').click(function() {
+        var y = 180;
+        $('.contentItem').css({
+          'transform': 'rotateY(' + y + 'deg)'
+        });
+
+    $('.contentItem').delay(3000).queue(function() {
+      $(this).css({
+        'transform': 'rotateY(0deg)'
+      }).dequeue();
+      $('.singleMember p').slideDown();
+      $('.menu').css('top', '80%');
+      $('.icon').toggle();
+    });
+
+    $('.singleMember .icon').css('display', 'block'); 
+    $('.singleMember .buy').css('display', 'block'); 
+    $('.singleMember .detail').css('display', 'none'); 
+  });
+
+   $(".plus").click(function() {
+       var val = parseInt($(this).prev().attr('value'));
+       $(this).prev().attr('value', val+1);
+       });
+
+   $(".minus").click(function() {
+       var val = parseInt($(this).next().attr('value'));
+       $(this).next().attr('value', val-1);
+       });
+ 
+ });
+    
+ 
+   </script>
+
+</body>
+
+</html>

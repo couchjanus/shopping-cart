@@ -12,14 +12,14 @@ function toggle_panel(panel, background_layer) {
 
 function makeItem($template, product, picture='cats'){
 
-    $template.find('.item').attr('productId', product["id"]);
+      $template.find('.contentItem').attr('productId', product["id"]);
 
-    $template.find('.productName').text(product.name).attr('productName', product["name"]);
 
-    $template.find('img').attr('src', "http://lorempixel.com/300/200/"+picture+"/" + (product.id + 1));
+      $template.find('.product-name').text(product.name.replace(/ /g, '\u00a0')).attr('productName', product["name"]);
 
-    $template.find('.productPrice').text('$' + product["price"]).attr('productPrice', product["price"]);
+      $template.find('img').attr('src', "images/" + product.picture);
 
-    $template.find('.productDescription').text(product["description"]);
-    return $template;
+      $template.find('.product-price').text('$' + product["price"]).attr('productPrice', product["price"]);
+
+      return $template;
     }
