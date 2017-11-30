@@ -12,7 +12,7 @@ function toggle_panel(panel, background_layer) {
 
 function makeItem($template, product, picture='cats'){
 
-      $template.find('.contentItem').attr('productId', product["id"]);
+      $template.find('.singleMember').attr('productId', product["id"]);
 
 
       $template.find('.product-name').text(product.name.replace(/ /g, '\u00a0')).attr('productName', product["name"]);

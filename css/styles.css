@@ -2030,3 +2030,8 @@ figure.item button:hover{
   animation: cd-fade-in 0.3s;
 }
   
+.shopping-cart{
+    margin-left: 1.5em;
+    text-align: center;
+    padding: 0.5em;
+}
