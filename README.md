@@ -1,607 +1,542 @@
 # shopping-cart 
 
 ## Table of Contents
+- [JavaScript Object Notation](#JavaScript-Object-Notation)
+  - [Синтаксис JSON](#Синтаксис-JSON)
+  - [Методы JSON](#Методы JSON)
+- [Объекты sessionStorage и localStorage](#Объекты-sessionStorage-и-localStorage)
+- [Объект localStorage](#Объект-localStorage)
+- [Методы localStorage](#Методы-localStorage)
 
-- [Появление и иcчезновение элементов](#Появление-и-иcчезновение-элементов)
-- [Выполнение пользовательской анимации](#Выполнение-пользовательской-анимации)
-  - [Выполнение нескольких анимаций](#Выполнение-нескольких-анимаций)
-  - [Параметр properties](#Параметр-properties)
-  - [Обработчик завершения анимации](#Обработчик-завершения-анимации)
-  - [Параметр easing](#Параметр-easing)
-- [Позиция элемента](#Позиция-элемента)
-- [Поиск элемента с заданным номером](#Поиск-элемента-с-заданным-номером)
-- [Удаление объектов](#Удаление-объектов)
-- [jQuery extend](#jQuery-extend)
-- [Фильтрация выбранных элементов](#Фильтрация-выбранных-элементов)
-
-
-# Появление и иcчезновение элементов
-
-## Появление и иcчезновение элементов за счет прозрачности
-
-### .fadeIn()  .fadeOut()
-
-С помощью этих функций можно показывать и скрывать выбранные элементы на странице, за счет плавного изменения прозрачности. после скрытия элемента, его css-свойство display автоматически становится равным none, а перед появлением, оно получает свое прежнее значение обратно. 
-
-Методы имеют два варианта использования:
-
-## .fadeIn([duration],[callback])  .fadeOut([duration],[callback])
-
-duration — продолжительность выполнения анимации (появления или скрытия). Может быть задана в миллисекундах или строковым значением 'fast' или 'slow' (200 и 600 миллисекунд). По умолчанию, анимация будет происходить за 400 миллисекунд.
-
-callback — функция, заданная в качестве обработчика завершения анимации (появления или скрытия). Ей не передается никаких параметров, однако, внутри функции, переменная this будет содержать DOM-объект анимируемого элемента. Если таких элементов несколько, то обработчик будет вызван отдельно, для каждого элемента.
+- [Реализация корзины покупок](#Реализация-корзины-покупок)
+  - [Поддерживает ли браузер API localStorage](#Поддерживает-ли-браузер-API-localStorage)
+  - [Загрузка данных из LocalStorage](#Загрузка-данных-из-LocalStorage)
+  - [Где вызывать функцию showCart](#Где-вызывать-функцию-showCart)
+  - [Подготовка данных для записи в localStorage](#Подготовка-данных-для-записи-в-localStorage)
+  - [Добавляем или изменяем значение](#Добавляем-или-изменяем-значение)
+  - [Сохраняем корзину в localStorage](#Сохраняем-корзину-в-localStorage)
+  - [Просмотр содержимого корзины](#Просмотр-содержимого-корзины)
+  - [Подсчет итоговых сумм](#Подсчет-итоговых-сумм)
+  - [Обновление итогов](#Обновление-итогов)
+  - [Удаляем товар из корзины](#Удаляем-товар-из-корзины)
+  - [Очищаем все хранилище](#Очищаем-все-хранилище)
 
 
-## .fadeIn([duration],[easing],[callback])  .fadeOut([duration],[easing],[callback])
+# JavaScript Object Notation
 
-easing — изменение скорости анимации (будет ли она замедляется к концу выполнения или наоборот ускорится). 
+JSON (JavaScript Object Notation) — текстовый формат обмена данными, основанный на JavaScript. JSON формат считается независимым от языка и может использоваться практически с любым языком программирования.
 
+## Синтаксис JSON
 
-## Примеры использования:
+JSON-текст представляет собой одну из двух структур:
+
+- Набор пар ключ: значение. В различных языках это реализовано как объект, запись, структура, словарь, хэш-таблица, список с ключом или ассоциативный массив. Ключом может быть только строка (регистрозависимая: имена с буквами в разных регистрах считаются разными), значением — любая форма.
+
+- Упорядоченный набор значений. Во многих языках это реализовано как массив, вектор, список или последовательность.
+
+Это универсальные структуры данных: как правило, любой современный язык программирования поддерживает их в той или иной форме. Они легли в основу JSON, так как он используется для обмена данными между различными языками программирования.
+
+В качестве значений в JSON могут быть использованы:
+
+### Объект
+
+Объект — это неупорядоченное множество пар ключ:значение, заключённое в фигурные скобки «{ }». Ключ описывается строкой, между ним и значением стоит символ «:». Пары ключ-значение отделяются друг от друга запятыми.
+
+### Массив
+
+Массив (одномерный) — это упорядоченное множество значений. Массив заключается в квадратные скобки «[ ]». Значения разделяются запятыми.
+
+### Число
+
+Литералы true, false и null.
+
+### Строка
+Строка — это упорядоченное множество из нуля или более символов юникода, заключённое в двойные кавычки. Символы могут быть указаны с использованием escape-последовательностей, начинающихся с обратной косой черты «\» (поддерживаются варианты \", \\, \/, \t, \n, \r, \f и \b), или записаны шестнадцатеричным кодом в кодировке Unicode в виде \uFFFF.
+Строка очень похожа на одноимённый тип данных в языках С и Java. Число тоже очень похоже на С- или Java-число, за исключением того, что используется только десятичный формат. Пробелы могут быть вставлены между любыми двумя синтаксическими элементами.
+
+## Методы JSON
+
+### JSON.parse()
+Разбирает строку JSON, возможно с преобразованием получаемого значения и его свойств и возвращает разобранное значение.
+
+### JSON.stringify()
+Возвращает строку JSON, соответствующую указанному значению, возможно с включением только определённых свойств или с заменой значений свойств определяемым пользователем способом.
+
+# Объекты sessionStorage и localStorage
+
+Отличаются эти объекты друг от друга только тем, что имеют различный период времени хранения данных, помещённых в них. Объект sessionStorage хранит данные ограниченное время, они удаляются сразу после того как пользователь завершает свой сеанс или закрывает браузер. Объект localStorage в отличие от объекта sessionStorage хранит данные неограниченное время.
+
+# Объект localStorage
+
+localStorage это свойство глобального объекта браузера (window). К нему можно обращаться как window.localStorage или просто localStorage.
+
+Контейнеры localStorage и sessionStorage хранят данные с помощью элементов (пар "ключ-значение"). Ключ представляет собой некоторый идентификатор, который связан со значением. Т.е. для того чтобы записать или получить некоторое значение необходимо знать его ключ. 
+Значение представляет собой строку, это необходимо учитывать при работе с ним в коде JavaScript. 
+ 
+## Устройство объектов sessionStorage и localStorage
+
+в Google Chrome вам надо открыть DevTools (F12), перейти на вкладку «Resourses» и на левой панели вы увидите localStorage для данного домена и все значения, что оно содержит.
+
+Для каждого домена браузер создает свой объект localStorage, и редактировать или просматривать его можно только на этом домене. Например, с домена mydomain-1.com нельзя получить доступ к localStorage вашего mydomain-2.com.
+
+Работа с localStorage очень напоминает работу с объектами в JavaScript. 
+
+# Методы localStorage
+
+## .getItem(key)
+
+Метод getItem(key) используется для получения значения элемента хранилища по его ключу (key).
+
+## .setItem(key,value)
+
+Метод setItem(key,value) предназначен для добавления в хранилище элемента с указанным ключом (key) и значением (value). Если в хранилище уже есть элемент с указанным ключом (key), то в этом случае произойдет изменения его значения (value).
+
+## .key(индекс)
+
+Метод key(индекс) возвращает ключ элемента по его порядковому номеру (индексу), который находится в данном хранилище.
+
+## .removeItem(key)
+
+Метод removeItem(key) удаляет из контейнера sessionStorage или localStorage элемент, имеющий указанный ключ.
+
+## .clear()
+
+Метод clear() удаляет все элементы из контейнера.
+
+## .length
+
+Свойство length возвращает количество элементов, находящихся в контейнере.
+
+# Реализация корзины покупок
+
+## Поддерживает ли браузер API localStorage
+
+Проверить, поддерживает ли браузер API sessionStorage и localStorage можно с помощью следующей строки:
 
 ```js
-$("#leftFit").fadeOut() // элемент с идентификатором leftFit "растворится" за 400 мс.
-
-$("#leftFit").fadeIn()  // элемент с идентификатором leftFit "прояснится" за 400 мс.
-
-$("#leftFit").fadeOut(300)  // в течении 1/3 секунды элемент с идентификатором leftFit исчезнет.
-
-$("#leftFit").fadeIn("slow")  // в течении 600 мс появится элемент с идентификатором leftFit.
+if (window.sessionStorage && window.localStorage) {
+  //объекты sessionStorage и localtorage поддерживаются
+}
+else {
+  //объекты sessionStorage и localtorage не поддерживаются
+}
 ```
+
+В LocalStorage, мы можем записывать только строковые данные. 
+
+Если нужно добавить массив или объект, то его можно предварительно преобразовать в JSON-строку (JSON.stringify(obj)), а после получения данных из LocalStorage - производим обратное преобразование (JSON.parse(json_string)). 
+
+## Загрузка данных из LocalStorage
+
 ## 01.html
 
 ```js
-$('.addcart').click(function() {
-        var y = 180;
-        $('.contentItem').css({
-          'transform': 'rotateY(' + y + 'deg)'
-        });
 
+var shoppingCart = [];
 
-        cart_trigger.fadeOut(1000);
-        cart_trigger.fadeIn(500);
-```
+  $(function() {
 
-## callback — функция: 02.html
+    if (localStorage.shoppingCart){
 
-```js
-$('.addcart').click(function() {
-        var y = 180;
-        $('.contentItem').css({
-          'transform': 'rotateY(' + y + 'deg)'
-        });
-
-        $('.shopping-cart').fadeOut(1000, function() {
-                $(this).css({
-                    'backgroundColor':'rgba(255,0,0,0.5)',
-                    'borderRadius': '50%',
-                    'transform': 'scale(2, 2)'
-                    });
-            });
-
-        $('.shopping-cart').fadeIn(500);
-
-```
-
-## Метод .fadeToggle()
-
-Вызов этого метода приводит к плавному исчезновению (если элемент не скрыт) или появлению (если элемент скрыт) выбранных элементов на странице, за счет изменения прозрачности. после скрытия элемента, его css-свойство display становится равным none, а перед появлением, оно получает свое прежнее значение обратно. 
-
-```js
-.fadeToggle([duration],[easing],[callback])
-```
-duration — продолжительность выполнения анимации (появления или скрытия). Может быть задана в миллисекундах или строковым значением 'fast' или 'slow' (200 и 600 миллисекунд). По умолчанию, анимация будет происходить за 400 миллисекунд.
-
-easing — изменение скорости анимации (будет ли она замедляется к концу выполнения или наоборот ускорится).
-
-callback — функция, заданная в качестве обработчика завершения анимации (появления или скрытия). Ей не передается никаких параметров, однако, внутри функции, переменная this будет содержать DOM-объект анимируемого элемента. Если таких элементов несколько, то обработчик будет вызван отдельно, для каждого элемента.
-
-## Примеры использования:
-```js
-$("#leftFit").fadeToggle()  // скроет/покажет элемент с идентификатором leftFit за 400 мс.
-
-$("#leftFit").fadeToggle(300) // в течении 1/3 секунды скроет/покажет элемент с идентификатором leftFit.
-
-$("#leftFit").fadeToggle("slow")  // в течении 600 мс скроет/покажет элемент с идентификатором leftFit.
-```
-
-# Выполнение пользовательской анимации
-
-## .animate()
-
-Выполняет заданную пользователем анимацию, с выбранными элементами. Анимация происходит за счет плавного изменения CSS-свойств у элементов. 
-
-Функция имеет два варианта использования:
-
-## .animate(properties, [duration], [easing], [callback])
-
-properties — список CSS-свойств, участвующих в анимации и их конечных значений.
-
-duration — продолжительность выполнения анимации. Может быть задана в миллисекундах или строковым значением 'fast' или 'slow' (200 и 600 миллисекунд).
-
-easing — изменение скорости анимации (будет ли она замедляется к концу выполнения или наоборот ускорится). 
-
-callback — функция, которая будет вызвана после завершения анимации.
-
-## .animate(properties, options)
-
-properties — список CSS-свойств, участвующих в анимации и их конечных значений.
-
-options — дополнительные опции. Должны быть представлены объектом, в формате опция:значение. 
-
-### Варианты опций:
-
-- duration — продолжительность выполнения анимации
-- easing — изменение скорости анимации (будет ли она замедляется к концу выполнения или наоборот ускориться). 
-- complete — функция, которая будет вызвана после завершения анимации.
-- step — функция, которая будет вызвана после каждого шага анимации.
-- queue — булево значение, указывающее, следует ли помещать текущую анимацию в очередь функций. В случае false, анимация будет запущена сразу же, не вставая в очередь.
-- specialEasing — позволяет установить разные значения easing, для разных CSS-параметров. Задается объектом, в формате параметр:значение. 
-
-
-## Выполнение нескольких анимаций
-
-При одновременном вызове нескольких эффектов, применительно к одному элементу, их выполнение будет происходить не одновременно, а поочередно. 
-
-Например при выполнении следующих команд:
-```js
-  $("#my-div").animate({height: "hide"}, 1000);
-  $("#my-div").animate({height: "show"}, 1000);
-```
-элемент с идентификатором my-div, в начале будет плавно исчезать с экрана, а затем начнет плавно появляться вновь. Однако, анимации, заданные на разных элементах, будут выполняться одновременно:
-
-```js
-  $("#my-div-1").animate({height: "hide"}, 1000);
-  $("#my-div-2").animate({height: "show"}, 1000);
-```
-
-## Параметр properties
-
-Задается объектом, в формате css-свойство:значение. Это очень похоже на задание группы параметров в методе .css(), однако, properties имеет более широкий диапазон типов значений. Они могут быть заданы не только в виде привычных единиц: чисел, пикселей, процентов и др., но еще и относительно: {height:"+=30", left:"-=40"} (увеличит высоту на 30 пикселей и сместит вправо на 40). Кроме того, можно задавать значения "hide", "show", "toggle", которые скроют, покажут или изменят видимость элемента на противоположную, за счет параметра, к которому они применены. 
-
-Например
-```js
-$('div').animate(
-  {
-    opacity: "hide",
-    height: "hide"
-  },
-5000);
-```
-Скроет div-элементы, за счет уменьшения прозрачности и уменьшения высоты (сворачиванием) элемента.
-
-в параметре properties можно указывать только те css-свойства, которые задаются с помощью числовых значений. Например, свойство background-color использовать не следует.
-
-Величины, которые в css пишутся с использованием дефиса, должны быть указаны без него (не margin-left, а marginLeft).
-
-## Обработчик завершения анимации
-
-Функция, заданная в качестве обработчика завершения анимации не получает параметров, однако, внутри функции, переменная this будет содержать DOM-объект анимируемого элемента. Если таких элементов несколько, то обработчик будет вызван отдельно, для каждого элемента.
-
-## Параметр easing
-
-Этот параметр определяет динамику выполнения анимации — будет ли она проходить с замедлением, ускорением, равномерно или как то еще. Параметр easing задают с помощью функции. В стандартном jQuery доступны лишь две такие функции: 'linear' и 'swing' (для равномерной анимации и анимации с ускорением). По умолчанию, easing равняется 'swing'. Другие варианты можно найти в плагинах, например, jQuery UI.
-
-Существует возможность задавать разные значения easing для разных css-свойств, при выполнении одной анимации. Для этого нужно воспользоваться вторым вариантом функции animate() и задать опцию specialEasing. Например:
-
-```js
-$('#clickme').click(function() {
-  $('#book').animate({
-    opacity: 'toggle',
-    height: 'toggle'
-  }, {
-    duration: 5000, 
-    specialEasing: {
-      opacity: 'linear',
-      height: 'swing'
+      shoppingCart = JSON.parse(localStorage.shoppingCart);
+    
     }
-  });
-});
-```
-в этом случае изменение прозрачности будет происходить равномерно (linear), а высота будет изменяться с разгоном в начале и небольшим торможением в конце (swing).
-
-# Позиция элемента
-
-## .offset()  .position()
-
-С помощью этих функций, можно узнавать координаты элемента на странице. Кроме этого, с помощью offset(), можно изменить координаты элемента. Имеется несколько вариантов использования функций:
-
-## .offset() .position()
-
-обе функции возвращают координаты выбранного элемента (JS объект с полями top и left). Если выбрано несколько элементов, то значение будет взято у первого. Метод offset возвращает координаты относительно начала страницы, а position относительно ближайшего родителя, у которого задан тип позиционирования (css-свойство position равно relative или absolute или fixed).
-
-## .offset(value)
-
-изменяет координаты всех выбранных элементов делая их равными value. Значение value должен быть объектом с двумя полями — {top:newTop, left:newLeft}.
-
-## .offset(function(index, value))
-
-устанавливает новое значение координат элементов, которое возвращает пользовательская функция. Функция вызывается отдельно для каждого из выбранных элементов. При вызове ей передаются следующие параметры: index — позиция элемента в наборе, value — текущие координаты элемента.
-
-### Примеры использования:
-```js
-$("div.content").offset() // возвратит координаты первого div-элемента с классом content, относительно начала страницы.
-
-$("div.content").position() // возвратит координаты первого div-элемента с классом content, относительно ближайшего родителя с заданным позиционированием.
-
-$(".content").offset({top:30, left:100})  // устанавливает координаты относительно начала страницы, равные (100, 30) для всех элементов с классом content.
 ```
 
-при изменении координат с помощью функции offset, все выбранные элементы, у которых не задан тип позиционирования (то есть position = static), автоматически изменят позиционирование на относительное (relative).
-
-
-# Поиск элемента с заданным номером
-
-```
-.eq()
-```
-Возвращает элемент, идущий под заданным номером в наборе выбранных элементов. 
-```js
-.eq(index)
-```
-index — номер искомого элемента в наборе. Может быть задан двумя способами: стандартно, как в массиве, то есть нумерация будет начинаться с 0. Кроме этого, можно задать index отрицательным целым числом, и в таком случае, элементы будут браться с конца: -1 — последний элемент, -2 — предпоследний, и.т.д.
-
-## Примеры использования:
-```js
-$("div").eq(0)  // вернет первый div-элемент на странице.
-$("div").eq(-1) // вернет последний div-элемент на странице.
-$("div.lBlock").eq(5) // вернет шестой по счету div-элемент с классом lBlock.
-```
-
-## 03.html
+Свойство shoppingCart.length возвращает количество элементов, находящихся в shoppingCart.
 
 ```js
-$('.addcart').click(function() {
-        var y = 180;
-        $('.contentItem').css({
-          'transform': 'rotateY(' + y + 'deg)'
-        });
 
-        var imgtodrag = $(this).parents('.singleMember').find("img").eq(0);
-        
-        if (imgtodrag) {
-            var imgclone = imgtodrag.clone()
-                .offset({
-                top: imgtodrag.offset().top,
-                left: imgtodrag.offset().left
-            })
-                .css({
-                'opacity': '0.5',
-                    'position': 'absolute',
-                    'height': '150px',
-                    'width': '150px',
-                    'z-index': '100'
-            })
-                .appendTo($('body'));
-        }        
+  function showCart(){
+    if (shoppingCart.length == 0) {
+      console.log("Your Shopping Cart is Empty!");
+      return;
+    }
+  }
 ```
-## 04.html
+
+## Где вызывать функцию showCart
+
+### 02.html
+
+```js
+
+    const cart_trigger = $('#cart-trigger');
+
+    cart_trigger.on('click', () => {
+       toggle_panel(cart, shadow_layer);
+
+       showCart();
+    });
+```
+
+### 03.html
+
+## Подготовка данных для записи в localStorage
 
 ```js
 
 $('.addcart').click(function() {
-        var y = 180;
-        $('.contentItem').css({
-          'transform': 'rotateY(' + y + 'deg)'
-        });
 
-        var imgtodrag = $(this).parents('.singleMember').find("img").eq(0);
-        
-        if (imgtodrag) {
-            var imgclone = imgtodrag.clone()
-                .offset({
-                top: imgtodrag.offset().top,
-                left: imgtodrag.offset().left
-            })
-                .css({
-                'opacity': '0.5',
-                    'position': 'absolute',
-                    'height': '150px',
-                    'width': '150px',
-                    'z-index': '100'
-            })
-        
-            .appendTo($('body'))
-                .animate({
-                'top': $('.shopping-cart').offset().top + 10,
-                    'left': $('.shopping-cart').offset().left + 10,
-                    'width': 75,
-                    'height': 75
-            }, 1000, 'linear');
-        
-        }        
-        
-        $('.shopping-cart').fadeOut(1000, function() {
-                $(this).css({
-                    'backgroundColor':'rgba(255,0,0,0.5)',
-                    'borderRadius': '50%',
-                    'transform': 'scale(2, 2)'
-                    });
-            });
-      
+    let id = $(this).parents('.singleMember').attr("productId");
 
-        $('.shopping-cart').fadeIn(500);
+    let price = $(this).parents(".singleMember").find(".product-price").attr("productPrice");
+
+    let name = $(this).parents(".singleMember").children(".product-name").text();
+    
+    let quantity = $(this).parents(".singleMember").find(".quantity").val();
+    
+    let picture = $(this).parents(".singleMember").find("img").attr('src');            
+
+    console.log(id, price, name, quantity, picture);
 ```
 
-# Удаление объектов
+## Добавляем или изменяем значение
 
-## Методы для удаления элементов страницы.
-```
-.remove([selector])  .detach([selector])
-```
-Удаляют выбранные элементы на странице. В качестве параметра можно указать селектор и тогда удалены будут только те выбранные элементы, которые ему удовлетворяют. 
-
-Различие двух рассматриваемых методов заключается в том, что при использовании detach, jQuery не удаляет информацию о элементе и поэтому он может быть восстановлен. Например:
-```js
-var foo = jQuery('#foo');
- 
-foo.detach(); //удаляем элемент
- 
-//много-много кода
- 
-foo.appendTo('body'); //вставляем элемент обратно на страницу (не обязательно в то же место, где он был)
-```
-
-## 05.html
-```js
-$('.addcart').click(function() {
-        var y = 180;
-        $('.contentItem').css({
-          'transform': 'rotateY(' + y + 'deg)'
-        });
-
-        var imgtodrag = $(this).parents('.singleMember').find("img").eq(0);
-        
-        if (imgtodrag) {
-            var imgclone = imgtodrag.clone()
-                .offset({
-                top: imgtodrag.offset().top,
-                left: imgtodrag.offset().left
-            })
-                .css({
-                'opacity': '0.5',
-                    'position': 'absolute',
-                    'height': '150px',
-                    'width': '150px',
-                    'z-index': '100'
-            })
-        
-            .appendTo($('body'))
-                .animate({
-                'top': $('.shopping-cart').offset().top + 10,
-                    'left': $('.shopping-cart').offset().left + 10,
-                    'width': 75,
-                    'height': 75
-            }, 1000, 'linear');
-        
-        }        
-        
-        $('.shopping-cart').fadeOut(1000, function() {
-                $(this).css({
-                    'backgroundColor':'rgba(255,0,0,0.5)',
-                    'borderRadius': '50%',
-                    'transform': 'scale(2, 2)'
-                    });
-            });
-      
-
-        $('.shopping-cart').fadeIn(500);
-
-        imgclone.animate({
-                'width': 0,
-                    'height': 0
-            }, function () {
-                $(this).detach()
-            });
-```
-
-# jQuery extend
+### 04.html
 
 ```js
+  let item = { 
+      Id: id, 
+      Product: name,  
+      Price: price, 
+      Quantity: quantity, 
+      Picture: picture 
+    }; 
+    
+    shoppingCart.push(item);
 
-  jQuery.extend( jQuery.easing, {
+    console.log(shoppingCart);
+```
+## Сохраняем корзину в localStorage
+
+```js
+   
+    saveCart();
+
+```
+
+Перед сохранением выполняем сериализацию данных в JSON с помощью функции JSON.stringify().
+
+```js
+  function saveCart() {
   
-      easeInOutExpo: function (x, t, b, c, d) {
-            if (t==0) return b;
-            if (t==d) return b+c;
-            if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
-            return c/2 * (-Math.pow(2, -10 * --t) + 2) + b;
-        },
-  });
-
+    if ( window.localStorage)
+      {
+        localStorage.shoppingCart = JSON.stringify(shoppingCart);
+      }
+  }
 ```
-
-## 06.html
+Если товар уже находится в корзине
 
 ```js
-            .appendTo($('body'))
-                .animate({
-                'top': $('.shopping-cart').offset().top + 10,
-                    'left': $('.shopping-cart').offset().left + 10,
-                    'width': 75,
-                    'height': 75
-            }, 1000, 'easeInOutExpo');
 
+for (let i in shoppingCart) {
+      if(shoppingCart[i].Product == name)
+        {
+         shoppingCart[i].Quantity += quantity;
+         saveCart();
+         return;
+        }
+    }
 ```
-## 07.html
 
-```html
+## Просмотр содержимого корзины
 
-    <script id="cartItem" type="text/template">
-        
-        <li>
-        <span class="productInCart"></span>
-           <span class="qty item-quantities">
-            </span>
+### 05.html 
 
-            <div class="item-prices">
-            </div>
-            <a class="item-remove img-replace" href="#0"></a>
-        
-        </li>
-
-    </script>
-
-```
-## Javascript
 ```js
-      $('.addcart').click(function() {
-        var y = 180;
-        $('.contentItem').css({
-          'transform': 'rotateY(' + y + 'deg)'
-        });
 
-        var imgtodrag = $(this).parents('.singleMember').find("img").eq(0);
-        
-        if (imgtodrag) {
-            var imgclone = imgtodrag.clone()
-                .offset({
-                top: imgtodrag.offset().top,
-                left: imgtodrag.offset().left
-            })
-                .css({
-                'opacity': '0.5',
-                    'position': 'absolute',
-                    'height': '150px',
-                    'width': '150px',
-                    'z-index': '100'
-            })
-        
-            .appendTo($('body'))
-                .animate({
-                'top': $('.shopping-cart').offset().top + 10,
-                    'left': $('.shopping-cart').offset().left + 10,
-                    'width': 75,
-                    'height': 75
-            }, 1000, 'easeInOutExpo');
-        
-        }        
-        
-        $('.shopping-cart').fadeOut(1000, function() {
-                $(this).css({
-                    'backgroundColor':'rgba(255,0,0,0.5)',
-                    'borderRadius': '50%',
-                    'transform': 'scale(2, 2)'
-                    });
-            });
+function showCart(){
+    if (shoppingCart.length == 0) {
+      console.log("Your Shopping Cart is Empty!");
+      return;
+    }
+
+    $("#cartBody").empty();
+
+    for (var i in shoppingCart) {
+    
+      var $templateCart = $($('#cartItem').html());
+  
+      var item = shoppingCart[i];
+    
+      $templateCart.attr('product_id', item.Id);
+    
+      $templateCart.find(".item-quantities").text(item.Quantity);
+    
+      $templateCart.find(".item-quantities").after(' '+ item.Product); 
+    
+      $templateCart.find('.item-price').text(item.Price);
+    
+      $templateCart.find('.item-prices').text(item.Quantity * item.Price);
+
+      $templateCart.find('span.qty').attr('style', 'background-image:'+ 'url('+item.Picture+')');
+
+      $(".cart-items").append($templateCart);
+    }
+  }
+
+    cart_trigger.on('click', () => {
+      toggle_panel(cart, shadow_layer);
+      showCart();
+    });
+```
+
+## Подсчет итоговых сумм
+
+### 06.html
+
+```js
+  function showCart(){
+    if (shoppingCart.length == 0) {
+      console.log("Your Shopping Cart is Empty!");
+      return;
+    }
+
+    $("#cartBody").empty();
+
+    for (var i in shoppingCart) {
+    
+      var $templateCart = $($('#cartItem').html());
+  
+      var item = shoppingCart[i];
+    
+      $templateCart.attr('product_id', item.Id);
+    
+      $templateCart.find(".item-quantities").text(item.Quantity);
+    
+      $templateCart.find(".item-quantities").after(' '+ item.Product); 
+    
+      $templateCart.find('.item-price').text(item.Price);
+    
+      $templateCart.find('.item-prices').text(item.Quantity * item.Price);
+
+      $templateCart.find('span.qty').attr('style', 'background-image:'+ 'url('+item.Picture+')');
+
+      $(".cart-items").append($templateCart);
+    }
+    updateTotal();
+  }
+```
+
+## Обновление итогов
+
+
+## Вызов функции для элементов набора
+```
+.each()
+```
+Выполняет заданную функцию для каждого из выбранных элементов в отдельности. Это дает возможность обрабатывать выбранные элементы отдельно друг от друга.
+
+```js
+.each(callback(index, domElement))
+```
+Выполняет функцию callback для каждого из выбранных элементов. В callback передаются 2 параметра: номер элемента в наборе (нумерация начинается с нуля) и сам элемент в виде объекта DOM.
+
+метод .each() возвращает исходный набор элементов.
+
+```js
+  function updateTotal() {
+      var quantities = 0,
+      total = 0,
       
+      $cartTotal = $('#cart_total span'),
+      items = $('.cart-items').children();
 
-        $('.shopping-cart').fadeIn(500);
+      items.each(function (index, item) {
+          var $item = $(item);
+          total += parseFloat($item.find('.item-prices').text());
+      });
 
-        imgclone.animate({
-                'width': 0,
-                    'height': 0
-            }, function () {
-                $(this).detach()
-            });
+      $cartTotal.text('$' + parseFloat(Math.round(total * 100) / 100).toFixed(2));
+  }
+```
 
-    $('.contentItem').delay(3000).queue(function() {
-      $(this).css({
-        'transform': 'rotateY(0deg)'
-      }).dequeue();
-      $('.singleMember p').slideDown();
-      $('.menu').css('top', '80%');
-      $('.icon').toggle();
+## Удаляем товар из корзины
+
+## Метод find()
+
+Метод find() возвращает значение первого найденного в массиве элемента, которое удовлетворяет условию переданному в callback функции.  В противном случае возвращается undefined.
+```js
+arr.find(callback[, thisArg])
+```
+### Параметры
+
+- callback
+Функция, вызывающаяся для каждого значения в масиве, принимает три аргумента:
+- element
+Текущий обрабатываемый элемент в массиве.
+- index
+Индекс текущего обрабатываемого элемента в массиве.
+- array
+Массив, по которому осуществляется проход.
+- thisArg
+Необязательный параметр. Значение, используемое в качестве this при выполнении функции callback.
+
+### Возвращаемое значение
+
+Значение элемента из массива, если элемент прошёл проверку, иначе undefined.
+
+
+Метод find вызывает переданную функцию callback один раз для каждого элемента, присутствующего в массиве, до тех пор, пока она не вернёт true. Если такой элемент найден, метод find немедленно вернёт значение этого элемента. В противном случае, метод find вернёт undefined. 
+
+Функция callback вызывается с тремя аргументами: значением элемента, индексом элемента и массивом, по которому осуществляется проход.
+
+Если в метод find был передан параметр thisArg, при вызове callback он будет использоваться в качестве значения this. В противном случае в качестве значения this будет использоваться значение undefined.
+
+Метод find не изменяет массив, для которого он был вызван.
+
+```js
+
+  console.log(shoppingCart.find(x => x.Id === index));
+
+```
+
+
+```js
+   var result = shoppingCart.filter(function( obj ) 
+   {
+     if (obj.Id == index){
+            console.log(obj);     
+     }
+     return obj.Id == index;
+   });
+      
+   console.log(result);
+
+```
+
+## Метод findIndex()
+
+Метод findIndex() возвращает индекс в массиве, если элемент удовлетворяет условию проверяющей функции. В противном случае возвращается -1.
+```js
+arr.findIndex(callback[, thisArg])
+```
+### Параметры
+
+- callback
+Функция, вызывающаяся для каждого значения в масиве, принимает три аргумента:
+- element
+Текущий обрабатываемый элемент в массиве.
+- index
+Индекс текущего обрабатываемого элемента в массиве.
+- array
+Массив, по которому осуществляется проход.
+- thisArg
+Необязательный параметр. Значение, используемое в качестве this при выполнении функции callback.
+
+Метод findIndex вызывает переданную функцию callback один раз для каждого элемента, присутствующего в массиве, до тех пор, пока она не вернёт true. Если такой элемент найден, метод findIndex немедленно вернёт индекс этого элемента. В противном случае, метод findIndex вернёт -1. Функция callback вызывается только для индексов массива, имеющих присвоенные значения; она не вызывается для индексов, которые были удалены или которым значения никогда не присваивались.
+
+Функция callback вызывается с тремя аргументами: значением элемента, индексом элемента и массивом, по которому осуществляется проход.
+
+Если в метод findIndex был передан параметр thisArg, при вызове callback он будет использоваться в качестве значения this. В противном случае в качестве значения this будет использоваться значение undefined.
+
+Метод findIndex не изменяет массив, для которого он был вызван.
+
+```js
+
+console.log(shoppingCart.indexOf(shoppingCart.find(x => x.Id === index)));
+
+```
+
+## Метод splice()
+
+Метод splice() изменяет содержимое массива, удаляя существующие элементы и/или добавляя новые.
+```js
+array.splice(start, deleteCount[, item1[, item2[, ...]]])
+```
+### Параметры
+
+- start
+Индекс, по которому начинать изменять массив. Если больше длины массива, реальный индекс будет установлен на длину массива. Если отрицателен, указывает индекс элемента с конца.
+
+- deleteCount
+Целое число, показывающее количество старых удаляемых из массива элементов. Если deleteCount равен 0, элементы не удаляются. В этом случае вы должны указать как минимум один новый элемент. Если deleteCount больше количества элементов, оставшихся в массиве, начиная с индекса start, то будут удалены все элементы до конца массива.
+
+- itemN
+Необязательные параметры. Добавляемые к массиву элементы. Если вы не укажете никакого элемента, splice() просто удалит элементы из массива.
+
+### Возвращаемое значение
+
+Массив, содержащий удалённые элементы. Если будет удалён только один элемент, вернётся массив из одного элемента. Если никакие элементы не будут удалены, вернётся пустой массив.
+
+Если количество указанных вставляемых элементов будет отличным от количества удаляемых элементов, массив изменит длину после вызова.
+
+## Пример: использование метода splice()
+```js
+
+   shoppingCart.splice(shoppingCart.indexOf(shoppingCart.find(x => x.Id === index)),1); 
+      
+   console.log(shoppingCart);
+
+```
+
+### 07.html
+
+```js
+   $('body').on('click', '.cart-items .item-remove', function () {
+      var $this = $(this);
+      var index = $this.parent().attr("product_id");
+
+      console.log(index);
+
+      var result = shoppingCart.filter(function( obj ) {
+          if (obj.Id == index){
+            console.log(obj);     
+          }
+        return obj.Id == index;
+      });
+      
+      console.log(result);
+
+      console.log(shoppingCart.find(x => x.Id === index));
+
+      console.log(shoppingCart.indexOf(shoppingCart.find(x => x.Id === index)));
+
+      shoppingCart.splice(shoppingCart.indexOf(shoppingCart.find(x => x.Id === index)),1); 
+      
+      console.log(shoppingCart);
+      var $item = $this.parents('li');
+      $item.remove();
+      saveCart();
+      updateTotal();
     });
 
-
-    var $templateCart = $($('#cartItem').html());
-
-    var productId = $(this).parents(".contentItem").attr("productId");
-
-    $templateCart.attr('id', 'product_' + productId);
-        
-    $templateCart.find('.item-prices').attr('id', "price_"+productId);
-
-    $templateCart.find(".item-quantities").attr('id', "qty_"+productId);
-
-    $templateCart.find(".item-quantities").text($(this).parents(".singleMember").find(".quantity").val());
-        
-    $templateCart.find(".item-quantities").after(' '+$(this).parents(".singleMember").children(".product-name").attr("productName")); 
-        
-    $templateCart.find('.item-prices').text($(this).parents(".singleMember").children(".product-price").attr("productPrice"));
-
-    $(".cart-items").append($templateCart);
-
-    $('.singleMember .icon').css('display', 'block'); 
-    $('.singleMember .buy').css('display', 'block'); 
-    $('.singleMember .detail').css('display', 'none'); 
-  });
-
-
 ```
+## item-remove
 
-# Фильтрация выбранных элементов
-```
-.filter()
-```
-Фильтрует набор выбранных элементов. 
-
-Метод имеет два варианта использования:
-
-## .filter(selector)
-
-Фильтрует набор элементов, оставляя только те, которые удовлетворяют селектору selector.
-
-## .filter(function(index))
-
-Фильтрует набор элементов c помощью заданной функции. Эта функция вызывается отдельно, для каждого из выбранных элементов. Если она возвращает true, то текущий элемент будет включен в конечный результат. Сами элементы доступны в функции, в переменной this, а их порядковые номера в наборе — в переменной index.
-
-Примеры использования:
 ```js
-$("div").filter(".lBlock")  // вернет div-элементы с классом lBlock.
 
-$("div").filter(filterDivs) // вернет div-элементы, "одобренные" функцией filterDivs.
+   $('body').on('click', '.cart-items .item-remove', function () {
+      var $this = $(this);
+      var index = $this.parent().attr("product_id");
 
+      shoppingCart.splice(shoppingCart.indexOf(shoppingCart.find(x => x.Id === index)),1); 
+      
+      var $item = $this.parents('li');
+      $item.remove();
+      saveCart();
+      updateTotal();
+    });
+
+```
+
+## Очищаем все хранилище
+```js
+localStorage.clear()
 ```
 
 ## 08.html
 
 ```js
-var $templateCart = $($('#cartItem').html());
 
-    var productId = $(this).parents(".singleMember").attr("productId");
-    
-    var items = $(".cart-items").children();
-    
-    var $matched = null,  quantity = 0, $p=0;
-
-    $matched = items.filter(function (index) {
-         var $this = $(this);
-        return $this.attr("id") === "product_"+productId;
-    });
-    
-    if ($matched.length) {
-        quantity = + parseInt($matched.find('.qty').text()) + parseInt($(this).parents(".singleMember").find(".quantity").val());
-        $p = $matched.find('.item-prices').text();
-        $matched.find('.qty').text(quantity);
-    } else {
-
-    $templateCart.attr('id', 'product_' + productId);
-        
-    $templateCart.find('.item-prices').attr('id', "price_"+productId);
-
-    $templateCart.find(".item-quantities").attr('id', "qty_"+productId);
-
-    $templateCart.find(".item-quantities").text($(this).parents(".singleMember").find(".quantity").val());
-        
-    $templateCart.find(".item-quantities").after(' '+$(this).parents(".singleMember").children(".product-name").attr("productName")); 
-        
-    $templateCart.find('.item-prices').text($(this).parents(".singleMember").children(".product-price").attr("productPrice"));
-
-    $(".cart-items").append($templateCart);
-    
-  }
-```
-
-## 09.html
-
-```js
-
-$('body').on('click', '.cart-items .item-remove', function () {
-        var $this = $(this),
-        $item = $this.parents('li');
-        $item.remove();
-    });
+$('body').on('click', '#cart .clear-cart', function () {
+   
+      localStorage.removeItem('shoppingCart');
+      $("#cartBody").empty();
+      shoppingCart = [];
+      updateTotal();
+   });
 
 ```

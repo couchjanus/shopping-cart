@@ -191,27 +191,11 @@
     <div id="cart">
         <h2>Cart</h2>
         <ul class="cart-items">
-            <li>
-                <span class="qty">1x</span> Product Name
-                <div class="price">$9.99</div>
-                <a href="#0" class="item-remove img-replace"></a>
-            </li>
 
-            <li>
-                <span class="qty">2x</span> Product Name
-                <div class="price">$19.98</div>
-                <a href="#" class="item-remove img-replace"></a>
-            </li>
-
-            <li>
-                <span class="qty">1x</span> Product Name
-                <div class="price">$9.99</div>
-                <a href="#" class="item-remove img-replace"></a>
-            </li>
         </ul> <!-- cd-cart-items -->
 
         <div class="cart-total">
-            <p>Total <span>$39.96</span></p>
+            <p>Total <span>$00.00</span></p>
         </div> <!-- cd-cart-total -->
 
         <a href="#" class="checkout-btn">Checkout</a>
@@ -269,7 +253,7 @@
 
  <script id="productTemplate" type="text/template">
 
-  <div class="contentItem text-center" productId="">
+  <div class="contentItem text-center">
     <div class="singleMember">
           <p class="product-name">Very&nbsp;Nice&nbsp;Cat</p>
           <div class="icon">
@@ -312,34 +296,68 @@
   </div>  <!-- item wrapper end -->
 </script>
 
+<script id="cartItem" type="text/template">
+        <li>
+        <span class="productInCart"></span>
+           <span class="qty item-quantities">
+            </span>
+            <div class="item-prices">
+            </div>
+            <a class="item-remove img-replace" href="#0"></a>
+        </li>
+</script>
+
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 
   <script type="text/javascript">
 
-   $(function() {
 
-        const cart_trigger = $('#cart-trigger'),
-            cart = $('#cart'),
-            shadow_layer = $('#shadow-layer');
+  var shoppingCart = [];
 
-        const close = $('.close');
-        const megacatalog = $('#megacatalog');
-        const mega = $('.mega-menu');
+  function showCart(){
+    if (shoppingCart.length == 0) {
+      console.log("Your Shopping Cart is Empty!");
+      return;
+    }
+  }
 
-        megacatalog.click(() => {
-            mega.addClass('active');
-        });
+  function saveCart() {
+  
+    if ( window.localStorage)
+      {
+        localStorage.shoppingCart = JSON.stringify(shoppingCart);
+      }
+  }
 
-        close.click(() => {
-            mega.removeClass('active');
-        });
+  $(function() {
 
-        cart_trigger.on('click', () => {
-            toggle_panel(cart, shadow_layer);
-        });
+    if (localStorage.shoppingCart){
 
+      shoppingCart = JSON.parse(localStorage.shoppingCart);
+    
+    }
 
+    const cart_trigger = $('#cart-trigger'),
+          cart = $('#cart'),
+          shadow_layer = $('#shadow-layer');
+
+    const close = $('.close');
+    const megacatalog = $('#megacatalog');
+    const mega = $('.mega-menu');
+
+    megacatalog.click(() => {
+      mega.addClass('active');
+    });
+
+    close.click(() => {
+      mega.removeClass('active');
+    });
+
+    cart_trigger.on('click', () => {
+      toggle_panel(cart, shadow_layer);
+      showCart();
+    });
 
     for (var i=0; i<Object.keys(data).length; i++){
         var $template = $($('#productTemplate').html());
@@ -366,12 +384,11 @@
       });
     
       $('.addcart').click(function() {
-        var y = 180;
         $('.contentItem').css({
-          'transform': 'rotateY(' + y + 'deg)'
+          'transform': 'rotateY(180deg)'
         });
 
-        var imgtodrag = $(this).parents('.singleMember').find("img").eq(0);
+        let imgtodrag = $(this).parents('.singleMember').find("img").eq(0);
         
         if (imgtodrag) {
             var imgclone = imgtodrag.clone()
@@ -379,22 +396,20 @@
                 top: imgtodrag.offset().top,
                 left: imgtodrag.offset().left
             })
-                .css({
-                'opacity': '0.5',
-                    'position': 'absolute',
-                    'height': '150px',
-                    'width': '150px',
-                    'z-index': '100'
+            .css({
+              'opacity': '0.5',
+              'position': 'absolute',
+              'height': '150px',
+              'width': '150px',
+              'z-index': '100'
             })
-        
             .appendTo($('body'))
-                .animate({
-                'top': $('.shopping-cart').offset().top + 10,
-                    'left': $('.shopping-cart').offset().left + 10,
-                    'width': 75,
-                    'height': 75
-            }, 1000, 'linear');
-        
+            .animate({
+              'top': $('.shopping-cart').offset().top + 10,
+              'left': $('.shopping-cart').offset().left + 10,
+              'width': 75,
+              'height': 75
+            }, 1000, 'easeInOutExpo');
         }        
         
         $('.shopping-cart').fadeOut(1000, function() {
@@ -408,6 +423,13 @@
 
         $('.shopping-cart').fadeIn(500);
 
+        imgclone.animate({
+                'width': 0,
+                    'height': 0
+            }, function () {
+                $(this).detach()
+            });
+
     $('.contentItem').delay(3000).queue(function() {
       $(this).css({
         'transform': 'rotateY(0deg)'
@@ -417,10 +439,54 @@
       $('.icon').toggle();
     });
 
+    let id = $(this).parents('.singleMember').attr("productId");
+
+    let price = $(this).parents(".singleMember").find(".product-price").attr("productPrice");
+
+    let name = $(this).parents(".singleMember").children(".product-name").text();
+    
+    let quantity = $(this).parents(".singleMember").find(".quantity").val();
+    
+    let picture = $(this).parents(".singleMember").find("img").attr('src');            
+
+    console.log(id, price, name, quantity, picture);
+
+    for (let i in shoppingCart) {
+      if(shoppingCart[i].Product == name)
+        {
+         shoppingCart[i].Quantity += quantity;
+         saveCart();
+         return;
+        }
+    }
+   
+    let item = { 
+      Id: id, 
+      Product: name,  
+      Price: price, 
+      Quantity: quantity, 
+      Picture: picture 
+    }; 
+    
+    shoppingCart.push(item);
+
+    console.log(shoppingCart);
+
+    saveCart();
+
+
+  
     $('.singleMember .icon').css('display', 'block'); 
     $('.singleMember .buy').css('display', 'block'); 
     $('.singleMember .detail').css('display', 'none'); 
   });
+
+   $('body').on('click', '.cart-items .item-remove', function () {
+        var $this = $(this),
+        $item = $this.parents('li');
+        $item.remove();
+    });
+
 
    $(".plus").click(function() {
        var val = parseInt($(this).prev().attr('value'));
