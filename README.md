@@ -3,7 +3,7 @@
 ## Table of Contents
 - [JavaScript Object Notation](#JavaScript-Object-Notation)
   - [Синтаксис JSON](#Синтаксис-JSON)
-  - [Методы JSON](#Методы JSON)
+  - [Методы JSON](#Методы-JSON)
 - [Объекты sessionStorage и localStorage](#Объекты-sessionStorage-и-localStorage)
 - [Объект localStorage](#Объект-localStorage)
 - [Методы localStorage](#Методы-localStorage)
