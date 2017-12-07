@@ -1,558 +1,63 @@
- <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-    <head>
-    <!-- Basic Page Needs
-    ================================================== -->
-      <meta charset="utf-8">
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Hello, AJAX!</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-      
-      <meta name="description" content="">
-      <meta name="author" content="">
-      <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-      <link rel="icon" href="./favicon.ico">
-        <!-- Mobile Specific Metas
-    ================================================== -->
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  </head>
+  <body>
 
-      <title>Shopaholic Template</title>
-
-      <!-- CSS
-      ================================================== -->
-
-      <!-- Bootstrap core CSS -->
-      <link href="./css/bootstrap.min.css" rel="stylesheet">
-      <!-- FontAwesome -->
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
-      
-      <!-- Custom styles for this template -->
-      <link href="./css/styles.css" rel="stylesheet">
-    
-      <link href='http://fonts.googleapis.com/css?family=Lato:400,300' rel='stylesheet' type='text/css'>
-      <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,500' rel='stylesheet' type='text/css'>
-    </head>
-
- <body data-spy="scroll" data-target=".navbar-fixed-top">
-        <!--[if lt IE 7]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-
-  <header id="header" class="navbar-fixed-top navbar-inverse video-menu" role="banner">
-    <div class="container">
-      <!-- <div class="row"> -->
-                 <div class="navbar-header ">
-                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" href="#">
-                                <img src="images/logo.png" alt="" class="img-responsive">
-                        </a>
-                 </div><!--Navbar header End-->
-                  <nav class="collapse navbar-collapse navigation" id="navbar-collapse" role="navigation">
-                        <ul class="nav navbar-nav navbar-right ">
-                            <li class="active"> <a href="#home" >Home</a></li>
-                            
-                            <li><a href="#" id="megacatalog">Catalog</a> </li>
-                            <li><a href="#about" >About Us </a> </li>
-                            <li><a href="#blog" >Blog</a> </li>
-                            <li><a href="#contact" >Contact Us</a> </li>
-                            
-                            <li id="cart-trigger"><a href="#" ><i class="fa fa-shopping-cart shopping-cart"></i></a></li>
-                        
-                        </ul>
-
-                     </nav>
-    </div><!-- /.container-fluid -->
-  </header>
-<!-- product Start -->
-<section class="product">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="feature_header text-center">
-                    <h3 class="feature_title">Our <b>Cat Members</b></h3>
-                    <h4 class="feature_sub">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </h4>
-                    <div class="divider"></div>
-                </div>
-            </div>  <!-- Col-md-12 End -->
-            <div class="product-items">
-
-
-            </div>
-        </div>
-    </div> <!-- Conatiner product end -->
-</section>  <!-- Section product End -->
-
-<!-- Our product End -->
-<div class="clearfix"></div>
-
-
-  <!-- Footer Area Start -->
-
-<footer id="footer">
-    <div class="footer_top">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3 col-sm-6">
-                    <h3 class="menu_head">Main Menu</h3>
-                    <div class="footer_menu">
-                        <ul>
-                            <li><a href="#about">Home</a></li>
-                            <li><a href="#service">Service</a></li>
-                            <li><a href="#portfolio">Portfolio</a></li>
-                            <li><a href="#blog">Blog</a></li>
-                            <li><a href="#contact">Contact</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <h3 class="menu_head">Useful Links</h3>
-                    <div class="footer_menu">
-                        <ul>
-                            <li><a href="#">Terms of use</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#"> inventore natus ullam eum</a></li>
-                            <li><a href="#">consectetur adipisicing elit.</a></li>
-                            <li><a href="#">Frequently Asked Questions</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6">
-                    <h3 class="menu_head">Contact us</h3>
-                    <div class="footer_menu_contact">
-                        <ul>
-                            <li> <i class="fa fa-home"></i>
-                                <span> It Shag, 1 Kyiv </span></li>
-                            <li><i class="fa fa-globe"></i>
-                                <span> +099-12345678</span></li>
-                            <li><i class="fa fa-phone"></i>
-                                <span> info@gmail.com</span></li>
-                            <li><i class="fa fa-map-marker"></i>
-                            <span> www.shopaholic.com</span></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-3 col-sm-6">
-                    <h3 class="menu_head">Tags</h3>
-                    <div class="footer_menu tags">
-                        <a href="#"> Mice</a>
-                        <a href="#"> Cats</a>
-                        <a href="#"> Dogs</a>
-                        <a href="#"> Rabbits</a>
-                        <a href="#"> Crocodiles</a>
-                        <a href="#"> Chicks</a>
-                        <a href="#"> Dinosaurs</a>
-                        <a href="#"> Skunks</a>
-                        <a href="#"> Rats</a>
-                        <a href="#"> Crows</a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div class="footer_b">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="footer_bottom">
-                        <p class="text-block"> &copy; Copyright reserved to <span>Janus </span></p>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="footer_mid pull-right">
-                        <ul class="social-contact list-inline">
-                            <li> <a href="#"><i class="fa fa-facebook"></i></a></li>
-                            <li> <a href="#"><i class="fa fa-twitter"></i></a></li>
-                            <li> <a href="#"><i class="fa fa-rss"></i></a></li>
-                            <li> <a href="#"><i class="fa fa-google-plus"></i> </a></li>
-                            <li><a href="#"> <i class="fa fa-linkedin"></i></a></li>
-                            <li><a href="#"> <i class="fa fa-pinterest"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</footer>
-<!-- Footer Area End -->
-
-<div id="shadow-layer"></div>
-
-    <div id="cart">
-        <h2>Cart</h2>
-        
-        <ul class="cart-items" id="cartBody">
-
-        </ul> <!-- cd-cart-items -->
-
-        <div class="cart-total" id="cart_total">
-            <p>Total <span id="allTotal">$00.00</span></p>
-        </div> <!-- cd-cart-total -->
-
-        <a href="#" class="checkout-btn">Checkout</a>
-
-        <p class="go-to-cart"><a href="#">Go to cart page</a></p>
-    </div> <!-- cd-cart -->
-
-    <div class="mega-menu">
-        <div class="mega-menu-top">
-          <div class="mega-search">
-            <label for="mega-search">Search</label>
-            <input type="search" id="mega-search" placeholder="Search" />
-          </div>
-          <div class="close">
-            <span>&#10006;</span> 
-          </div>
-        </div>
-        <h3>Catalog</h3>
-        <ul class="nav themes">
-          <li>Curabitur</li>
-          <li>Commodo</li>
-          <li>Development</li>
-          <li>Environment</li>
-          <li>Diversity</li>
-          <li>Ornared</li>
-          <li>Faciisis</li>
-          <li>Health</li>
-          <li>Dignissim</li>          
-          <li>Science & Tech</li>          
-          <li>Visas</li>
-          <li>Women & Girls</li>
-        </ul>
-        <footer>
-          <div class="logo_footer">  
-          <img src="images/logo.png" class="logo">
-          </div>
-          <ul class="nav footer">
-            <li>Contact Us</li>
-            <li>About Us</li>
-            <li>Privacy Policy</li>
-          </ul>
-        </footer>
+    <div class="card text-center">
+      <div class="card-header">
+        Hello, AJAX!
       </div>
+      <div class="card-body">
+        <h4 class="card-title">Консоль выполнения запроса:</h4>
+        <p class="card-text" id="console">Обрабатываем ответ сервера.</p>
+        <a href="#" class="btn btn-primary btnGo">Запустить скрипт</a>
+      </div>
+      <div class="card-footer text-muted" id="printResult">
+        ответ сервера
+      </div>
+    </div>
 
-<!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     
-    <script src="./js/jquery.min.js"></script>
-    <script src="./js/popper.min.js"></script>
-    <script src="./js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="./js/ie10-viewport-bug-workaround.js"></script>
-
-
- <script id="productTemplate" type="text/template">
-
-  <div class="contentItem text-center">
-    <div class="singleMember">
-          <p class="product-name">Very&nbsp;Nice&nbsp;Cat</p>
-          <div class="icon">
-            <div class="icon_bg"></div>
-            <i class="fa fa-shopping-cart fa-2x"></i>
-          </div>
-          <div class="image">
-            <img src="images/1.jpg" alt="image" width="260" />
-          </div>
-          <div class="menu">
-            <div class="price product-price">
-              $9.99
-            </div>
-            <div class="buy">
-              Buy now!
-            </div>
-            <div class="detail">
-              Detail
-            </div>
-
-            <div class="howmany">
-              <div class="quantity-input">
-                <input class="minus btn" type="button" value="-">
-                <input class="input-text quantity text" value="3" size="4">
-                <input class="plus btn" type="button" value="+">
-              </div>
-            </div>
-            <div class="cancel">
-              Cancel
-            </div>
-            <div class="addcart">
-              Add to Cart!
-            </div>
-          </div>
-     </div>
-     <div class="card_back">
-          <i class="fa fa-check fa-4x"></i>
-          <p>Success!</p>
-     </div>
-  </div>  <!-- item wrapper end -->
-</script>
-
-<script id="cartItem" type="text/template">
-        <li>
-        <span class="productInCart"></span>
-           <span class="qty item-quantities">
-            </span>
-            <div class="item-prices">
-            </div>
-            <a class="item-remove img-replace" href="#0"></a>
-        </li>
-</script>
-
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
-
-  <script type="text/javascript">
-
-
-  var shoppingCart = [];
-
-  function showCart(){
-    if (shoppingCart.length == 0) {
-      console.log("Your Shopping Cart is Empty!");
-      return;
-    }
-
-    $("#cartBody").empty();
-
-    for (var i in shoppingCart) {
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script type="text/javascript">
     
-      var $templateCart = $($('#cartItem').html());
-  
-      var item = shoppingCart[i];
-    
-      $templateCart.attr('product_id', item.Id);
-    
-      $templateCart.find(".item-quantities").text(item.Quantity);
-    
-      $templateCart.find(".item-quantities").after(' '+ item.Product); 
-    
-      $templateCart.find('.item-price').text(item.Price);
-    
-      $templateCart.find('.item-prices').text(item.Quantity * item.Price);
 
-      $templateCart.find('span.qty').attr('style', 'background-image:'+ 'url('+item.Picture+')');
+    $('.btnGo').on('click', function(){
 
-      $(".cart-items").append($templateCart);
-    }
-    updateTotal();
-  }
-
-  function updateTotal() {
-      var quantities = 0,
-      total = 0,
-      
-      $cartTotal = $('#cart_total span'),
-      items = $('.cart-items').children();
-
-      items.each(function (index, item) {
-          var $item = $(item);
-          total += parseFloat($item.find('.item-prices').text());
-      });
-
-      $cartTotal.text('$' + parseFloat(Math.round(total * 100) / 100).toFixed(2));
-  }
-
-  function saveCart() {
-  
-    if (window.localStorage)
-      {
-        localStorage.shoppingCart = JSON.stringify(shoppingCart);
-        
-      }
-  }
-
-  $(function() {
-
-    if (localStorage.shoppingCart){
-
-      shoppingCart = JSON.parse(localStorage.shoppingCart);
-    
-    }
-
-    const cart_trigger = $('#cart-trigger'),
-          cart = $('#cart'),
-          shadow_layer = $('#shadow-layer');
-
-    const close = $('.close');
-    const megacatalog = $('#megacatalog');
-    const mega = $('.mega-menu');
-
-    megacatalog.click(() => {
-      mega.addClass('active');
-    });
-
-    close.click(() => {
-      mega.removeClass('active');
-    });
-
-    cart_trigger.on('click', () => {
-      toggle_panel(cart, shadow_layer);
-      showCart();
-    });
-
-    for (var i=0; i<Object.keys(data).length; i++){
-        var $template = $($('#productTemplate').html());
-
-        $(".product-items").append(makeItem($template, data[i]));
-    }
-  
-  $('body').on('click', '.buy', function() {
-
-        $(this).parents('.singleMember').find('.singleMember p').slideUp();
-        $(this).parents('.singleMember').find('.menu').css('top', '40%');
-        $(this).parents('.singleMember').find('.icon').css('display', 'none'); 
-        $(this).parents('.singleMember').find('.buy').css('display', 'none'); 
-        $(this).parents('.singleMember').find('.detail').css('display', 'block'); 
-        
-      });
-    
-      $('.cancel').click(function() {
-        $('.singleMember p').slideDown();
-        $('.menu').css('top', '80%');
-        $('.singleMember .icon').css('display', 'block'); 
-        $('.singleMember .buy').css('display', 'block'); 
-        $('.singleMember .detail').css('display', 'none'); 
-      });
-    
-      $('.addcart').click(function() {
-        $('.contentItem').css({
-          'transform': 'rotateY(180deg)'
-        });
-
-        let imgtodrag = $(this).parents('.singleMember').find("img").eq(0);
-        
-        if (imgtodrag) {
-            var imgclone = imgtodrag.clone()
-                .offset({
-                top: imgtodrag.offset().top,
-                left: imgtodrag.offset().left
-            })
-            .css({
-              'opacity': '0.5',
-              'position': 'absolute',
-              'height': '150px',
-              'width': '150px',
-              'z-index': '100'
-            })
-            .appendTo($('body'))
-            .animate({
-              'top': $('.shopping-cart').offset().top + 10,
-              'left': $('.shopping-cart').offset().left + 10,
-              'width': 75,
-              'height': 75
-            }, 1000, 'easeInOutExpo');
-        }        
-        
-        $('.shopping-cart').fadeOut(1000, function() {
-                $(this).css({
-                    'backgroundColor':'rgba(255,0,0,0.5)',
-                    'borderRadius': '50%',
-                    'transform': 'scale(2, 2)'
-                    });
-            });
-      
-
-        $('.shopping-cart').fadeIn(500);
-
-        imgclone.animate({
-                'width': 0,
-                    'height': 0
-            }, function () {
-                $(this).detach()
-            });
-
-    $('.contentItem').delay(3000).queue(function() {
-      $(this).css({
-        'transform': 'rotateY(0deg)'
-      }).dequeue();
-      $('.singleMember p').slideDown();
-      $('.menu').css('top', '80%');
-      $('.icon').toggle();
-    });
-
-    let id = $(this).parents('.singleMember').attr("productId");
-    let price = $(this).parents(".singleMember").find(".product-price").attr("productPrice");
-    let name = $(this).parents(".singleMember").children(".product-name").text();
-    let quantity = $(this).parents(".singleMember").find(".quantity").val();
-    let picture = $(this).parents(".singleMember").find("img").attr('src');            
-
-    for (let i in shoppingCart) {
-      if(shoppingCart[i].Product == name)
-        {
-         shoppingCart[i].Quantity += quantity;
-         saveCart();
-         return;
-        }
-    }
-   
-    let item = { 
-      Id: id, 
-      Product: name,  
-      Price: price, 
-      Quantity: quantity, 
-      Picture: picture 
-    }; 
-    
-    shoppingCart.push(item);
-
-    saveCart();
-
-    $('.singleMember .icon').css('display', 'block');
-    $('.singleMember .buy').css('display', 'block'); 
-    $('.singleMember .detail').css('display', 'none'); 
-  });
-
-   $('body').on('click', '.cart-items .item-remove', function () {
-      var $this = $(this);
-      var index = $this.parent().attr("product_id");
-
-      console.log(index);
-
-      var result = shoppingCart.filter(function( obj ) {
-          if (obj.Id == index){
-            console.log(obj);     
+        //Создаём запрос
+        $.ajax({
+          url: 'http://headers.jsontest.com/',
+          beforeSend: function(){
+            $('#console').html('<div class="alert alert-secondary" role="alert">1: Подготовка к отправке...</div>');
+        },
+        error: function(xhr){
+            $('#console').html('<div class="alert alert-danger" role="alert">Ошибка: сервер вернул статус: '+ xhr.statusText +'</div>');
+            $("#printResult").html("<b>Прибыли данные: "+xhr.responseText+"</b>");
+        },
+        success: function(data){
+            var text = $('#console').html();
+            $('#console').html(text + '<div class="alert alert-success" role="alert">4: Обмен завершен!</div>');
+            $("#printResult").html("<b>Прибыли данные: "+data['User-Agent']+"</b>");
+            console.log(data);
           }
-        return obj.Id == index;
-      });
-      
-      console.log(result);
-
-      console.log(shoppingCart.find(x => x.Id === index));
-
-      console.log(shoppingCart.indexOf(shoppingCart.find(x => x.Id === index)));
-
-      shoppingCart.splice(shoppingCart.indexOf(shoppingCart.find(x => x.Id === index)),1); 
-      
-      console.log(shoppingCart);
-      var $item = $this.parents('li');
-      $item.remove();
-      saveCart();
-      updateTotal();
-    });
-
-   $(".plus").click(function() {
-       var val = parseInt($(this).prev().attr('value'));
-       $(this).prev().attr('value', val+1);
-       });
-
-   $(".minus").click(function() {
-       var val = parseInt($(this).next().attr('value'));
-       $(this).next().attr('value', val-1);
-       });
- });
-    
+        });
  
-    </script>
-</body>
+   });
 
+
+  </script>
+  
+  </body>
 </html>
