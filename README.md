@@ -1,330 +1,500 @@
 # shopping-cart 
 
-# Bootstrap-Admin-Theme-3
+# Что такое PHP?
+PHP это первоначально аббревиатура для Personal Home Pages (Личные Домашние Страницы), но в настоящее время это рекурсивный акроним для PHP: Hypertext Preprocessor (Гипертекстовый Препроцессор).
 
-https://github.com/VinceG/Bootstrap-Admin-Theme-3
+http://php.net/
 
-# mockapi.io
+PHP был разработан датским гренландцем Rasmus Lerdorf. PHP это язык программирования общего назначения с открытым исходным кодом. PHP сконструирован специально для ведения Web-разработок и его код может внедряться непосредственно в HTML.
 
-## products1.html
+PHP отличается от JavaScript тем, что PHP-скрипты выполняются на сервере и генерируют HTML, который посылается клиенту.
 
-```js
+Web-страницы, созданные с использованием PHP, обрабатываются как обычные HTML-страницы. Их можно создавать и изменять точно таким же образом, как и обычные страницы на HTML.
 
-var data = [];
+# Что потребуется?
 
-    var url = 'https://5a2f94b9a871f00012678dc8.mockapi.io/products';
-    
-    // Fetch data from url
+## Серверы
+PHP это серверная/server-side технология. Следовательно, для работы РНР вам нужен сервер.
 
-      $.ajax({
-        url: url,
-        method: 'GET'
-      }).then(
-        function(json_data) {
+Вы можете иметь сайт на сервере-хосте, поддерживающем РНР.
 
-          console.log(json_data);
-          
-          for(var i in json_data)
-          {
-             data.push(json_data[i]);
-          }
-          console.log(data);
-        
-        });
-```
+Если у вас ещё нет вэб-сайта на сервере-хосте, можете создать бесплатную учётную запись на 000webhost.com, который поддерживает PHP.
 
-## products2.html
+## Установить PHP на ваш компьютер
 
-```html
+Вот ссылки для загрузки и установки:
 
-    <script type="text/template" id="trItem">
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>
-          <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
-          <button class="btn btn-info"><i class="glyphicon glyphicon-refresh"></i> Update</button>
-          <button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
-          <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button>
-        </td>
-      </tr>
-    </script>
+- Windows Installation Guide http://php.net/manual/en/install.windows.php
+- Mac Installation Guide http://php.net/manual/en/install.macosx.php
+- Linux Installation Guide http://php.net/manual/en/install.unix.php
 
-```
-## Fetch data from url
+## XAMPP
 
-```js
+### Установка XAMPP
 
-var data = [];
-var url = 'https://5a2f94b9a871f00012678dc8.mockapi.io/products';
+Загрузите XAMPP:
 
-    function makeTrItem(template, product){
+- Установка и загрузка XAMPP для Windows http://www.apachefriends.org/en/xampp-windows.html
+- Установка и загрузка XAMPP для Mac http://www.apachefriends.org/en/xampp-macosx.html
+- Установка и загрузка XAMPP для Linux http://www.apachefriends.org/en/xampp-linux.html
 
-        template.find('td').first().text(product["id"])
-          .next().text(product["name"])
-          .next().text(product["price"]);
+Просто следуйте инструкциям на экране в процессе установки.
 
-        return template;
-      }
-   
-    
-// Fetch data from url
+После загрузки и установки XAMPP можете стартовать сервер, сохранять ваши РНР-документы в папке c:\xampp\htdocs на вашем компьютере и получать к ним доступ в браузере по адресу http://localhost.
 
-  $.ajax({
-        url: url,
-        method: 'GET'
-        })
-        .then(
-          function(json_data) {
+## Open Server Panel
 
-            for(var i in json_data)
-            {
-               data.push(json_data[i]);
-            }
-        
-            for (var i=0; i<Object.keys(data).length; i++) {
-              
-              var $template = $($('#trItem').html());
-             
-              $(".table-items").append(makeTrItem($template, data[i]));
-             
-             }
-        
-  });
+https://ospanel.io/
 
-```
-## Сзздаем строку таблицы
+Open Server Panel — это портативная серверная платформа и программная среда, созданная специально для веб-разработчиков с учётом их рекомендаций и пожеланий. 
 
-```js
+## Laragon
 
-function makeTrItem(template, product){
+- https://sourceforge.net/projects/laragon/files/
 
-        template.find('td').first().text(product["id"]).next().text(product["name"]).next().text(product["price"]);
+- https://sourceforge.net/projects/laragon/files/Portable/
 
-          template.find('td').last().find('.btn-default').click(function(){
-            console.log('View product By Id ' + product["id"]);
-          })
+## Тест
 
-          template.find('td').last().find('.btn-primary').click(function(){
-            console.log('Edit product By Id ' + product["id"]);
-          })
+1. Откройте XAMPP Control Panel
 
-          template.find('td').last().find('.btn-danger').click(function(){
-            console.log('Delete product By Id ' + product["id"]);
-          })
+2. Стартуйте сервер Apache и MySql-сервер
 
-         return template;
-      }
-```
-## Получаем элемент 
+3. Создайте в текстовом редакторе файл test.php.
 
-```js
-  template.find('td').last().find('.btn-primary').click(function(){
-    
-    console.log('Edit product By Id ' + product["id"]);
-
-    $.ajax({
-      url: url+'/'+product["id"],
-      method: 'GET'
-      }).then(
-            function(json_data) {
-            
-                console.log('View product By Id ' + json_data);   
-              });
-  });
-
-```
-## Шаблон формы
+4. Вставьте в файл следующий код:
 
 ```html
 
-<script type="text/template" id="formEdit">
-  <div class="row">
-    <div class="col-md-6">
-      <div class="content-box-large">
-        <div class="panel-heading">
-          <div class="panel-title">Edit Item</div>
-                       
-          <div class="panel-options">
-            <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
-            <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
-          </div>
-        </div>
-        <div class="panel-body">
-          <form class="form-horizontal" role="form">
-            <div class="form-group">
-              <label for="name" class="col-sm-2 control-label">Product Name</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="name" placeholder="Product Name">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="price" class="col-sm-2 control-label">Product Price</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="price" placeholder="Product Price">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="picture" class="col-sm-2 control-label">Product Picture</label>
-              <div class="col-sm-10">
-                <input type="text" class="form-control" id="picture" placeholder="Product Picture">
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label">Product Description</label>
-              <div class="col-sm-10">
-                <textarea class="form-control" placeholder="Product Description" rows="3" id="description"></textarea>
-              </div>
-            </div>
-                                 
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-primary">Update Product</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</script>
-
-```
-## Строим форму
-
-```js
-          template.find('td').last().find('.btn-primary').click(function(){
-            
-
-            $.ajax({
-              url: url+'/'+product["id"],
-              method: 'GET'
-            }).then(
-              function(json_data) {
-                                
-                console.log('Edit product By Id ' + json_data['name']);   
-
-               var formTemplate = $($('#formEdit').html());
-
-               formTemplate.find('#name').val(json_data["name"]);
-               formTemplate.find('#price').val(json_data["price"]);
-               formTemplate.find('#picture').val(json_data["picture"]);
-               formTemplate.find('#description').text(json_data["description"]);
-               $("#main").empty();
-               $("#main").append(formTemplate);
-
-
-              });
-
-```
-## Удаление элемента
-
-```js
-          template.find('td').last().find('.btn-danger').click(function(){
-            console.log('Delete product By Id ' + product["id"]);
-
-            $.ajax({
-              url: url+'/'+product["id"],
-              method: 'DELETE'
-            }).then(
-              function(json_data) {
-                console.log('Delete product By Id ' + json_data); 
-                $("#tr" + product["id"]).remove();  
-              });
-
-          });
-
-```
-## Добавление элемента
-
-```js
-
-$('#add').click(function(){
-
-            var formTemplate = $($('#formEdit').html());
-               $("#main").empty();
-               $("#main").append(formTemplate);
-          });
-
-```
-## Добавление элемента
-
-```js
-          $('#add').click(function(){
-
-            var formTemplate = $($('#formEdit').html());
-               $("#main").empty();
-               $("#main").append(formTemplate);
-             
-               $('#save').on('click', function(){
-
-               $.ajax({
-                   type: "POST",
-                   url: url,
-                   data: 
-                    {
-                        "price": $("#idForm").find("#price").val(),
-                        "name":  $("#idForm").find("#name").val(),
-                        "picture": $("#idForm").find("#picture").val(),
-                        "description": $("#idForm").find("#descriptin").val()
-                      },
-
-
-               }).then(function(data){
-                    console.log(data); // show response from the php script.
-
-               });
-
-             });
-
-          });
+<?php echo "Hello World!"; ?>
 
 ```
 
-## Редактирование элемента
+5. Сохраните его в папке "c:\xampp\htdocs".
 
+6. Откройте этот файл в браузере: http://localhost/test.php
+
+Если браузер выведет "Hello World!", значит установка прошла успешно, и вы можете запускать РНР на вашем компьютере. 
+
+При написании скриптов PHP необходимо сохранять файлы с расширением .php.
+
+
+# Код PHP
+
+Код PHP отделяется специальными начальным и конечным тегами, которые позволяют "переключаться" в "PHP-режим" и выходить из него.
+
+Чтобы включить в файл код PHP, необходимо заключить код PHP в специальные теги, которых различают 4 вида (они эквивалентны и можно использовать любые):
+
+## Инструкция обработки XML:
+```php
+<?php
+    ...
+?>
+```
+## Инструкция обработки SGML:
+```php
+<?
+    ...
+?>
+```
+## Инструкция обработки сценариев HTML:
 ```js
-          template.find('td').last().find('.btn-primary').click(function(){
 
-            $.ajax({
-              url: url+'/'+product["id"],
-              method: 'GET'
-            }).then(
-              function(json_data) {
-               var formTemplate = $($('#formEdit').html());
-               formTemplate.find('#name').val(json_data["name"]);
-               formTemplate.find('#price').val(json_data["price"]);
-               formTemplate.find('#picture').val(json_data["picture"]);
-               formTemplate.find('textarea#description').val(json_data["description"]);
+  <script language = "php">
+      ...
+  </script>
 
-               formTemplate.find('.save').attr('id', 'update');
-               
-               $("#main").empty();
-               $("#main").append(formTemplate);
+```
+## Инструкция в стиле ASP:
+```php
+<%
+    ...
+%>
+```
+## Пишем код PHP
 
-               $('#update').on('click', function(){
+Скриптовый блоки  PHP могут быть размещены в любом месте документа.
 
-                $.ajax({
-                    url: url + '/'+ json_data["id"],
-                    type: 'PUT',
-                    withCredentials: true,
-                    data: {
-                        "id": json_data["id"],
-                        "price": $("#idForm").find("#price").val(),
-                        "name":  $("#idForm").find("#name").val(),
-                        "picture": $("#idForm").find("#picture").val(),
-                        "description": $("#idForm").find("textarea#description").val()
-                    },
-                    success: function(result) {
-                        console.log('Updated product saccess'); 
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log('Error ', jqXHR, textStatus, errorThrown); 
-                    }
-                });
-              });      
-           });
-          });
+```php
 
+  <?php
+  тело программы
+  ?>
+
+```
+
+PHP файл обычно содержит HTML-теги, так же, как HTML-файл, и некоторый код PHP-скриптов.
+```html
+
+  <html>
+  <body>
+    <?php
+    echo "Hello World";
+    ?>
+  </body>
+  </html>
+```
+
+Каждый код строки в PHP должны заканчиваться точкой с запятой.Точка с запятой является разделителем и используется, чтобы отличить один набор инструкций от другого. 
+
+Существуют два основных положения для вывода текста с помощью PHP: echo() и print(). 
+
+
+```html
+
+  <html>
+  <body>
+    <?php
+    print "Hello World";
+    ?>
+  </body>
+  </html>
+
+```
+ 
+
+## Комментарии в PHP
+В PHP, мы используем // , чтобы сделать однострочный комментарий или /* и */, чтобы сделать большой блок комментариев. Комментарии нужны чтобы писать пояснение в коде, сами комментарии на выполнение кода не влияют и не выводятся.
+```html
+
+  <html>
+  <body>
+    <?php
+    //Это комментарий
+    /*
+    Это
+     
+    тоже
+     
+    комментарий
+    */
+    ?>
+  </body>
+  </html>
+
+```
+## Переменные в PHP
+
+Переменные PHP используются для хранения значений, таких как текстовые строки, числа или массивы. Когда переменная объявлена, она может быть использована снова и снова в вашем скрипте. Все переменные в PHP начинаются с символа $.
+
+Переменной называется величина, значение которой меняется в процессе исполнения кода программы.
+
+Переменные - это некоторые данные, обрабатываемые в программе и имеющие имя. В зависимости от типа данных, программа после объявления переменных, выделяет определённое количество ячеек в памяти, для хранения этих переменных.
+
+
+## Правильный способ объявления переменных в PHP:
+```php
+
+  $var_name = value;
+```
+
+Одинарный знак = является оператором присваивания, то есть мы говорим на языке PHP: переменной var_name присваиваем значение value.
+
+Когда мы объявляем строковую переменную, то мы должны строку заключить в кавычки, одинарные или двойные разницы не имеет, главное что если начинается с одинарной, то и заканчивается одинарной, начинается с двойной - заканчивается с двойной. Числовые переменные мы пишем без кавычек.
+
+```php
+
+  <?php
+  $txt="Hello World!";
+  $x=16;
+  print $txt;
+  echo $x;
+  ?>
+```
+
+В PHP переменная создается автоматически, когда вы ее используете. Правила именования для переменных:
+
+- Имя переменной должно начинаться с буквы или символа подчеркивания "_"
+- Имя переменной может содержать только буквенный-цифровые символы и знак подчеркивания (А-Я, AZ, 0-9, и _)
+- Имя переменной не должно содержать пробелов. Если имя переменной более одного слова, она должна быть разделена подчеркиванием ($ my_string), или с капитализацией ($myString).
+
+PHP является слабо типизированным языком.  В PHP переменные не должны быть объявлены перед добавлением значения. PHP автоматически преобразует переменную в правильный тип данных, в зависимости от его значения. 
+
+
+# Строки
+## Конкатенация (сцепление)
+Если ваша строка на одной строке занимает не рекомендуемую длину (120 символов), используйте конкатенацию.
+Для удобства чтения лучше использовать конкатенацию, чем операторы присваивания.
+Если используете новую строку при сцеплении строк, делайте относительно оригинальной строки отступы.
+
+```php
+
+    <?php
+    $a  = 'Multi-line example';    // Оператор сцепления строк (.=)
+    $a .= "\n";
+    $a .= 'of what not to do';
+
+    vs.
+
+    $a = 'Multi-line example'      // Оператор объединения (.)
+        . "\n"                     // используя новые строки.
+        . 'of what to do';
+```
+
+## Тип строки.
+
+### Одиночные кавычки
+Часто самый быстрый способ отделить строку - эта использовать одинарные кавычки. Скорость заключается в том, что PHP не анализирует строку (не ищет в ней переменные). Одинарные кавычки лучше всего подходят для:
+
+- строк, которые не нужно анализировать,
+- имён переменных, которые нужно написать как текст.
+
+```php
+
+  <?php
+  echo 'Посмотрите как прекрасна моя симпатичная строка.';    // анализ этой строке не нужен.
+
+  /**
+   * Выведет:
+   *
+   * Посмотрите как прекрасна моя симпатичная строка.
+   */
+
+```
+### Двойные кавычки
+Двойные кавычки, как швейцарский нож. Они лучше всего используются для:
+
+- Escaped strings
+- строк с использованием переменных,
+- использования Condensing multi-line concatenation, для удобство просмотра кода.
+
+```php
+
+    <?php
+    echo 'phptherightway is ' . $adjective . '.'     // эта строка использует multiple concatenating для
+        . "\n"                                       // отделения переменных от строки.
+        . 'I love learning' . $code . '!';
+
+    vs.
+
+    echo "phptherightway is $adjective.\n I love learning $code!"  // А тут используются двойные кавычки.
+```
+При использовании двойных кавычек часто бывает, что переменную нужно использовать в чуть изменнёном виде. Но при анализе строки PHP не сможет определить, что это переменная. Для решения этой проблемы оберните переменную в фигурные скобки.
+
+```php 
+
+    <?php
+    $juice = 'plum';
+    echo "I drank some juice made of $juices";    // $juices не определена
+
+    vs.
+
+    $juice = 'plum';
+    echo "I drank some juice made of {$juice}s";    // $juice будет анализирована.
+
+    /**
+     * Комплексные переменные также оборачивайте в фигурные скобки.
+     */
+
+    $juice = array('apple', 'orange', 'plum');
+    echo "I drank some juice made of {$juice[1]}s";   // $juice[1] будет анализирована.
+
+```
+
+## Получение информации о системе из PHP
+
+```php
+  <?php phpinfo(); ?>
+```
+
+## $_SERVER
+
+$_SERVER - специальная зарезервированная переменная PHP, которая содержит всю информацию, полученную от Web-сервера. Её также называют суперглобальной.
+
+
+### Вывод значения переменной (элемента массива)
+
+```php
+
+<?php
+  echo $_SERVER['HTTP_USER_AGENT'];
+?>
+```
+
+### Пример использования управляющих структур и функций
+```php
+
+  <?php
+    if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE) {
+        echo 'Вы используете Internet Explorer.<br />';
+    }
+  ?>
+```
+
+strpos() - встроенная в PHP функция, которая ищет одну строку в другой. В данном случае мы ищем строку 'MSIE' (needle) в $_SERVER (haystack). Если "иголка" найдена внутри "сена", функция возвращает позицию "иголки" относительно начала "сена". В противном случае она возвращает FALSE. Если она не вернет FALSE, то условие в if окажется истинным (TRUE), и код в фигурных скобках ({ }) выполнится. В противном случае этот код не выполняется. 
+
+
+### Смешение режимов HTML и PHP
+
+```html
+
+  <?php
+  if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE) {
+  ?>
+  <h3>strpos(), должно быть, вернул не false</h3>
+  <p>Вы используете Internet Explorer</p>
+  <?php
+  } else {
+  ?>
+  <h3>strpos() вернул false</h3>
+  <p>Вы не используете Internet Explorer</p>
+  <?php
+  }
+  ?>
+```
+
+## Операторы сравнения
+```php
+
+  <?php
+  $a = 5;   // 5 как целое число (integer)
+
+  var_dump($a == 5);       // Сравниваются значения; Вернёт true
+  var_dump($a == '5');     // Сравниваются значения (игнорируя типы); Вернёт true
+  var_dump($a === 5);      // Сравниваются типы и значения (integer vs. integer); Вернёт true
+  var_dump($a === '5');    // Сравниваются типы и значения (integer vs. string); Вернёт false
+
+  /**
+   * Строгое сравнение
+   */
+  if (strpos('testing', 'test')) {    // 'test' находится в 0 позиции, результатом будет 'false'
+      // Ваш код...
+  }
+
+  vs.
+
+  if (strpos('testing', 'test') !== false) {    // Результатом будет 'true', т.к. тут строгое сравнение (0 !== false)
+      // Ваш код...
+  }
+
+```
+
+# Условные операторы
+## Оператор “If”
+
+```php
+  <?php
+  function test($a)
+  {
+      if ($a) {
+          return true;
+      } else {
+          return false;
+      }
+  }
+
+  vs.
+
+  function test($a)
+  {
+      if ($a) {
+          return true;
+      }
+      return false;    // else использовать не обязательно
+  }
+```
+
+## Оператор “Switch”
+Оператор “Switch” является отличным способом, чтобы не использовать много операторов “if” с использованием “elseif”, но необходимо знать некоторые вещи:
+
+- Оператор “Switch” сравнивает только значения, но не типы данных (равнозначно логической операции ‘==’)
+- Этот оператор сравнивает выражение с каждым значением, пока не найдёт нужное. Если не нашёл, использует “default” (если определён)
+- Без использования ‘break’, выражение будет сравниваться со всеми значениями по-порядку, пока не встретит “break” или “return”
+- Если вы используете для возврата результата ‘return’ то ‘break’ можно опустить.
+
+```php
+    <?php
+    $answer = test(2);    // Этот код выберет 'case 2' и 'case 3'.
+
+    function test($a)
+    {
+        switch ($a) {
+            case 1:
+                // Код...
+                break;             // Прекратит выполнение switch тут если $a == 1, т.к. используется 'break'
+            case 2:
+                // Код...         // Код без 'break', поэтому будет выполнено сравнение с 'case 3'
+            case 3:
+                // Код...
+                return $result;    // within a function, 'return' will end the function
+            default:
+                // Код...
+                return $error;
+        }
+    }
+```
+
+## Тернарный оператор
+Тернарный оператор (‘(expr1) ? (expr2) : (expr3)’) используется для удобства объединения кода в одну строку, но часто избыточен. Хоть он может быть вложенным, рекомендуется его использовать один на строку.
+
+```php
+
+    <?php
+    $a = 5;
+    echo ($a == 5) ? 'yay' : 'nay';
+
+    vs.
+
+    //Вложения
+    $b = 10;
+    echo ($a) ? ($a == 5) ? 'yay' : 'nay' : ($b == 10) ? 'excessive' : ':(';    // Вложения трудно читаемы.
+```
+
+Используя ‘return’ будьте внимательны:.
+
+```php
+
+  <?php
+  $a = 5;
+  echo ($a == 5) ? return true : return false;    // этот пример будет выдавать сообщение об ошибке
+
+  vs.
+
+  $a = 5;
+  return ($a == 5) ? 'yay' : 'nope';    // этот пример вернёт 'yay'
+
+```
+
+# .htaccess
+
+```bash
+
+    Options +FollowSymlinks
+    RewriteEngine On
+    # RewriteBase /
+
+    # Exclude directories from rewrite rules
+    RewriteRule ^(css|i|js|storages|assets) - [L]
+
+    # For Friendly URLs
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?route=$1 [L,QSA]
+
+```
+
+# nginx configuration
+
+```bash
+
+    location /css {
+    }
+
+    location /i {
+    }
+
+    location /js {
+    }
+
+    location /storages {
+    }
+
+    location /assets {
+    }
+
+    location / {
+      if (!-e $request_filename){
+        rewrite ^(.*)$ /index.php?route=$1 break;
+      }
+    }
 ```
