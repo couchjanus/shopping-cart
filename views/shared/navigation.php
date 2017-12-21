@@ -14,12 +14,12 @@
                  </div><!--Navbar header End-->
                   <nav class="collapse navbar-collapse navigation" id="navbar-collapse" role="navigation">
                         <ul class="nav navbar-nav navbar-right ">
-                            <li class="active"> <a href="#home" >Home</a></li>
+                            <li class="active"> <a href="/" >Home</a></li>
                             
                             <li><a href="#" id="megacatalog">Catalog</a> </li>
-                            <li><a href="#about" >About Us </a> </li>
+                            <li><a href="/about" >About Us </a> </li>
                             <li><a href="#blog" >Blog</a> </li>
-                            <li><a href="#contact" >Contact Us</a> </li>
+                            <li><a href="/contact" >Contact Us</a> </li>
                             
                             <li id="cart-trigger"><a href="#" ><i class="fa fa-shopping-cart shopping-cart"></i></a></li>
                         
