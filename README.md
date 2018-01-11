@@ -33,7 +33,7 @@ $ php -r 'print_r(get_defined_constants());'
 $ some_application | some_filter | php | sort -u > final_output.txt
 ```
 
-## Пример Запуск PHP-скрипта как консольного
+## Запуск PHP-скрипта как консольного
 
 ```php
 
@@ -47,7 +47,7 @@ $ php cli/info.php
 
 ```
 
-## главные отличия между php-cli и "php через браузер":
+## Главные отличия между php-cli и "php через браузер":
 
 1. php-cli выполняется с правами пользователя, который его запускает, php-через-браузер выполняется с правами "пользователя" веб-сервера.
 
@@ -193,7 +193,7 @@ DROP INDEX - deletes an index
 
 ```
 
-# Создание MySQL Database
+# Создание MySQL базы данных
 
 ## SQL CREATE DATABASE Statement
 
@@ -258,7 +258,7 @@ mysqli_close($link);
 ```
 
 
-# Создание MySQL Database с помощью MySQLi
+# Создание MySQL базы данных с помощью MySQLi
 
 ```php
 
@@ -294,7 +294,7 @@ mysqli_close($conn);
 
 ```
 
-# Создание MySQL Tables
+# Создание MySQL таблиц
 
 
 # SQL CREATE TABLE Statement
@@ -487,7 +487,7 @@ mysqli_close($conn);
 
 ```
 
-# Реализауия контроллера
+# Реализация контроллера
 
 ## config/app.php
 
@@ -628,7 +628,7 @@ while($row = mysqli_fetch_assoc($result)){
 mysqli_close($conn);
 
 ```
-# Публиквция данных
+# Публикация данных
 
 ```html
 
