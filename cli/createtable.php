@@ -16,17 +16,16 @@ if (mysqli_connect_errno()) {
 echo "Connected successfully\n\n";
 
 // Create database
-$sql = "CREATE TABLE guestbook (
-    id int NOT NULL AUTO_INCREMENT,
-    username varchar(25) NOT NULL,
-    email varchar(30) NOT NULL,
-    comment text NOT NULL,
-    appended_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+$sql = "CREATE TABLE posts (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    title varchar(255) NOT NULL,
+    content text NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );";
 
 if (mysqli_query($conn, $sql)) {
-    echo "Table guetbook created successfully\n\n";
+    echo "Table posts created successfully\n\n";
 
 } else {
     printf("Error creating table: %s\n", mysqli_error($conn));

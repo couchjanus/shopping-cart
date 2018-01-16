@@ -9,7 +9,7 @@ require_once VIEWS.'shared/navigation.php';
         <div class="row">
             <div class="col-md-12">
                 <div class="feature_header text-center">
-                    <h3 class="feature_title">Our <b>Cat Members</b></h3>
+                    <h3 class="feature_title"><?=$title;?></b></h3>
                     <h4 class="feature_sub">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </h4>
                     <div class="divider"></div>
                 </div>

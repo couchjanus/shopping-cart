@@ -8,7 +8,7 @@ require_once VIEWS.'shared/navigation.php';
         <div class="row">
             <div class="col-md-12">
                 <div class="feature_header text-center">
-                    <h3 class="feature_title">About <b>Page</b></h3>
+                    <h3 class="feature_title"><?=$title;?></h3>
                     <h4 class="feature_sub">Hello There</h4>
                     <div class="divider"></div>
                 </div>

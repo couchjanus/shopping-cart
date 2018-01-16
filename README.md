@@ -1,536 +1,523 @@
 # shopping-cart 
 
-# PHP CLI
+# Объектно ориентированный PHP
 
-PHP CLI расшифровывается так: Command Line Interface. [Интерфейс командной строки](http://php.net/manual/ru/features.commandline.php).
+Объектно-ориентированное программирование - это стиль кодирования, который позволяет разработчикам группировать схожие задачи в классы. Это помогает сохранить код в соответствии с принципом «не повторяйся» (DRY) и простым в обслуживании.
 
-Основная цель CLI - разработка консольных приложений на PHP. 
+Одним из основных преимуществ программирования по принципу DRY является то, что если в вашей программе изменяется часть информации, обычно требуется только одно изменение для обновления кода. 
 
-# Выполнение PHP-файлов 
-В CLI есть три различных способа запуска PHP-кода:
+ООП является очень наглядным и более простым подходом к программированию.
 
-- Указание конкретного файла для запуска.
+# Объекты и классы
 
-```php
-$ php my_script.php
+Каждое определение класса начинается с ключевого слова class, затем следует имя класса, и далее пара фигурных скобок, которые заключают в себе определение свойств и методов этого класса.
 
-$ php -f my_script.php
+Именем класса может быть любое слово, при условии, что оно не входит в список зарезервированных слов PHP, начинается с буквы или символа подчеркивания и за которым следует любое количество букв, цифр или символов подчеркивания. 
+Если задать эти правила в виде регулярного выражения, то получится следующее выражение: 
 
 ```
-Оба способа (с указанием опции -f или без) запустят файл my_script.php. Нет ограничений, какой файл запускать; в частности, файлы не обязаны должны иметь расширение .php.
+  
+  ^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$.
 
-Если необходимо передать аргументы в скрипт, то при использовании опции -f первым аргументом должен быть -- .
-
-- Передать PHP-код напрямую в командной строке.
-
-```php
-$ php -r 'print_r(get_defined_constants());'
 ```
 
-- Передать запускаемый PHP-код через стандартный поток ввода (stdin).
+Класс может содержать собственные константы, переменные (называемые свойствами) и функции (называемые методами).
+
+# Синтаксис для создания класса
+
+объявить класс с помощью ключевого слова class, за которым следует имя класса и набор фигурных скобок ({}):
+
+## MyClass01.php
 
 ```php
-$ some_application | some_filter | php | sort -u > final_output.txt
+
+class MyClass
+{
+  
+  // Class properties and methods go here   
+
+}
+ 
 ```
 
-## Пример Запуск PHP-скрипта как консольного
+## AboutController.php
 
 ```php
 
 <?php
-
-phpinfo();
-
-?>
-
-$ php cli/info.php
-
-```
-
-## главные отличия между php-cli и "php через браузер":
-
-1. php-cli выполняется с правами пользователя, который его запускает, php-через-браузер выполняется с правами "пользователя" веб-сервера.
-
-2. Вы можете запустить что-нибудь в духе sudo php someFile.php и выполнить его с правами рута (самого главного пользователя в системе)
-
-3. В php-cli по умолчанию нет ограничения по времени выполнения скрипта.
-
-
-
-# Расширения для работы с базами данных
-http://php.net/manual/ru/refs.database.vendors.php
-
-# Улучшенный модуль MySQL (MySQL Improved) 
-http://php.net/manual/ru/book.mysqli.php
-
-Расширение mysqli позволяет вам получить доступ к функциональности, которую предоставляет MySQL. 
-
-Документация MySQL находится по адресу http://dev.mysql.com/doc/.
-
-# Подключение к MySQL из PHP
-
-Для подключения к MySQL из PHP нам надо указать настройки подключения: адрес сервера, логин, пароль, название базы данных и т.д. 
-
-# mysqli_connect
-
-Эта функция является псевдонимом: mysqli::__construct()
-
-
-## Пример использования mysqli_connect()
-
-```php
-
-<?php
-$link = mysqli_connect("127.0.0.1", "my_user", "my_password", "my_db");
-
-if (!$link) {
-    echo "Ошибка: Невозможно установить соединение с MySQL." . PHP_EOL;
-    echo "Код ошибки errno: " . mysqli_connect_errno() . PHP_EOL;
-    echo "Текст ошибки error: " . mysqli_connect_error() . PHP_EOL;
-    exit;
-}
-
-echo "Соединение с MySQL установлено!" . PHP_EOL;
-echo "Информация о сервере: " . mysqli_get_host_info($link) . PHP_EOL;
-
-mysqli_close($link);
-?>
-
-```
-
-Так как мы будем подключаться к серверу на локальной машине, то адресом сервера будет localhost. 
-
-По умолчанию на локальном сервере MySQL уже есть пользователь root, под которым мы и будем подключаться. И также нам необходим пароль, который мы указали при установке MySQL.
-
-Подключиться к базе данных:
-
-
-```php
-<?php
-$servername = "localhost"; // адрес сервера 
-$username = "dev"; // имя пользователя
-$password = "ghbdtn"; // пароль
-
-// Create connection
-$conn = mysqli_connect($servername, $username, $password);
-
-// Check connection
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-echo "Connected successfully\n\n";
-
-mysqli_close($conn);
-
-?>
-```
-
-# exit
-
-exit — Вывести сообщение и прекратить выполнение текущего скрипта
-
-```
-void exit ([ string $status ] )
-void exit ( int $status )
-
-```
-- status
-Если status задан в виде строки, то эта функция выведет содержимое status перед выходом.
-
-Если status задан в виде целого числа (integer), то это значение будет использовано как статус выхода и не будет выведено. Статусы выхода должны быть в диапазоне от 0 до 254, статус выхода 255 зарезервирован PHP и не должен использоваться. Статус выхода 0 используется для успешного завершения программы.
-
-# die — Эквивалент функции exit
-
-
-## Пример использования exit
-
-```php
-<?php
-
-$filename = '/path/to/data-file';
-$file = fopen($filename, 'r')
-    or exit("Невозможно открыть файл ($filename)");
-
-?>
-
-```
-
-# mysqli_error
-
-```
-string mysqli_error ( mysqli $link )
-```
-Возвращает сообщение об ошибке последнего вызова функции MySQLi, который может успешно выполниться или провалиться.
-
-- link
-Идентификатор соединения, полученный с помощью mysqli_connect() или mysqli_init()
-
-
-# mysqli_close
-```
-bool mysqli_close ( mysqli $link )
-```
-Закрывает ранее открытое соединение с базой данных.
-
-Открытые непостоянные соединения MySQL и результирующие наборы автоматически удаляются сразу по окончании работы PHP скрипта. Следовательно, закрывать соединения и очищать результирующие наборы не обязательно, но рекомендуется, так как это сразу же освободит ресурсы базы данных и память, занимаемую результатами выборки, что может положительно сказаться на производительности.
-
-
-# SQL Statements
-
-```sql
-
-SELECT - extracts data from a database
-UPDATE - updates data in a database
-DELETE - deletes data from a database
-INSERT INTO - inserts new data into a database
-CREATE DATABASE - creates a new database
-ALTER DATABASE - modifies a database
-CREATE TABLE - creates a new table
-ALTER TABLE - modifies a table
-DROP TABLE - deletes a table
-CREATE INDEX - creates an index (search key)
-DROP INDEX - deletes an index
-
-```
-
-# Создание MySQL Database
-
-## SQL CREATE DATABASE Statement
-
-
-```sql
-
-CREATE DATABASE testDB;
-
-```
-
-## SQL DROP DATABASE Statement
-
-```sql
-
-DROP DATABASE testDB;
-
-```
-
-# mysqli_query
-
-Функция mysqli_query() возвращает объект $result, который содержит результат запроса. В случае неудачи данный объект содержит значение false.
-
-```
-mixed mysqli_query ( mysqli $link , string $query [, int $resultmode = MYSQLI_STORE_RESULT ] )
-
-```
-Выполняет запрос query к базе данных.
-
-- link
-Идентификатор соединения, полученный с помощью mysqli_connect()
-
-- query
-Текст запроса.
-
-- resultmode
-Либо константа MYSQLI_USE_RESULT, либо MYSQLI_STORE_RESULT в зависимости от требуемого поведения функции. По умолчанию используется MYSQLI_STORE_RESULT.
-
-Возвращает FALSE в случае неудачи. В случае успешного выполнения запросов SELECT, SHOW, DESCRIBE или EXPLAIN mysqli_query() вернет объект mysqli_result. Для остальных успешных запросов mysqli_query() вернет TRUE.
-
-
-# mysqli_connect_errno
-
-```
-int mysqli_connect_errno ( void )
-```
-Возвращает код ошибки последнего вызова mysqli_connect().
-
-```php
-
-<?php
-$link = mysqli_connect("localhost", "my_user", "my_password", "world");
-
-/* проверка соединения */
-if (mysqli_connect_errno()) {
-    printf("Не удалось подключиться: %s\n", mysqli_connect_error());
-    exit();
-}
-
-mysqli_close($link);
-?>
-
-```
-
-
-# Создание MySQL Database с помощью MySQLi
-
-```php
-
-<?php
-$servername = "localhost";
-$username = "dev";
-$password = "ghbdtn";
-
-// Create connection
-$conn = mysqli_connect($servername, $username, $password);
-
-/* проверка соединения */
-if (mysqli_connect_errno()) {
-    printf("Не удалось подключиться: %s\n", mysqli_connect_error());
-    exit();
-}
-
-echo "Connected successfully\n\n";
-
-// Create database
-$sql = "CREATE DATABASE mydb";
-
-if (mysqli_query($conn, $sql)) {
-    echo "Database created successfully\n\n";
-
-} else {
-    // echo "Error creating database: " . mysqli_error($conn);
-    printf("Error creating database: %s\n", mysqli_error($conn));
-}
-
-mysqli_close($conn);
-?>
-
-```
-
-# Создание MySQL Tables
-
-
-# SQL CREATE TABLE Statement
-
-```sql
-
-CREATE TABLE table_name (
-    column1 datatype,
-    column2 datatype,
-    column3 datatype,
-   ....
-);
-
-```
-
-
-# Типы SQL Date
-
-- DATE - format YYYY-MM-DD
-- DATETIME - format: YYYY-MM-DD HH:MI:SS
-- TIMESTAMP - format: YYYY-MM-DD HH:MI:SS
-- YEAR - format YYYY or YY
-
-# SQL CREATE TABLE
-
-```php
-
-CREATE TABLE guestbook (
-    id int,
-    username varchar(25),
-    email varchar(30),
-    comment text,
-    appended_at TIMESTAMP,
-    PRIMARY KEY (id)
-);
-
-```
-
-
-# SQL NOT NULL 
-
-
-```php
-
-CREATE TABLE guestbook (
-    id int NOT NULL,
-    username varchar(25) NOT NULL,
-    email varchar(30) NOT NULL,
-    comment text NOT NULL,
-    appended_at TIMESTAMP,
-    PRIMARY KEY (id)
-);
-
-```
-# SQL PRIMARY KEY
-
-```php
-
-CREATE TABLE guestbook (
-    id int NOT NULL,
-    username varchar(25) NOT NULL,
-    email varchar(30) NOT NULL,
-    comment text NOT NULL,
-    appended_at TIMESTAMP,
-    PRIMARY KEY (id)
-);
-
-```
-
-# AUTO INCREMENT поле
-
-```php
-
-CREATE TABLE guestbook (
-    id int NOT NULL AUTO_INCREMENT,
-    username varchar(25) NOT NULL,
-    email varchar(30) NOT NULL,
-    comment text NOT NULL,
-    appended_at TIMESTAMP,
-    PRIMARY KEY (id)
-);
-```
-
-
-# SQL DEFAULT 
-
-Автоматическое назначение TIMESTAMP
-https://dev.mysql.com/doc/refman/5.5/en/timestamp-initialization.html
-
-```php
-
-CREATE TABLE guestbook (
-    id int NOT NULL AUTO_INCREMENT,
-    username varchar(25) NOT NULL,
-    email varchar(30) NOT NULL,
-    comment text NOT NULL,
-    appended_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
-);
-
-```
-
-
-Создаем таблицу guestbook
-
-```php
-
-<?php
-$servername = "localhost";
-$username = "dev";
-$password = "ghbdtn";
-$dbname = "mydb";
-
-// Create connection
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-
-/* проверка соединения */
-if (mysqli_connect_errno()) {
-    printf("Не удалось подключиться: %s\n", mysqli_connect_error());
-    exit();
-}
-
-echo "Connected successfully\n\n";
-
-// Create database
-$sql = "CREATE TABLE guestbook (
-    id int NOT NULL AUTO_INCREMENT,
-    username varchar(25) NOT NULL,
-    email varchar(30) NOT NULL,
-    comment text NOT NULL,
-    appended_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
-);";
-
-if (mysqli_query($conn, $sql)) {
-    echo "Table guetbook created successfully\n\n";
-
-} else {
-    printf("Error creating table: %s\n", mysqli_error($conn));
-}
-
-mysqli_close($conn);
-?>
-```
-
-
-# Вставка данныз в MySQL
-
-```sql 
-INSERT INTO table_name (column1, column2, column3, ...)
-VALUES (value1, value2, value3, ...);
-
-```
-
-
-# Добавляем запись в таблицу
-
-```php
-
-<?php
-$servername = "localhost";
-$username = "dev";
-$password = "ghbdtn";
-$dbname = "mydb";
-
-// Create connection
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-
-/* проверка соединения */
-if (mysqli_connect_errno()) {
-    printf("Не удалось подключиться: %s\n", mysqli_connect_error());
-    exit();
-}
-
-echo "Connected successfully\n\n";
-
-// Create database
-$sql = "INSERT INTO guestbook (username, email, comment)
-VALUES ('John', 'john@example.com', 'Hi, It is John Doe');";
-
-
-if (mysqli_query($conn, $sql)) {
-    echo "New record created successfully";
-} else {
-    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-}
-
-mysqli_close($conn);
-?>
-
-```
-
-# Реализауия контроллера
-
-## config/app.php
-
-```php
-
-define('HOST', 'localhost'); // адрес сервера 
-define('DATABASE', 'mydb'); // имя базы данных
-define('DBUSER', 'dev'); // имя пользователя
-define('DBPASSWORD', 'ghbdtn'); // пароль
-
-```
-
-# mysqli_real_escape_string
-
-```
-string mysqli_real_escape_string ( mysqli $link , string $escapestr )
-```
-
-Эта функция используется для создания допустимых в SQL строк, которые можно использовать в SQL выражениях. Заданная строка кодируется в экранированную SQL строку, используя текущий набор символов подключения.
-
-```php
-
-if (!empty($_POST)) {
+ 
+class AboutController
+{
+ 
+   // Class properties and methods go here   
     
-    if ( !$_POST['username'] or !$_POST['email'] or !$_POST['comment']){
-        echo "<b>please complete all the fields</b><br><br>";
+}
+
+```
+
+## Создание экземпляра класса
+
+После создания класса новый экземпляр может быть создан и сохранен в переменной с использованием ключевого слова new:
+
+```php
+
+$obj = new MyClass;
+
+$obj = new AboutController;
+
+
+```
+
+Новый объект всегда будет создан, за исключением случаев, когда он содержит конструктор, в котором определен вызов исключения в случае ошибки. Рекомендуется определять классы до создания их экземпляров.
+
+Чтобы увидеть содержимое класса, используйте var_dump ():
+
+## MyClass01.php
+
+```php
+
+<?php
+ 
+class MyClass
+{
+  // Class properties and methods go here
+}
+ 
+$obj = new MyClass;
+ 
+var_dump($obj);
+ 
+?>
+
+```
+
+Если с директивой new используется строка (string), содержащая имя класса, то будет создан новый экземпляр этого класса. Если имя находится в пространстве имен, то оно должно быть задано полностью.
+
+## Создание экземпляра класса
+
+## MyClass02.php
+
+```php
+
+<?php
+$instance = new MyClass();
+
+// Это же можно сделать с помощью переменной:
+$className = 'MyClass';
+$instance = new $className(); // new MyClass()
+?>
+
+```
+
+# Свойства и методы 
+
+
+## Определение свойств класса
+
+Для добавления данных в класс используются свойства или переменные класса. Они работают точно так же, как и обычные переменные, за исключением того, что они привязаны к объекту и поэтому могут быть доступны только с помощью объекта.
+
+Чтобы добавить свойство в MyClass, добавьте следующий код в свой скрипт:
+
+```php
+
+<?php
+ 
+class MyClass
+{
+  // Class properties and methods go here
+  public $prop1 = "I'm a class property!";
+}
+
+$instance = new MyClass();
+ 
+var_dump($instance);
+
+```
+## Ключевое слово public
+Ключевое слово public определяет видимость свойства. Затем свойство присваивается с использованием стандартного синтаксиса переменных и присваивается значение (хотя свойствам классов не требуется начальное значение).
+
+Чтобы прочитать это свойство и вывести его в браузер, укажите объект, с которого следует читать, и свойство, которое нужно прочитать:
+
+```
+echo $obj->prop1;
+
+```
+Поскольку могут существовать несколько экземпляров класса, если отдельный объект не ссылается, то сценарий не сможет определить, с какого объекта следует читать свойство. Использование стрелки (->) является конструкцией ООП, которая обращается к содержащимся в нем свойствам и методам данного объекта.
+
+## MyClass04.php
+
+```php
+
+<?php
+ 
+<?php
+ 
+class MyClass
+{
+  // Class properties and methods go here
+  public $prop1 = "I'm a class property!";
+}
+
+$instance = new MyClass();
+
+echo $instance->prop1; // Output the property
+ 
+?>
+```
+
+## Определение методов класса
+
+Методы являются специфичными для класса функциями. Отдельные действия, которые объект сможет выполнить, определены внутри класса как методы.
+
+Например, чтобы создать методы, которые будут устанавливать и получать значение свойства класса $prop1, добавьте в свой код следующее:
+
+## MyClass05.php
+
+```php
+
+<?php
+ 
+class MyClass
+{
+  public $prop1 = "I'm a class property!";
+ 
+  public function setProperty($newval)
+  {
+      $this->prop1 = $newval;
+  }
+ 
+  public function getProperty()
+  {
+      return $this->prop1 . "<br />";
+  }
+}
+ 
+$instance = new MyClass;
+ 
+echo $instance->prop1;
+ 
+?>
+```
+
+ООП позволяет объектам ссылаться на себя, используя $this. При работе внутри метода используйте $this таким же образом, как вы использовали бы имя объекта вне класса.
+
+## Псевдопеременная $this
+
+Псевдопеременная $this доступна в том случае, если метод был вызван в контексте объекта. $this является ссылкой на вызываемый объект. Обычно это тот объект, которому принадлежит вызванный метод, но может быть и другой объект, если метод был вызван статически из контекста другого объекта. 
+
+## Простое определение класса
+
+```php
+
+<?php
+class SimpleClass
+{
+    // объявление свойства
+    public $var = 'значение по умолчанию';
+
+    // объявление метода
+    public function displayVar() {
+        echo $this->var;
     }
-    else{
-        // подключаемся к серверу
-        $conn = mysqli_connect(HOST, DBUSER, DBPASSWORD, DATABASE) 
-        or die("Ошибка " . mysqli_error($conn));
+}
+?>
+
+```
+
+Чтобы использовать эти методы, вызовите их так же, как обычные функции, но сначала укажите ссылку на объект, к которому они принадлежат. Прочитайте свойство из MyClass, измените его значение и прочитайте его еще раз, внеся следующие изменения:
+
+## MyClass05.php
+```php
+<?php
+ 
+class MyClass
+{
+  public $prop1 = "I'm a class property!";
+ 
+  public function setProperty($newval)
+  {
+      $this->prop1 = $newval;
+  }
+ 
+  public function getProperty()
+  {
+      return $this->prop1 . "<br />";
+  }
+}
+ 
+$instance = new MyClass;
+ 
+echo $instance->getProperty(); // Get the property value
+ 
+$instance->setProperty("I'm a new property value!"); // Set a new one
+ 
+echo $instance->getProperty(); // Read it out again to show the change
+ 
+?>
+```
+
+Свойства и методы класса живут в разделенных "пространствах имен", так что возможно иметь свойство и метод с одним и тем же именем. Ссылки как на свойства, так и на методы имеют одинаковую нотацию, и получается, что получите вы доступ к свойству или же вызовете метод - определяется контекстом использования.
+
+## Доступ к свойству vs. вызов метода
+
+## MyClass06.php
+
+```php
+
+<?php
+class MyClass
+{
+    public $bar = 'свойство';
+    
+    public function bar() {
+        return 'метод';
+    }
+}
+
+$obj = new MyClass();
+
+echo $obj->bar, PHP_EOL, $obj->bar(), PHP_EOL;
+
+```
+
+## использование нескольких экземпляров одного класса
+
+## MyClass07.php
+
+```php
+
+<?php
+ 
+class MyClass
+{
+  public $prop1 = "I'm a class property!";
+ 
+  public function setProperty($newval)
+  {
+      $this->prop1 = $newval;
+  }
+ 
+  public function getProperty()
+  {
+      return $this->prop1 . "<br />";
+  }
+}
+ 
+// Create two objects
+$obj = new MyClass;
+$obj2 = new MyClass;
+ 
+// Get the value of $prop1 from both objects
+echo $obj->getProperty();
+echo $obj2->getProperty();
+ 
+// Set new values for both objects
+$obj->setProperty("I'm a new property value!");
+$obj2->setProperty("I belong to the second instance!");
+ 
+// Output both objects' $prop1 value
+echo $obj->getProperty();
+echo $obj2->getProperty();
+ 
+?>
+
+```
+
+ООП хранит объекты как отдельные сущности, что позволяет легко разделять различные фрагменты кода на небольшие связанные пакеты.
+
+# Волшебные методы в ООП
+Чтобы упростить использование объектов, PHP также предоставляет ряд магических методов или специальных методов, вызываемых, когда определенные общие действия происходят внутри объектов. Это позволяет разработчикам выполнять ряд полезных задач с относительной легкостью.
+
+## Использование конструкторов и деструкторов
+Когда создается экземпляр объекта, часто желательно сразу же установить несколько вещей. Чтобы справиться с этим, PHP предоставляет магический метод __construct(), который вызывается автоматически всякий раз, когда новый объект
+создается.
+
+## MyClass08.php
+
+```php
+
+<?php
+ 
+class MyClass
+{
+  public $prop1 = "I'm a class property!";
+ 
+  public function __construct()
+  {
+      echo 'The class "', __CLASS__, '" was initiated!<br />';
+  }
+ 
+  public function setProperty($newval)
+  {
+      $this->prop1 = $newval;
+  }
+ 
+  public function getProperty()
+  {
+      return $this->prop1 . "<br />";
+  }
+}
+ 
+// Create a new object
+$obj = new MyClass;
+ 
+// Get the value of $prop1
+echo $obj->getProperty();
+ 
+// Output a message at the end of the file
+echo "End of file.\n>";
+ 
+?>
+```
+
+__CLASS__ возвращает имя класса, в котором оно вызывается; Это то, что известно как волшебная константа. 
+
+## магический метод __destruct()
+
+Чтобы вызвать функцию, когда объект разрушен, доступен магический метод __destruct(). Это полезно для очистки класса (например, закрытие соединения с базой данных).
+
+Вывести сообщение, когда объект уничтожен, определяя магический метод
+__destruct() в MyClass:
+
+## MyClass09.php
+
+```php
+
+<?php
+ 
+class MyClass
+{
+  public $prop1 = "I'm a class property!";
+ 
+  public function __construct()
+  {
+      echo 'The class "', __CLASS__, '" was initiated!<br />';
+  }
+ 
+  public function __destruct()
+  {
+      echo 'The class "', __CLASS__, '" was destroyed.<br />';
+  }
+ 
+  public function setProperty($newval)
+  {
+      $this->prop1 = $newval;
+  }
+ 
+  public function getProperty()
+  {
+      return $this->prop1 . "<br />";
+  }
+}
+ 
+// Create a new object
+$obj = new MyClass;
+ 
+// Get the value of $prop1
+echo $obj->getProperty();
+ 
+// Output a message at the end of the file
+echo "End of file.\n";
+ 
+?>
+```
+
+«Когда достигнут конец файла, PHP автоматически освобождает все ресурсы».
+
+Чтобы явно вызвать деструктор, вы можете уничтожить объект, используя
+функцию unset():
+
+## MyClass10.php
+
+```php
+<?php
+ 
+class MyClass
+{
+  public $prop1 = "I'm a class property!";
+ 
+  public function __construct()
+  {
+      echo 'The class "', __CLASS__, '" was initiated!<br />';
+  }
+ 
+  public function __destruct()
+  {
+      echo 'The class "', __CLASS__, '" was destroyed.<br />';
+  }
+ 
+  public function setProperty($newval)
+  {
+      $this->prop1 = $newval;
+  }
+ 
+  public function getProperty()
+  {
+      return $this->prop1 . "<br />";
+  }
+}
+ 
+// Create a new object
+$obj = new MyClass;
+ 
+// Get the value of $prop1
+echo $obj->getProperty();
+ 
+// Destroy the object
+unset($obj);
+ 
+// Output a message at the end of the file
+echo "End of file.\n";
+ 
+?>
+```
+
+## функция extract
+
+Импортирует переменные из массива в текущую таблицу символов.
+Каждый ключ проверяется на предмет корректного имени переменной. Также проверяются совпадения с существующими переменными в символьной таблице.
+
+Эта функция рассматривает ключи массива в качестве имен переменных, а их значения - в качестве значений этих переменных. Для каждой пары ключ/значение будет создана переменная в текущей таблице символов, в соответствии с параметрами flags и prefix.
+
+## bootstrap.php
+
+```php
+
+<?php
+
+if (function_exists('date_default_timezone_set')){
+    date_default_timezone_set('Europe/Kiev');    
+}
 
 
-        $username = mysqli_real_escape_string ($conn, $_POST['username']);
-        $email = mysqli_real_escape_string ($conn, $_POST['email']);
-        $comment = mysqli_real_escape_string ($conn, $_POST['comment']);
+// Общие настройки
+ini_set('display_errors',1);
+error_reporting(E_ALL);
 
-        // выполняем операции с базой данных
+function render($path, $data = []) 
+{
+    extract($data);
+    
+    return require VIEWS."/{$path}.php";
+}
 
-        $sql = "INSERT INTO guestbook (username, email, comment) VALUES ('$username', '$email', '$comment')";
+require_once realpath(__DIR__).'/../config/app.php';
+require_once CORE.'Router.php';
 
-        mysqli_query($conn, $sql) or die("Ошибка: " . mysqli_error($conn));
-        mysqli_close($conn);
+```
+
+## AboutController.php
+
+```php
+
+<?php
+
+class AboutController
+{
+    
+    public function __construct()
+    {   
+        render('home/about', ['title'=>'SHOPAHOLIC ABOUT PAGE']);
     }
     
 }
@@ -538,112 +525,306 @@ if (!empty($_POST)) {
 ```
 
 
-# SQL SELECT Statement
-
-```sql
-
-SELECT column1, column2, ...
-FROM table_name;
-
-
-SELECT * FROM table_name;
-
-```
-
-# Выбираем записи из таблицы
+## Router.php
 
 ```php
 
-<?php
-$servername = "localhost";
-$username = "dev";
-$password = "ghbdtn";
-$dbname = "mydb";
+// Проверить наличие такого запроса в routes
 
-// Create connection
-$conn = mysqli_connect($servername, $username, $password, $dbname);
+foreach ($routes as $uriPattern => $path) {
 
-/* проверка соединения */
-if (mysqli_connect_errno()) {
-    printf("Не удалось подключиться: %s\n", mysqli_connect_error());
-    exit();
+ //Сравниваем uriPattern и $uri
+ if($uriPattern == $uri){
+
+   // Определить контроллер
+   $controller = $path;
+
+   //Подключаем файл контроллера
+   $controllerFile = CONTROLLERS . $controller . EXT;
+
+   if(file_exists($controllerFile)){
+
+     include_once($controllerFile);
+     
+     $result = true;
+
+     $controller = new $controller;
+     
+     break;
+     }
+   }
+}
+   
+if($result === null){
+     require_once VIEWS.'404'.EXT;
 }
 
-echo "Connected successfully\n\n";
-
-$sql = "SELECT * FROM guestbook";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-    // output data of each row
-    while($row = mysqli_fetch_assoc($result)) {
-        echo "id: " . $row["id"]. " - User Name: " . $row["username"]. " Email: " . $row["email"]. " Comment: " . $row["comment"]. " Created: " . $row["appended_at"]. "\n\n";
-    }
-} else {
-    echo "0 results\n";
-}
-
-mysqli_close($conn);
-?>
-
 ```
 
-# mysqli_fetch_assoc
-
-mysqli_result::fetch_assoc -- mysqli_fetch_assoc — Извлекает результирующий ряд в виде ассоциативного массива
-
-```
-array mysqli_fetch_assoc ( mysqli_result $result )
-```
-Возвращает ассоциативный массив строк, соответствующий результирующей выборке, где каждый ключ в массиве соответствует имени одного из столбцов выборки или NULL, если других рядов не существует.
-
-Имена полей, возвращаемые этой функцией являются регистро-зависимыми.
-
-Эта функция устанавливает NULL-поля в значение NULL PHP.
-
-- result
-Идентификатор результата запроса, полученный с помощью mysqli_query().
-
-
-# Извлечение данных из табоицы
-
-```php
-
-$conn = mysqli_connect(HOST, DBUSER, DBPASSWORD, DATABASE) 
-        or die("Ошибка " . mysqli_error($conn));
-
-$comments = [];
-
-$sql = "SELECT * FROM guestbook";
-
-$result = mysqli_query($conn, $sql);
-
-$resCount = mysqli_num_rows($result);
-
-while($row = mysqli_fetch_assoc($result)){
-        array_push($comments, $row);
-    }
-
-// закрываем подключение
-mysqli_close($conn);
-
-```
-# Публиквция данных
+## home/about.php
 
 ```html
 
+  <section class="product">
+      <div class="container">
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="feature_header text-center">
+                      <h3 class="feature_title"><?=$title;?></h3>
+                      <h4 class="feature_sub">Hello There</h4>
+                      <div class="divider"></div>
+                  </div>
+              </div>  <!-- Col-md-12 End -->
+          </div>
+      </div> <!-- Conatiner product end -->
+  </section>  <!-- Section product End -->
+```
+
+
+## routes.php
+
+```php
+
+return [
+    'contact' => 'ContactController@index',
+    'about' => 'AboutController@index',
+    'blog' => 'BlogController@index',
+    'guestbook' => 'GuestbookController@index',
+    //Главаня страница
+    'index.php' => 'HomeController@index', 
+    '' => 'HomeController@index',  
+];
+```
+
+## explode — Разбивает строку с помощью разделителя
+
+Возвращает массив строк, полученных разбиением строки string с использованием delimiter в качестве разделителя.
+
+- delimiter - Разделитель.
+- string - Входная строка.
+- limit - Если аргумент limit является положительным, возвращаемый массив будет содержать максимум limit элементов, при этом последний элемент будет содержать остаток строки string. Если параметр limit отрицателен, то будут возвращены все компоненты, кроме последних -limit. Если limit равен нулю, то он расценивается как 1.
+
+Если delimiter является пустой строкой (""), explode() возвращает FALSE. Если delimiter не содержится в string, и используется отрицательный limit, то будет возвращен пустой массив (array), иначе будет возвращен массив, содержащий string.
+
+
+## Router.php
+
+```php
+foreach ($routes as $uriPattern => $path) {
+
+ //Сравниваем uriPattern и $uri
+ if($uriPattern == $uri){
+
+   // Определить контроллер
+   $segments = explode('@', $path);
+   $controller = array_shift($segments);
+   $action = array_shift($segments);
+
+   //Подключаем файл контроллера
+   $controllerFile = CONTROLLERS . $controller . EXT;
+
+   if(file_exists($controllerFile)){
+     include_once($controllerFile);
+     $controller = new $controller;
+     $controller->$action(); 
+     $result = true;
+     break;
+     }
+   }
+}
+```
+
+## method_exists — Проверяет, существует ли метод в данном классе
+
+- object - Экземпляр объекта или имя класса
+- method_name - Имя метода
+
+Возвращает TRUE, если метод method_name определен для указанного объекта object, иначе возвращает FALSE.
+
+### Пример использования method_exists()
+
+```php
+
+   //Подключаем файл контроллера
+   $controllerFile = CONTROLLERS . $controller . EXT;
+
+   if(file_exists($controllerFile)){
+     include_once($controllerFile);
+     
+     $result = true;
+
+     $controller = new $controller;
+
+     if (! method_exists($controller, $action)) {
+      throw new Exception(
+      "{$controller} does not respond to the {$action} action."
+      );
+      }
+      else{
+       $controller->$action();  
+      }
+
+```
+## Модель исключений (exceptions)
+
+Модель исключений (exceptions) в PHP схожа с используемыми в других языках программирования. Исключение можно сгенерировать ("выбросить") при помощи оператора throw, и можно перехватить ( "поймать") оператором catch. 
+
+Код генерирующий исключение, должен быть окружен блоком try, для того чтобы можно было перехватить исключение. 
+Каждый блок try должен иметь как минимум один соответствующий ему блок catch или finally.
+
+Генерируемый объект должен принадлежать классу Exception или наследоваться от Exception. Попытка сгенерировать исключение другого класса приведет к неисправимой ошибке
+
+Внутренние функции PHP в основном используют сообщения об ошибках, и только новые объектно-ориентированные расширения используют исключения. Однако, ошибки можно легко преобразовать в исключения с помощью класса ErrorException.
+
+Стандартная библиотека PHP (SPL) предоставляет хороший набор встроенных классов исключений.
+
+## Выброс исключений
+
+```php
+
+function inverse($x) {
+    if (!$x) {
+        throw new Exception('Деление на ноль.');
+    }
+    return 1/$x; }
+
+public function direct($uri)
+  {
+    if (array_key_exists($uri, $this->routes)) {
+      return $this->routes[$uri];
+    }
+    Throw new Exception('No route defined for this URI.');
+  }
+```
+
+Для того, чтобы отловить исключение, используется конструкция try...catch. В блоке try выполняются операции, которые могут привести к исключительной ситуации, а блок catch позволяет принять решение что делать, если исключение было брошено.
+
+```php
+
+  try {
+      throw new Exception(\\\"Exception message\\\");
+      echo \\\"That code will never been executed\\\";
+  } catch (Exception $e) {
+      echo $e->getMessage(); //выведет \\\"Exception message\\\"
+  }
+```
+при выбрасывании исключения, остальной код в блоке try выполнен не будет, а управление будет передано в оператор catch, в котором мы указываем, как будет называться объект, в который будет передано выброшенное исключение (в нашем случае — $e). 
+
+Внутри блока оператора catch, на основании данных из исключения мы можем применять какое-либо действие в зависимости от ситуации. 
+
+
+Также исключения можно передавать цепочкой (chain) наверх:
+
+```php
+
+  class MyException extends Exception {}
+  try {
+      try {
+          //...
+          throw new Exception(\\\"inner\\\");
+          //...
+      }
+  catch (Exception $e) {
+          throw new MyException(\\\"outer\\\");
+      }
+  } catch (MyException $e) {
+      echo $e->getMessage(); //выведет \\\"outer\\\"
+  }
+
+```
+## блок finally
+этот блок будет выполнен вне зависимости от того, было выброшено исключение или нет:
+
+```php
+
+try {
+    // код который может выбросить исключение
+} catch (Exception $e) {
+    // код который может обработать исключение
+    // если конечно оно появится
+} finally {
+    // код, который будет выполнен при любом раскладе
+}
+```
+
+```php
+
+try {
+     
+      include_once($controllerFile);
+      $controller = new $controller;
+
+      try {
+          // код который может выбросить исключение
+          $controller->$action();  
+      } catch (Exception $e) {
+          // код который может обработать исключение если оно появится
+        if (! method_exists($controller, $action)) {
+          throw new Exception(
+          "{$controller} does not respond to the {$action} action."
+          );
+        }
+      }
+      
+      $result = true;
+      break; 
+    } 
+    catch (Exception $e) {
+        // код который может обработать исключение
+        // если конечно оно появится
+        if (! file_exists($controllerFile)) {
+          throw new Exception("{$controllerFile} does not respond.");
+      }
+    } 
+```
+
+
+## Blog
+
+```php
+
+<?php
+
+class BlogController
+{
+
+public function index()
+    {   
+        $conn = mysqli_connect(HOST, DBUSER, DBPASSWORD, DATABASE) 
+        or die("Ошибка " . mysqli_error($conn));
+        $posts = [];
+        $sql = "SELECT * FROM posts";
+        $result = mysqli_query($conn, $sql);
+        $resCount = mysqli_num_rows($result);
+        while($row = mysqli_fetch_assoc($result)){
+                array_push($posts, $row);
+            }
+        // закрываем подключение
+        mysqli_close($conn);
+
+        render('blog/index', ['title'=>'Our <b>Cats Blog</b>', 'posts'=>$posts, 'resCount'=>$resCount]);
+    }
+}
+```
+
+## blog/index.php
+
+```html
+
+  <div class="items">
     <?php 
-        if($resCount>0){
-          echo "<h3>$resCount comments:</h3> ";
-          // print_r($comments);
-          foreach ($comments as $row) {
-            echo "<div class='top'><b>User ".$row["username"]."</b> <a href='mailto:".$row["email"]."'>".$row["email"]."</a> Added this </div>"; 
-            echo "<div class='comment'>".strip_tags($row["comment"])."</div>"; 
-            echo "<div class='added_at'> At: ".strip_tags($row["appended_at"])."</div>"; 
+      if($resCount>0){
+         echo "<h3>$resCount posts:</h3> ";
+         foreach ($posts as $row) {
+           echo "<h2>".$row["title"]."</h2>"; 
+           echo "<div class='added_at'> Added At: ".strip_tags($row["created_at"])."</div>"; 
+           echo "<div class='content'>".strip_tags($row["content"])."</div>"; 
+                  
           }
         }
         else{
-             echo "No comments.... ";
+          echo "No posts yet.... ";
         }
     ?>
+  </div>
 ```
