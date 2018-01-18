@@ -1,484 +1,5 @@
 # shopping-cart 
 
-# Объектно ориентированный PHP
-
-Объектно-ориентированное программирование - это стиль кодирования, который позволяет разработчикам группировать схожие задачи в классы. Это помогает сохранить код в соответствии с принципом «не повторяйся» (DRY) и простым в обслуживании.
-
-Одним из основных преимуществ программирования по принципу DRY является то, что если в вашей программе изменяется часть информации, обычно требуется только одно изменение для обновления кода. 
-
-ООП является очень наглядным и более простым подходом к программированию.
-
-# Объекты и классы
-
-Каждое определение класса начинается с ключевого слова class, затем следует имя класса, и далее пара фигурных скобок, которые заключают в себе определение свойств и методов этого класса.
-
-Именем класса может быть любое слово, при условии, что оно не входит в список зарезервированных слов PHP, начинается с буквы или символа подчеркивания и за которым следует любое количество букв, цифр или символов подчеркивания. 
-Если задать эти правила в виде регулярного выражения, то получится следующее выражение: 
-
-```
-  
-  ^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$.
-
-```
-
-Класс может содержать собственные константы, переменные (называемые свойствами) и функции (называемые методами).
-
-# Синтаксис для создания класса
-
-объявить класс с помощью ключевого слова class, за которым следует имя класса и набор фигурных скобок ({}):
-
-## MyClass01.php
-
-```php
-
-class MyClass
-{
-  
-  // Class properties and methods go here   
-
-}
- 
-```
-
-## AboutController.php
-
-```php
-
-<?php
- 
-class AboutController
-{
- 
-   // Class properties and methods go here   
-    
-}
-
-```
-
-## Создание экземпляра класса
-
-После создания класса новый экземпляр может быть создан и сохранен в переменной с использованием ключевого слова new:
-
-```php
-
-$obj = new MyClass;
-
-$obj = new AboutController;
-
-
-```
-
-Новый объект всегда будет создан, за исключением случаев, когда он содержит конструктор, в котором определен вызов исключения в случае ошибки. Рекомендуется определять классы до создания их экземпляров.
-
-Чтобы увидеть содержимое класса, используйте var_dump ():
-
-## MyClass01.php
-
-```php
-
-<?php
- 
-class MyClass
-{
-  // Class properties and methods go here
-}
- 
-$obj = new MyClass;
- 
-var_dump($obj);
- 
-?>
-
-```
-
-Если с директивой new используется строка (string), содержащая имя класса, то будет создан новый экземпляр этого класса. Если имя находится в пространстве имен, то оно должно быть задано полностью.
-
-## Создание экземпляра класса
-
-## MyClass02.php
-
-```php
-
-<?php
-$instance = new MyClass();
-
-// Это же можно сделать с помощью переменной:
-$className = 'MyClass';
-$instance = new $className(); // new MyClass()
-?>
-
-```
-
-# Свойства и методы 
-
-
-## Определение свойств класса
-
-Для добавления данных в класс используются свойства или переменные класса. Они работают точно так же, как и обычные переменные, за исключением того, что они привязаны к объекту и поэтому могут быть доступны только с помощью объекта.
-
-Чтобы добавить свойство в MyClass, добавьте следующий код в свой скрипт:
-
-```php
-
-<?php
- 
-class MyClass
-{
-  // Class properties and methods go here
-  public $prop1 = "I'm a class property!";
-}
-
-$instance = new MyClass();
- 
-var_dump($instance);
-
-```
-## Ключевое слово public
-Ключевое слово public определяет видимость свойства. Затем свойство присваивается с использованием стандартного синтаксиса переменных и присваивается значение (хотя свойствам классов не требуется начальное значение).
-
-Чтобы прочитать это свойство и вывести его в браузер, укажите объект, с которого следует читать, и свойство, которое нужно прочитать:
-
-```
-echo $obj->prop1;
-
-```
-Поскольку могут существовать несколько экземпляров класса, если отдельный объект не ссылается, то сценарий не сможет определить, с какого объекта следует читать свойство. Использование стрелки (->) является конструкцией ООП, которая обращается к содержащимся в нем свойствам и методам данного объекта.
-
-## MyClass04.php
-
-```php
-
-<?php
- 
-<?php
- 
-class MyClass
-{
-  // Class properties and methods go here
-  public $prop1 = "I'm a class property!";
-}
-
-$instance = new MyClass();
-
-echo $instance->prop1; // Output the property
- 
-?>
-```
-
-## Определение методов класса
-
-Методы являются специфичными для класса функциями. Отдельные действия, которые объект сможет выполнить, определены внутри класса как методы.
-
-Например, чтобы создать методы, которые будут устанавливать и получать значение свойства класса $prop1, добавьте в свой код следующее:
-
-## MyClass05.php
-
-```php
-
-<?php
- 
-class MyClass
-{
-  public $prop1 = "I'm a class property!";
- 
-  public function setProperty($newval)
-  {
-      $this->prop1 = $newval;
-  }
- 
-  public function getProperty()
-  {
-      return $this->prop1 . "<br />";
-  }
-}
- 
-$instance = new MyClass;
- 
-echo $instance->prop1;
- 
-?>
-```
-
-ООП позволяет объектам ссылаться на себя, используя $this. При работе внутри метода используйте $this таким же образом, как вы использовали бы имя объекта вне класса.
-
-## Псевдопеременная $this
-
-Псевдопеременная $this доступна в том случае, если метод был вызван в контексте объекта. $this является ссылкой на вызываемый объект. Обычно это тот объект, которому принадлежит вызванный метод, но может быть и другой объект, если метод был вызван статически из контекста другого объекта. 
-
-## Простое определение класса
-
-```php
-
-<?php
-class SimpleClass
-{
-    // объявление свойства
-    public $var = 'значение по умолчанию';
-
-    // объявление метода
-    public function displayVar() {
-        echo $this->var;
-    }
-}
-?>
-
-```
-
-Чтобы использовать эти методы, вызовите их так же, как обычные функции, но сначала укажите ссылку на объект, к которому они принадлежат. Прочитайте свойство из MyClass, измените его значение и прочитайте его еще раз, внеся следующие изменения:
-
-## MyClass05.php
-```php
-<?php
- 
-class MyClass
-{
-  public $prop1 = "I'm a class property!";
- 
-  public function setProperty($newval)
-  {
-      $this->prop1 = $newval;
-  }
- 
-  public function getProperty()
-  {
-      return $this->prop1 . "<br />";
-  }
-}
- 
-$instance = new MyClass;
- 
-echo $instance->getProperty(); // Get the property value
- 
-$instance->setProperty("I'm a new property value!"); // Set a new one
- 
-echo $instance->getProperty(); // Read it out again to show the change
- 
-?>
-```
-
-Свойства и методы класса живут в разделенных "пространствах имен", так что возможно иметь свойство и метод с одним и тем же именем. Ссылки как на свойства, так и на методы имеют одинаковую нотацию, и получается, что получите вы доступ к свойству или же вызовете метод - определяется контекстом использования.
-
-## Доступ к свойству vs. вызов метода
-
-## MyClass06.php
-
-```php
-
-<?php
-class MyClass
-{
-    public $bar = 'свойство';
-    
-    public function bar() {
-        return 'метод';
-    }
-}
-
-$obj = new MyClass();
-
-echo $obj->bar, PHP_EOL, $obj->bar(), PHP_EOL;
-
-```
-
-## использование нескольких экземпляров одного класса
-
-## MyClass07.php
-
-```php
-
-<?php
- 
-class MyClass
-{
-  public $prop1 = "I'm a class property!";
- 
-  public function setProperty($newval)
-  {
-      $this->prop1 = $newval;
-  }
- 
-  public function getProperty()
-  {
-      return $this->prop1 . "<br />";
-  }
-}
- 
-// Create two objects
-$obj = new MyClass;
-$obj2 = new MyClass;
- 
-// Get the value of $prop1 from both objects
-echo $obj->getProperty();
-echo $obj2->getProperty();
- 
-// Set new values for both objects
-$obj->setProperty("I'm a new property value!");
-$obj2->setProperty("I belong to the second instance!");
- 
-// Output both objects' $prop1 value
-echo $obj->getProperty();
-echo $obj2->getProperty();
- 
-?>
-
-```
-
-ООП хранит объекты как отдельные сущности, что позволяет легко разделять различные фрагменты кода на небольшие связанные пакеты.
-
-# Волшебные методы в ООП
-Чтобы упростить использование объектов, PHP также предоставляет ряд магических методов или специальных методов, вызываемых, когда определенные общие действия происходят внутри объектов. Это позволяет разработчикам выполнять ряд полезных задач с относительной легкостью.
-
-## Использование конструкторов и деструкторов
-Когда создается экземпляр объекта, часто желательно сразу же установить несколько вещей. Чтобы справиться с этим, PHP предоставляет магический метод __construct(), который вызывается автоматически всякий раз, когда новый объект
-создается.
-
-## MyClass08.php
-
-```php
-
-<?php
- 
-class MyClass
-{
-  public $prop1 = "I'm a class property!";
- 
-  public function __construct()
-  {
-      echo 'The class "', __CLASS__, '" was initiated!<br />';
-  }
- 
-  public function setProperty($newval)
-  {
-      $this->prop1 = $newval;
-  }
- 
-  public function getProperty()
-  {
-      return $this->prop1 . "<br />";
-  }
-}
- 
-// Create a new object
-$obj = new MyClass;
- 
-// Get the value of $prop1
-echo $obj->getProperty();
- 
-// Output a message at the end of the file
-echo "End of file.\n>";
- 
-?>
-```
-
-__CLASS__ возвращает имя класса, в котором оно вызывается; Это то, что известно как волшебная константа. 
-
-## магический метод __destruct()
-
-Чтобы вызвать функцию, когда объект разрушен, доступен магический метод __destruct(). Это полезно для очистки класса (например, закрытие соединения с базой данных).
-
-Вывести сообщение, когда объект уничтожен, определяя магический метод
-__destruct() в MyClass:
-
-## MyClass09.php
-
-```php
-
-<?php
- 
-class MyClass
-{
-  public $prop1 = "I'm a class property!";
- 
-  public function __construct()
-  {
-      echo 'The class "', __CLASS__, '" was initiated!<br />';
-  }
- 
-  public function __destruct()
-  {
-      echo 'The class "', __CLASS__, '" was destroyed.<br />';
-  }
- 
-  public function setProperty($newval)
-  {
-      $this->prop1 = $newval;
-  }
- 
-  public function getProperty()
-  {
-      return $this->prop1 . "<br />";
-  }
-}
- 
-// Create a new object
-$obj = new MyClass;
- 
-// Get the value of $prop1
-echo $obj->getProperty();
- 
-// Output a message at the end of the file
-echo "End of file.\n";
- 
-?>
-```
-
-«Когда достигнут конец файла, PHP автоматически освобождает все ресурсы».
-
-Чтобы явно вызвать деструктор, вы можете уничтожить объект, используя
-функцию unset():
-
-## MyClass10.php
-
-```php
-<?php
- 
-class MyClass
-{
-  public $prop1 = "I'm a class property!";
- 
-  public function __construct()
-  {
-      echo 'The class "', __CLASS__, '" was initiated!<br />';
-  }
- 
-  public function __destruct()
-  {
-      echo 'The class "', __CLASS__, '" was destroyed.<br />';
-  }
- 
-  public function setProperty($newval)
-  {
-      $this->prop1 = $newval;
-  }
- 
-  public function getProperty()
-  {
-      return $this->prop1 . "<br />";
-  }
-}
- 
-// Create a new object
-$obj = new MyClass;
- 
-// Get the value of $prop1
-echo $obj->getProperty();
- 
-// Destroy the object
-unset($obj);
- 
-// Output a message at the end of the file
-echo "End of file.\n";
- 
-?>
-```
-
-## функция extract
-
-Импортирует переменные из массива в текущую таблицу символов.
-Каждый ключ проверяется на предмет корректного имени переменной. Также проверяются совпадения с существующими переменными в символьной таблице.
-
-Эта функция рассматривает ключи массива в качестве имен переменных, а их значения - в качестве значений этих переменных. Для каждой пары ключ/значение будет создана переменная в текущей таблице символов, в соответствии с параметрами flags и prefix.
-
 ## bootstrap.php
 
 ```php
@@ -506,6 +27,12 @@ require_once CORE.'Router.php';
 
 ```
 
+## Конструктор класса в PHP.
+
+Конструктор объявляется как метод класса с именем __construct(). Он может содержать произвольное число параметров, и предназначен, прежде всего, для инициализации свойств создаваемого экземпляра объекта.
+
+Конструкторы вызываются автоматически при создании новых объектов. Чтобы это стало возможным, имя метода-конструктора должно совпадать с именем класса, в котором он содержится.
+
 ## AboutController.php
 
 ```php
@@ -514,6 +41,7 @@ require_once CORE.'Router.php';
 
 class AboutController
 {
+    private $title = 'SHOPAHOLIC ABOUT PAGE';
     
     public function __construct()
     {   
@@ -523,7 +51,107 @@ class AboutController
 }
 
 ```
+## Вызвать конструктор класса
 
+```  
+    // Вызвать конструктор класса
+    
+    $controller = new AboutController();
+```
+
+## Доступ к класам и объектам в PHP
+
+Доступ к элементам класса осуществляется с помощью оператора ->.
+
+Чтобы получить доступ к элементам класса внутри класса, необходимо использовать указатель $this, которы всегда относится к текущему объекту.
+
+
+```php
+
+<?php
+
+class AboutController
+{
+    
+    private $title = 'SHOPAHOLIC ABOUT PAGE';
+
+    public function __construct()
+    {   
+        render('home/about', ['title'=>$this->title]);
+    }
+    
+}
+
+```
+
+Указатель $this можно также использовать для доступа к методам класса.
+
+В зависимости от количества передаваемых параметров могут вызываться разные конструкторы. 
+
+Можно вызвать конструктор, который просто создает объект, но не инициализирует его свойства:
+
+```
+$page = new AboutController();
+
+```
+
+## класс AboutController:
+
+
+```php
+
+<?php
+
+class AboutController
+{
+    
+    private $title = 'SHOPAHOLIC ABOUT PAGE';
+
+    public function __construct($title)
+    {   
+        $this->title = $title;
+
+        render('home/about', ['title'=>$this->title]);
+    }
+    
+}
+
+```
+Можно создать объект класса AboutController и присвоить значение его свойству title:
+
+```
+$page = new AboutController("About page");
+
+```
+
+## home/about.php
+
+```html
+
+  <section class="product">
+      <div class="container">
+          <div class="row">
+              <div class="col-md-12">
+                  <div class="feature_header text-center">
+                      <h3 class="feature_title"><?=$title;?></h3>
+                      <h4 class="feature_sub">Hello There</h4>
+                      <div class="divider"></div>
+                  </div>
+              </div>  <!-- Col-md-12 End -->
+          </div>
+      </div> <!-- Conatiner product end -->
+  </section>  <!-- Section product End -->
+```
+
+
+## функция extract
+
+Импортирует переменные из массива в текущую таблицу символов.
+Каждый ключ проверяется на предмет корректного имени переменной. Также проверяются совпадения с существующими переменными в символьной таблице.
+
+Эта функция рассматривает ключи массива в качестве имен переменных, а их значения - в качестве значений этих переменных. Для каждой пары ключ/значение будет создана переменная в текущей таблице символов, в соответствии с параметрами flags и prefix.
+
+# Создание экземпляра клнтроллера
 
 ## Router.php
 
@@ -548,6 +176,8 @@ foreach ($routes as $uriPattern => $path) {
      
      $result = true;
 
+     // Создание экземпляра клнтроллера
+     
      $controller = new $controller;
      
      break;
@@ -561,25 +191,9 @@ if($result === null){
 
 ```
 
-## home/about.php
+# Добавляем методы контроллера
 
-```html
-
-  <section class="product">
-      <div class="container">
-          <div class="row">
-              <div class="col-md-12">
-                  <div class="feature_header text-center">
-                      <h3 class="feature_title"><?=$title;?></h3>
-                      <h4 class="feature_sub">Hello There</h4>
-                      <div class="divider"></div>
-                  </div>
-              </div>  <!-- Col-md-12 End -->
-          </div>
-      </div> <!-- Conatiner product end -->
-  </section>  <!-- Section product End -->
-```
-
+Методы действий (action methods) представляют такие методы контроллера, которые обрабатывают запросы по определенному URL.
 
 ## routes.php
 
@@ -596,6 +210,19 @@ return [
 ];
 ```
 
+Здесь метод index является методом действия или просто действием контроллера. При получении запроса типа /about контроллер передает обработку запроса действию index.
+
+Методы действий всегда имеют модификатор public. Закрытых приватных методов действий не бывает. 
+
+```php
+
+    public function index()
+    {   
+        render('home/about', ['title'=>'SHOPAHOLIC <b>ABOUT PAGE</b>']);
+    }
+
+```
+
 ## explode — Разбивает строку с помощью разделителя
 
 Возвращает массив строк, полученных разбиением строки string с использованием delimiter в качестве разделителя.
@@ -606,8 +233,11 @@ return [
 
 Если delimiter является пустой строкой (""), explode() возвращает FALSE. Если delimiter не содержится в string, и используется отрицательный limit, то будет возвращен пустой массив (array), иначе будет возвращен массив, содержащий string.
 
+# Вызываем метод контроллера
 
 ## Router.php
+
+Разбиваем путь к контроллеру на сегменты 
 
 ```php
 foreach ($routes as $uriPattern => $path) {
@@ -615,18 +245,34 @@ foreach ($routes as $uriPattern => $path) {
  //Сравниваем uriPattern и $uri
  if($uriPattern == $uri){
 
-   // Определить контроллер
+   // Разбиваем путь к контроллеру на сегменты 
+   
    $segments = explode('@', $path);
+
+   // Определить контроллер
+
    $controller = array_shift($segments);
+   
+   // Определить действие контроллера
+
    $action = array_shift($segments);
 
    //Подключаем файл контроллера
+   
    $controllerFile = CONTROLLERS . $controller . EXT;
 
    if(file_exists($controllerFile)){
+   
      include_once($controllerFile);
+
+     // Создаем экземпляр контроллера
+
      $controller = new $controller;
+
+     // Вызываем метод контроллера
+
      $controller->$action(); 
+   
      $result = true;
      break;
      }
@@ -634,12 +280,16 @@ foreach ($routes as $uriPattern => $path) {
 }
 ```
 
-## method_exists — Проверяет, существует ли метод в данном классе
+# Функция method_exists()
+
+Функция method_exists() проверяет, поддерживается ли объектом метод с заданным именем. Если метод поддерживается, функция возвращает TRUE, в противном случае возвращается FALSE. Синтаксис функции method_exists():
+```
+bool method_exi sts (object имя_обьекта. string имя_метода)
+```
 
 - object - Экземпляр объекта или имя класса
 - method_name - Имя метода
 
-Возвращает TRUE, если метод method_name определен для указанного объекта object, иначе возвращает FALSE.
 
 ### Пример использования method_exists()
 
@@ -653,6 +303,8 @@ foreach ($routes as $uriPattern => $path) {
      
      $result = true;
 
+     // Создаем экземпляр контроллера
+
      $controller = new $controller;
 
      if (! method_exists($controller, $action)) {
@@ -660,6 +312,9 @@ foreach ($routes as $uriPattern => $path) {
       "{$controller} does not respond to the {$action} action."
       );
       }
+
+      // Вызываем метод контроллера
+
       else{
        $controller->$action();  
       }
@@ -778,8 +433,7 @@ try {
     } 
 ```
 
-
-## Blog
+## Контроллер Blog
 
 ```php
 
@@ -807,7 +461,7 @@ public function index()
 }
 ```
 
-## blog/index.php
+## Шаблон blog/index.php
 
 ```html
 
