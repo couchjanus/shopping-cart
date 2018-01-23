@@ -112,7 +112,7 @@ $dbname = "mydb";
 
 ## Обработка ошибок подключения
 
-```
+```php
 try {
     $connection = new PDO("mysql:host=localhost;dbname=$dbname", $username, $password);
     echo "Connected successfully\n";
@@ -131,7 +131,7 @@ try {
 При успешном подключении к базе данных в скрипт будет возвращен созданный PDO объект. Соединение остается активным на протяжении всего времени жизни объекта. Чтобы закрыть соединение, необходимо уничтожить объект путем удаления всех ссылок на него (этого можно добиться, присваивая NULL всем переменным, указывающим на объект). Если не сделать этого явно, PHP автоматически закроет соединение по окончании работы скрипта.
 
 ## Закрытие соединения
-```
+```php
 $dbh = new PDO('mysql:host=localhost;dbname=test', $user, $pass);
 // здесь мы каким-то образом используем соединение
 $sth = $dbh->query('SELECT * FROM foo');
@@ -158,7 +158,7 @@ http://php.net/manual/ru/pdo.query.php
 Получить данные из этого объекта можно как традиционным образом, через while, так и через foreach(). 
 
 ## Функция PDO::query
-```
+```php
 PDO::query — Выполняет SQL запрос и возвращает результирующий набор в виде объекта PDOStatement
 public PDOStatement PDO::query ( string $statement )
 public PDOStatement PDO::query ( string $statement , int $PDO::FETCH_COLUMN , int $colno )
@@ -174,7 +174,7 @@ PDO::query() возвращает объект PDOStatement или FALSE, есл
 
 ## Создаем таблицу categories
 
-```
+```php
 // Create TABLE categories
 $sql = "CREATE TABLE categories (
     id int(11) NOT NULL AUTO_INCREMENT,
@@ -193,7 +193,7 @@ $connection = new PDO("mysql:host=localhost;dbname=$dbname", $username, $passwor
 
 
 ## Создаем таблицу products
-```
+```php
 // Create TABLE products
 $sql = "CREATE TABLE products (
     id int(11) NOT NULL AUTO_INCREMENT,
@@ -223,7 +223,7 @@ return [
 ];
 ```
 ## Класс Connection.php
-```
+```php
 class Connection
  {
   
@@ -257,7 +257,8 @@ private свойства и методы не наследуются.
 Но если не устраивает - нужные нам свойства и методы можно объявить как protected - в этом случае они станут доступны в потомках, но по-прежнему не будут доступны извне.
 
 ## class View
-```
+
+```php
 
 <?php
 
@@ -271,6 +272,8 @@ public function render($path, $data = [], $error = false){
 }
 ```
 ## class Controller
+
+```php
 <?php
 class Controller {
    protected $_view;
@@ -285,9 +288,11 @@ class Controller {
        // todo
    }
 }
+```
 
 ## Изменим bootstrap
-```
+
+```php
 <?php
 if (function_exists('date_default_timezone_set')){
    date_default_timezone_set('Europe/Kiev');   
@@ -303,7 +308,7 @@ require_once CORE.'Controller.php';
 require_once CORE.'Router.php';
 ```
 ## Наследование класса
-```
+```php
 <?php
 class AboutController extends Controller
 {
@@ -316,8 +321,8 @@ class AboutController extends Controller
   
 }
 ```
-
-```
+## class HomeController
+```php
 <?php
 class HomeController extends Controller
 {
@@ -331,7 +336,7 @@ class HomeController extends Controller
 }
 ```
 # Панель администратора
-```
+```php
 <?php
 class DashboardController extends Controller      
 {
@@ -343,7 +348,7 @@ class DashboardController extends Controller
 ```
 ## Маршруты
 
-```
+```php
 <?php
 return [
    'contact' => 'ContactController@index',
@@ -363,7 +368,7 @@ return [
 ```
 ## Router.php
 
-```
+```php
 <?php
 $filename = CONFIG.'routes'.EXT;
 $result = null;
@@ -382,7 +387,7 @@ if (file_exists($filename)) {
 
 ## Функция array_key_exists()
 
-```
+```php
 function directPath($uri)
    {
      // Проверить наличие такого запроса в routes.php
@@ -396,7 +401,7 @@ http://php.net/manual/ru/function.array-key-exists.php
 Функция array_key_exists() возвращает TRUE, если в массиве присутствует указанный ключ key. Параметр key может быть любым значением, которое подходит для индекса массива.
 
 ## Конструкция list()
-```
+```php
 //получаем строку запроса
 $uri = getURI();
 $path = directPath($uri);
@@ -409,7 +414,7 @@ http://php.net/manual/ru/function.list.php
 
 
 ## Подключаем контроллер
-```
+```php
 $segments = explode('\\', $segments);
 $controller = array_pop($segments);
 //Подключаем файл контроллера
@@ -426,7 +431,7 @@ do {
 }while ( count($segments) >= 0);
 ```
 ## Создаем экземпляр класса
-```
+```php
    try {
      include_once($controllerFile);
      $controller = new $controller;
@@ -446,7 +451,7 @@ do {
 ```   
 ## Обработка исключений
 
-```
+```php
    catch (Exception $e) {
        // код который может обработать исключение
        $result = false;
@@ -469,7 +474,7 @@ if(!$result){
 
 
 Особенностью PDO::query() является то, что после выполнения SELECT запроса можно сразу работать с результирующим набором посредством курсора.
-```
+```php
 function getFruit($conn) {
     $sql = 'SELECT name, color, calories FROM fruit ORDER BY name';
     foreach ($conn->query($sql) as $row) {
@@ -483,7 +488,7 @@ function getFruit($conn) {
 SELECT применяется для извлечения строк, выбранных из одной или нескольких таблиц.
 
 выражение SELECT обязательно включает, выражение FROM
-```
+```sql
 SELECT --- FROM таблица 
 
 ```
@@ -495,7 +500,7 @@ SELECT --- FROM таблица
 
 Выражение select_expression задает столбцы, в которых необходимо проводить выборку.
 
-```
+```php
 public function index (){
    
        $db = Connection::make();
@@ -507,7 +512,7 @@ public function index (){
 
 ```
 ## Получить все столбцы
-```
+```sql
 SELECT * FROM categories
 ```
 ## GROUP BY, HAVING, ORDER BY
@@ -528,14 +533,14 @@ SELECT * FROM categories
 
 ## Функция ::fetchAll
 PDOStatement::fetchAll — Возвращает массив, содержащий все строки результирующего набора
-```
+```php
 public array PDOStatement::fetchAll ([ int $fetch_style [, mixed $fetch_argument [, array $ctor_args = array() ]]] )
 ```
 http://php.net/manual/ru/pdostatement.fetchall.php 
 
 
 ## Список всех категорий
-```
+```php
 public function index (){
        $db = Connection::make();
        // $db->exec("set names utf8");
@@ -552,7 +557,7 @@ public function index (){
 
 ## Контроллер категорий
 
-```
+```php
 <?php
 /**
 * Контроллер для управления категориями
@@ -571,7 +576,7 @@ class CategoriesController extends Controller{
 ```
 ## Шаблон списка категорий
 
-```
+```html
     
     <article class='large'>
        <a href="/admin/category/add" class="add_item"><i class="fa fa-plus fa-2x" aria-hidden="true"></i> Добавить категорию
@@ -602,7 +607,7 @@ class CategoriesController extends Controller{
 ```
 ## Контроллер товаров
 
-```
+```php
 class ProductsController extends Controller {
    public function index () {
        $db = Connection::make();
@@ -615,7 +620,7 @@ class ProductsController extends Controller {
    }
 ```
 ## Шаблон для товаров
-```
+```html
         <tbody class="table-items">
            <?php foreach ($products as $product):?>
               <tr>
@@ -636,7 +641,7 @@ class ProductsController extends Controller {
 
 Использование prepared statements укрепляет защиту от SQL-инъекций.
 http://php.net/manual/ru/pdo.prepare.php 
-```
+```php
 $db = Connection::make();
 
 $res = $db->prepare($sql);
@@ -647,7 +652,7 @@ Prepared statement — это заранее скомпилированное SQ
 
 ## Именные placeholders
 
-```
+```php
     # первым аргументом является имя placeholder
     # его принято начинать с двоеточия
     # хотя работает и без них
@@ -659,7 +664,7 @@ Prepared statement — это заранее скомпилированное SQ
 Здесь тоже можно передавать массив, но он должен быть ассоциативным. 
 В роли ключей должны выступать имена placeholder.
 
-```
+```php
     # данные, которые мы вставляем
 
        $db = Connection::make();
@@ -671,7 +676,7 @@ Prepared statement — это заранее скомпилированное SQ
 
 ## Создание новой категории
 
-```
+```php
    public function create () {
        if (isset($_POST) and !empty($_POST)) {
            $options['name'] = trim(strip_tags($_POST['name']));
@@ -691,7 +696,7 @@ Prepared statement — это заранее скомпилированное SQ
 ```
 ## Создание нового товара
 
-```
+```php
    public function create () {
        //Принимаем данные из формы
        if (isset($_POST) and !empty($_POST)) {
@@ -704,7 +709,7 @@ Prepared statement — это заранее скомпилированное SQ
            $options['status'] = trim(strip_tags($_POST['status']));
 ```
 ## Вставка записи в таблицу
-```
+```php
            $con = Connection::make();
            $sql = "
                INSERT INTO products(name, category_id, price, brand, description, is_new, status)
@@ -713,7 +718,7 @@ Prepared statement — это заранее скомпилированное SQ
        $res = $con->prepare($sql);
 ```
 ## PDOStatement::execute
-```
+```php
 public bool PDOStatement::execute ([ array $input_parameters ] )
 ```
 Запускает подготовленный запрос. Если запрос содержит метки параметров (псевдопеременные), вы должны либо:
@@ -723,7 +728,7 @@ http://php.net/manual/ru/pdostatement.execute.php
 
 
 ## Выполняем запрос 
-```
+```php
        $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
        $res->bindParam(':category_id', $options['category'], PDO::PARAM_INT);
        $res->bindParam(':price', $options['price'], PDO::PARAM_INT);
