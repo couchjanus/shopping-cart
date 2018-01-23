@@ -14,7 +14,7 @@
                  </div><!--Navbar header End-->
                   <nav class="collapse navbar-collapse navigation" id="navbar-collapse" role="navigation">
                         <ul class="nav navbar-nav navbar-right ">
-                            <li class="active"> <a href="/" >Home</a></li>
+                            <li><a href="/" >Home</a></li>
                             
                             <li><a href="#" id="megacatalog">Catalog</a> </li>
                             <li><a href="/about" >About Us </a> </li>

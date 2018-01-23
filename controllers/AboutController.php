@@ -1,16 +1,13 @@
 <?php
 
-class AboutController
+class AboutController extends Controller
 {
-    
-    public function __construct()
-    {   
-        render('home/about', ['title'=>'SHOPAHOLIC ABOUT PAGE']);
+    public function index()
+    {
+        $title = 'SHOPAHOLIC <b>ABOUT PAGE</b>';
+        
+        $this->_view->render('home/about', ['title'=>$title]);
     }
     
-    // public function index()
-    // {   
-    //     render('home/about', ['title'=>'SHOPAHOLIC <b>ABOUT PAGE</b>']);
-    // }
-    
 }
+

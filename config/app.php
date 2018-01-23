@@ -10,7 +10,4 @@
     define('APPNAME', 'Great Shopaholic');
     define('SLOGAN', 'Lets Build Cool Site');
     
-    define('HOST', 'localhost'); // адрес сервера 
-    define('DATABASE', 'mydb'); // имя базы данных
-    define('DBUSER', 'dev'); // имя пользователя
-    define('DBPASSWORD', 'ghbdtn'); // пароль
+    

@@ -1,95 +1,152 @@
 <?php
 
+$filename = CONFIG.'routes'.EXT;
+
+$result = null;
+
+// if (file_exists($filename)) {
+//     $routes = include($filename);
+// } else {
+//     echo "Файл $filename не существует";
+// }
+
+if (file_exists($filename)) {
+    define('ROUTES',include($filename));
+} else {
+    echo "Файл $filename не существует";
+}
+
+
 function getURI(){
     if (isset($_SERVER['REQUEST_URI']) and !empty($_SERVER['REQUEST_URI']))
         return trim($_SERVER['REQUEST_URI'], '/');
 }
+
+function directPath($uri)
+    {
+      // Проверить наличие такого запроса в routes.php
+        if (array_key_exists($uri, ROUTES)) {
+            return ROUTES[$uri];
+        }
+        Throw new Exception('No route defined for this URI.');
+    }
 
 
 //получаем строку запроса
 
 $uri = getURI();
 
+$path = directPath($uri);
 
-$filename = CONFIG.'routes'.EXT;
 
-if (file_exists($filename)) {
-    $routes = include($filename);
-} else {
-    echo "Файл $filename не существует";
-}
+list($segments, $action) = explode('@', $path);
+
+$segments = explode('\\', $segments);
+// 
+
+$controller = array_pop($segments);
+
+$controllerFile = '';
+
+do {
+    if(count($segments)==0){
+       $controllerFile = CONTROLLERS .$controllerFile.$controller . EXT;
+       break;
+    }
+    else{
+        $segment = array_shift($segments);
+        $controllerFile = $controllerFile.$segment.'/';
+    }
+}while ( count($segments) >= 0);
+
+//Подключаем файл контроллера
+
+    try {
+      include_once($controllerFile);
+      $controller = new $controller;
+
+      try {
+          // код который может выбросить исключение
+          $controller->$action();  
+          $result = true;
+      } catch (Exception $e) {
+
+        $result = false;
+          // код который может обработать исключение
+        if (! method_exists($controller, $action)) {
+          throw new Exception(
+          "{$controller} does not respond to the {$action} action."
+          );
+        }
+      }
+    } 
+    catch (Exception $e) {
+        // код который может обработать исключение
+        // если конечно оно появится
+        $result = false;
+        if (! file_exists($controllerFile)) {
+          throw new Exception("{$controllerFile} does not respond.");
+      }
+    }
+    finally{
+      return  $result;
+    } 
 
 
 // Проверить наличие такого запроса в routes
 
-foreach ($routes as $uriPattern => $path) {
+// foreach ($routes as $uriPattern => $path) {
 
- //Сравниваем uriPattern и $uri
- if($uriPattern == $uri){
+//  //Сравниваем uriPattern и $uri
+//  if($uriPattern == $uri){
 
-   // $segments = explode('@', $path);
-   // $controller = array_shift($segments);
-   // $action = array_shift($segments);
+//    $segments = explode('@', $path);
+//    $controller = array_shift($segments);
+//    $action = array_shift($segments);
    
-   // Определить контроллер
+//    // Определить контроллер
+   
+//    //Подключаем файл контроллера
+//    $controllerFile = CONTROLLERS . $controller . EXT;
 
-   $controller = $path;
-
-   //Подключаем файл контроллера
-   $controllerFile = CONTROLLERS . $controller . EXT;
-
-   if(file_exists($controllerFile)){
-     include_once($controllerFile);
-
-     $result = true;
-
-     $controller = new $controller;
-
-     // if (! method_exists($controller, $action)) {
-     //  throw new Exception(
-     //  "{$controller} does not respond to the {$action} action."
-     //  );
-     //  }
-     //  else{
-     //   $controller->$action();  
-     //  }
-     break;
-     }
-
-    // try {
+//     try {
      
-    //   include_once($controllerFile);
+//       include_once($controllerFile);
 
-    //   $controller = new $controller;
+//       $controller = new $controller;
 
-    //   try {
-    //       // код который может выбросить исключение
-    //       $controller->$action();  
-    //   } catch (Exception $e) {
-    //       // код который может обработать исключение
-    //       // если конечно оно появится
-    //     if (! method_exists($controller, $action)) {
-    //       throw new Exception(
-    //       "{$controller} does not respond to the {$action} action."
-    //       );
-    //     }
-    //   }
+//       try {
+//           // код который может выбросить исключение
+//           $controller->$action();  
+//       } catch (Exception $e) {
+//           // код который может обработать исключение
+//           // если конечно оно появится
+//         if (! method_exists($controller, $action)) {
+//           throw new Exception(
+//           "{$controller} does not respond to the {$action} action."
+//           );
+//         }
+//       }
       
-    //   $result = true;
-    //   break; 
-    // } 
-    // catch (Exception $e) {
-    //     // код который может обработать исключение
-    //     // если конечно оно появится
-    //     if (! file_exists($controllerFile)) {
-    //       throw new Exception("{$controllerFile} does not respond.");
-    //   }
-    // } 
+//       $result = true;
+//       break; 
+//     } 
+//     catch (Exception $e) {
+//         // код который может обработать исключение
+//         // если конечно оно появится
+//         if (! file_exists($controllerFile)) {
+//           throw new Exception("{$controllerFile} does not respond.");
+//       }
+//     } 
 
-   //  
-  }
-}
+//    //  
+//   }
+// }
    
-if($result === null){
+// if($result === null){
+//      require_once VIEWS.'404'.EXT;
+// }
+
+if(!$result){
      require_once VIEWS.'404'.EXT;
 }

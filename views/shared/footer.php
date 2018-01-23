@@ -33,7 +33,7 @@
                     <div class="footer_menu_contact">
                         <ul>
                             <li> <i class="fa fa-home"></i>
-                                <span> It Shag, 1 Kyiv </span></li>
+                                <span><?=APPNAME;?>, 1 Kyiv </span></li>
                             <li><i class="fa fa-globe"></i>
                                 <span> +099-12345678</span></li>
                             <li><i class="fa fa-phone"></i>

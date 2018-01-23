@@ -58,19 +58,41 @@ require_once VIEWS.'shared/navigation.php';
             
             <div class="clearfix"></div>
 
+              Past comments.... 
+                 count: <?php // echo $count;?>
+                 <br>
+                 <?php // echo $comments;
+                 echo '<pre>';
+                 
+                 echo htmlspecialchars(print_r($comments, true));
+                 
+                 echo '</pre>';
+
+                // foreach ($comments as $key => $value) {
+                //      # code...
+
+                // echo "<div class='top'><b>User ".$value[0]."</b> <a href='mailto:".$value[1]."'>".$value[1]."</a> Added this </div>"; 
+                // echo "<div class='comment'>".strip_tags($value[2])."</div>"; 
+                // echo "<div class='added_at'> At: ".strip_tags($value[3])."</div>"; 
+                //  }
+ 
+
+                 ?>
+
+
             <?php 
-             if($resCount>0){
-                echo "<h3>$resCount comments:</h3> ";
-                  // print_r($comments);
-                foreach ($comments as $row) {
-                  echo "<div class='top'><b>User ".$row["username"]."</b> <a href='mailto:".$row["email"]."'>".$row["email"]."</a> Added this </div>"; 
-                  echo "<div class='comment'>".strip_tags($row["comment"])."</div>"; 
-                  echo "<div class='added_at'> At: ".strip_tags($row["appended_at"])."</div>"; 
-                }
-             }
-             else{
-                echo "No comments.... ";
-             }
+             // if($resCount>0){
+             //    echo "<h3>$resCount comments:</h3> ";
+             //      // print_r($comments);
+             //    foreach ($comments as $row) {
+             //      echo "<div class='top'><b>User ".$row["username"]."</b> <a href='mailto:".$row["email"]."'>".$row["email"]."</a> Added this </div>"; 
+             //      echo "<div class='comment'>".strip_tags($row["comment"])."</div>"; 
+             //      echo "<div class='added_at'> At: ".strip_tags($row["appended_at"])."</div>"; 
+             //    }
+             // }
+             // else{
+             //    echo "No comments.... ";
+             // }
            ?>
 
         </div>

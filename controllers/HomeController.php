@@ -1,16 +1,14 @@
 <?php
 
-class HomeController
+class HomeController extends Controller
 {
     
-    public function __construct()
+    public function index()
     {   
-        render('home/index', ['title'=>'Our <b>Cat Members</b>']);
+        $title = 'Our <b>Cat Members</b>';
+
+        $this->_view->render('home/index', ['title'=>$title]);
+
     }
-    
-    // public function index()
-    // {   
-    //     render('home/index', ['title'=>'Our <b>Cat Members</b>']);
-    // }
     
 }
