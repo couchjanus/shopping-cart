@@ -1,201 +1,385 @@
 # shopping-cart 
 
-# Расширения для работы с базами данных
+# Регистрация хостинга
+
+- Зарегистрируйтесь на https://www.000webhost.com
+- Активируте учетную запись и перейдите в пвнель управления сайтом https://www.000webhost.com/members/website/janusnic
 
 
-- DBA — Database (dbm-style) 
-- ODBC — ODBC (Unified)
-- PDO — Объекты данных PHP
-- MongoDB — Драйвер MongoDB
-- Mssql — Microsoft SQL Server
-- MySQL — MySQL драйверы и плагины
-- OCI8 — Oracle OCI8
-- PostgreSQL
-- SQLite3
-- Sybase
+# File manager
+- Выбеоите вкладку File manager в https://files.000webhost.com/ 
 
-http://php.net/manual/ru/refs.database.php 
+- В директории public_html создайте файл index.php
 
-# Расширение Объекты данных PHP (PDO)
-
-Расширение Объекты данных PHP (PDO) определяет простой и согласованный интерфейс для доступа к базам данных в PHP. Каждый драйвер базы данных, в котором реализован этот интерфейс, может представить специфичный для базы данных функционал в виде стандартных функций расширения. 
-
-Само по себе расширение PDO не позволяет манипулировать доступом к базе данных. Чтобы воспользоваться возможностями PDO, необходимо использовать соответствующий конкретной базе данных PDO драйвер.
-
-PDO обеспечивает абстракцию доступа к данным. Это значит, что вне зависимости от того, какая конкретная база данных используется, вы можете пользоваться одними и теми функциями для выполнения запросов и выборки данных. PDO не абстрагирует саму базу данных, это расширение не переписывает SQL запросы и не эмулирует отсутствующий в СУБД функционал. Если нужно именно это, необходимо воспользоваться полноценной абстракцией базы данных.
-
-PDO может поддерживать любую систему управления базами данных, для которой существует PDO-драйвер.
-
-## Увидеть список доступных драйверов можно так:
-
-```
-    print_r(PDO::getAvailableDrivers());
-
-```
-## Инсталляция PDO на Unix системах
-
-PDO и драйвер PDO_SQLITE включены по умолчанию в PHP, начиная с версии 5.1.0. Чтобы включить PDO драйвер для произвольной базы данных, обратитесь к документации PDO драйверы баз данных.
-
-## Пользователи Windows
-PDO и все основные драйверы внедрены в PHP как загружаемые модули. Чтобы их использовать, требуется их просто включить, отредактировав файл php.ini следующим образом:
-
-```
-extension=php_pdo.dll
-```
-
-## Способы подключения к MS SQL Server и Sybase 
 ```php
-try {  
-        # MS SQL Server и Sybase через PDO_DBLIB  
-        $DBH = new PDO("mssql:host=$host;dbname=$dbname", $user, $pass);  
-        $DBH = new PDO("sybase:host=$host;dbname=$dbname", $user, $pass);  
-    }  
-        catch(PDOException $e) {  
-            echo $e->getMessage();  
-        }
+
+<?php
+echo "hello ";
 
 ```
 
-## Способы подключения к SQLite
+- Измените файл index.php
+
 ```php
-try {  
-    # SQLite  
-        $DBH = new PDO("sqlite:my/database/path/database.db");  
-        }  
-        catch(PDOException $e) {  
-            echo $e->getMessage();  
-        }
 
+<?php
+
+phpinfo();
 
 ```
-## PDO_PGSQL DSN — Соединение с базой данных PostgreSQL
 
-Строка подключания (Data Source Name или DSN) PDO_PGSQL состоит из следующих элементов, разделенных пробелом либо точкой с запятой:
+- В корне проекта / создайте директорию config
 
-- Префикс DSN
-- pgsql:.
+- В директории config создайте файл app.php
+
+```php
+
+<?php
+  
+    define('ROOT', realpath(__DIR__.'/../'));
+    define('VIEWS', ROOT.'/views/');
+    define('CONTROLLERS', ROOT.'/controllers/');
+    define('CONFIG', ROOT.'/config/');
+    define('CORE', ROOT.'/core/');
+    define('EXT', '.php');
+    define('APPNAME', 'Great Shopaholic');
+    define('SLOGAN', 'Lets Build Cool Site');
 
 ```
-$connection = new PDO("pgsql:host=localhost;port=5432;dbname=myshop; user=dev; password=ghbdtn");
+
+- В корне проекта / создайте директорию bootstrap
+
+- В директории bootstrap создайте файл bootstrap.php
+
+```php
+
+<?php
+
+// Общие настройки
+if (function_exists('date_default_timezone_set')){
+    date_default_timezone_set('Europe/Kiev');    
+}
+
+// Включить обработку ошибок
+
+ini_set('display_errors',1);
+error_reporting(E_ALL);
+
+// Подключить файл конфигурации
+require_once realpath(__DIR__).'/../config/app.php';
 
 ```
-- host - Имя хоста, на котором расположена база данных.
-- port - Порт, на котором эта база данных ждет подключения.
-- dbname - Имя базы данных.
-- user - Имя пользователя для соединения. Если вы зададите имя пользователя в DSN, PDO проигнорирует значение, переданное в качестве параметра конструктору.
-- password - Пароль пользователя для соединения. Если вы зададите пароль в DSN, PDO проигнорирует значение, переданное в качестве параметра конструктору.
 
+## В корне проекта / создайте директории
+- views
+- controllers
+- core
+
+- Измените файл index.php
+
+```php
+
+<?php
+
+require_once realpath(__DIR__).'/../bootstrap/bootstrap.php';
+
+```
+                
+
+# Manage database
+- Перейти в раздел
+https://www.000webhost.com/members/website/janusnic/database
+
+- Создать базу данных, указав ее имя и пароль доступа
+Например для базы ланных mydb и пользователя dev будет создана такая конфигурация подключения к базе данных 
+
+```
+
+id3998067_mydb  id3998067_dev localhost
+
+```
+## phpMyAdmin
+
+- Перейдите в панель управления phpMyAdmin, введя логин и пароль подключения к базе данных 
+
+https://databases.000webhost.com/index.php
+
+https://databases.000webhost.com/db_structure.php?server=1&db=id3998067_mydb
+
+- Создайте с помощью phpMyAdmin таблицу для публикации постов блога
+
+```sql
+CREATE TABLE posts (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    title varchar(255) NOT NULL,
+    content text NOT NULL,
+    status tinyint(1) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+```
+## Установка соединения с базой mysql
+
+В директории config создайте файл db.php
+
+## Замените данные для подключения к БД на ваши
+
+```php
+<?php
+ /**
+ * Данные для подключения к БД db.php
+ */
+
+return [
+    'database' => [
+        'name' => 'id3998067_mydb',
+        'username' => 'id3998067_dev', // - Логин $username
+        'password' => 'ghbdtn', // Пароль $password
+        'connection' => 'mysql:host=localhost',
+        'options' => [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ]
+    ]
+];
+
+```
 
 ## Установка соединения с базой mysql
 
+В директории core создайте файл Connection.php
+
 ```php
-$username = "dev";
-$password = "ghbdtn";
-$dbname = "mydb";
 
-/* проверка соединения */
+/* Установка соединения с базой mysql */
+ <?php
 
-   $connection = new PDO("mysql:host=localhost;dbname=$dbname", $username, $password);
+ class Connection
+ {
+  public static function make()
+  {
+    $db = include CONFIG.'db.php';
 
-    echo "Connected successfully\n";
+    $config = $db['database'];
+
+    try {
+      return new PDO(
+        // строка dsn. В ней указан драйвер подключения к базе, хост, имя базы 
+        $config['connection'].';dbname='.$config['name'], 
+        $config['username'],
+        $config['password'],
+        $config['options']
+      );
+
+    } catch (PDOException $e) { // Обработка ошибок подключения
+      die($e->getMessage());
+    }
+  }
+ }
 
 ```
 
-## Конструктор принимает три параметра:
-
-- "mysql:host=$host;dbname=$dbname" - Так называемая строка dsn. В ней указан драйвер подключения к базе, хост, имя базы и кодировка.
-- Логин $username = "dev";
-- Пароль $password = "ghbdtn";
-
-
-При успешном подключении к базе данных в скрипт будет возвращен созданный PDO объект. Соединение остается активным на протяжении всего времени жизни объекта. Чтобы закрыть соединение, необходимо уничтожить объект путем удаления всех ссылок на него (этого можно добиться, присваивая NULL всем переменным, указывающим на объект). Если не сделать этого явно, PHP автоматически закроет соединение по окончании работы скрипта.
-
-## Обработка ошибок подключения
+В директории core создайте файл Controller.php
 
 ```php
-try {
-    $connection = new PDO("mysql:host=localhost;dbname=$dbname", $username, $password);
-    echo "Connected successfully\n";
-    $connection->query($sql);
-    echo "Table Created successfully\n";
-} catch (PDOException $e) {
-    print "Error!: " . $e->getMessage() . "\n";
-    die();
-} finally {
-    // код, который будет выполнен при любом раскладе
-    $connection = null;
+<?php
+
+class Controller {
+
+    protected $_view;
+    
+    function __construct()
+    {
+        $this->_view = new View();
+    }
+
+    // действие (action), вызываемое по умолчанию
+    function actionIndex()
+    {
+        // todo
+    }
 }
 ```
-Если ваше приложение не перехватывает исключение PDO конструктора, движок zend выполнит стандартные операции для завершения работы скрипта и вывода обратной трассировки. В этой трассировке будет содержаться детальная информация о соединении с базой данных, включая имя пользователя и пароль. Ответственность за перехват исключений лежит на вас. Перехватить исключение можно явно (с помощью выражения catch), либо неявно, задав глобальный обработчик ошибок функцией set_exception_handler().
 
-При успешном подключении к базе данных в скрипт будет возвращен созданный PDO объект. Соединение остается активным на протяжении всего времени жизни объекта. Чтобы закрыть соединение, необходимо уничтожить объект путем удаления всех ссылок на него (этого можно добиться, присваивая NULL всем переменным, указывающим на объект). Если не сделать этого явно, PHP автоматически закроет соединение по окончании работы скрипта.
-
-## Закрытие соединения
+В директории core создайте файл View.php
 ```php
-$dbh = new PDO('mysql:host=localhost;dbname=test', $user, $pass);
-// здесь мы каким-то образом используем соединение
-$sth = $dbh->query('SELECT * FROM foo');
+<?php
 
-// соединение больше не нужно, закрываем
-$sth = null;
-$dbh = null;
+class View {
+
+    public function render($path, $data = [], $error = false){
+        extract($data);
+        return require VIEWS."/{$path}.php";
+    }
+
+}
+
 ```
-## Постоянные соединения
+В директории core создайте файл Router.php
 
-```
-$dbh = new PDO('mysql:host=localhost;dbname=test', $user, $pass, array(
-    PDO::ATTR_PERSISTENT => true
-));
-```
-Чтобы использовать постоянные соединения, необходимо добавить константу PDO::ATTR_PERSISTENT в массив параметров драйвера, который передается конструктору PDO. Если просто задать этот атрибут функцией PDO::setAttribute() уже после создания объекта, драйвер не будет использовать постоянные соединения.
-
-## Выполнение запросов
-Для выполнения запросов можно пользоваться двумя методами query и execute. 
-Если в запрос не передаются никакие переменные, то можно воспользоваться функцией query(). 
-http://php.net/manual/ru/pdo.query.php 
-
-Функция query выполнит запрос и вернёт специальный объект — PDO statement. 
-Получить данные из этого объекта можно как традиционным образом, через while, так и через foreach(). 
-
-## Функция PDO::query
 ```php
-PDO::query — Выполняет SQL запрос и возвращает результирующий набор в виде объекта PDOStatement
-public PDOStatement PDO::query ( string $statement )
-public PDOStatement PDO::query ( string $statement , int $PDO::FETCH_COLUMN , int $colno )
-public PDOStatement PDO::query ( string $statement , int $PDO::FETCH_CLASS , string $classname , array $ctorargs )
-public PDOStatement PDO::query ( string $statement , int $PDO::FETCH_INTO , object $object )
+<?php
+// Router.php
+$filename = CONFIG.'routes'.EXT;
+
+$result = null;
+
+if (file_exists($filename)) {
+    define('ROUTES',include($filename));
+} else {
+    echo "Файл $filename не существует";
+}
+
+
+function getURI(){
+    if (isset($_SERVER['REQUEST_URI']) and !empty($_SERVER['REQUEST_URI']))
+        return trim($_SERVER['REQUEST_URI'], '/');
+}
+
+function directPath($uri)
+    {
+      // Проверить наличие такого запроса в routes.php
+        if (array_key_exists($uri, ROUTES)) {
+            return ROUTES[$uri];
+        }
+        Throw new Exception('No route defined for this URI.');
+    }
+
+
+//получаем строку запроса
+
+$uri = getURI();
+
+$path = directPath($uri);
+
+
+list($segments, $action) = explode('@', $path);
+
+$segments = explode('\\', $segments);
+
+$controller = array_pop($segments);
+
+$controllerFile = '';
+
+do {
+    if(count($segments)==0){
+       $controllerFile = CONTROLLERS .$controllerFile.$controller . EXT;
+       break;
+    }
+    else{
+        $segment = array_shift($segments);
+        $controllerFile = $controllerFile.$segment.'/';
+    }
+}while ( count($segments) >= 0);
+
+//Подключаем файл контроллера
+
+    try {
+      include_once($controllerFile);
+      $controller = new $controller;
+
+      try {
+          // код который может выбросить исключение
+          $controller->$action();  
+          $result = true;
+      } catch (Exception $e) {
+
+        $result = false;
+          // код который может обработать исключение
+        if (! method_exists($controller, $action)) {
+          throw new Exception(
+          "{$controller} does not respond to the {$action} action."
+          );
+        }
+      }
+    } 
+    catch (Exception $e) {
+        // код который может обработать исключение
+        // если конечно оно появится
+        $result = false;
+        if (! file_exists($controllerFile)) {
+          throw new Exception("{$controllerFile} does not respond.");
+      }
+    }
+    finally{
+      return  $result;
+    } 
+
+if(!$result){
+     require_once VIEWS.'404'.EXT;
+}
 
 ```
-## Список параметров 
-- statement - Текст SQL запроса для подготовки и выполнения.
-Данные в запросе должны быть правильно экранированы.
+Подключить в файле bootstrap.php созданные классы
 
-PDO::query() возвращает объект PDOStatement или FALSE, если запрос выполнить не удалось.
+```php
+require_once CORE.'Connection.php';
+require_once CORE.'View.php';
+require_once CORE.'Controller.php';
+require_once CORE.'Router.php';
+
+```
+В директории controllers создайте файл HomeController.php
+
+```php
+<?php
+
+class HomeController extends Controller
+{
+    
+    public function index()
+    {   
+        $title = 'Our <b>Cat Members</b>';
+
+        $this->_view->render('home/index', ['title'=>$title]);
+
+    }
+    
+}
+```
+В директории views.home создайте файл index.php
+
+```html
+
+<section class="product">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="feature_header text-center">
+                    <h3 class="feature_title"><?=$title;?></b></h3>
+                    <h4 class="feature_sub">Lorem ipsum dolor sit amet, consectetur adipisicing elit. </h4>
+                    <div class="divider"></div>
+                </div>
+            </div>  <!-- Col-md-12 End -->
+            <div class="product-items">
+
+
+            </div>
+        </div>
+    </div> <!-- Conatiner product end -->
+</section>  <!-- Section product End -->
+
+<div class="clearfix"></div>
+
+```
 
 ## Создаем таблицу categories
 
-```php
-// Create TABLE categories
-$sql = "CREATE TABLE categories (
+```sql
+
+CREATE TABLE categories (
     id int(11) NOT NULL AUTO_INCREMENT,
     name varchar(255) NOT NULL,
     status tinyint(1) NOT NULL,
     PRIMARY KEY (id)
-);";
+);
 
-$connection = new PDO("mysql:host=localhost;dbname=$dbname", $username, $password);
-    echo "Connected successfully\n";
-
-
-    $connection->query($sql);
-    echo "Table Created successfully\n";
 ```
 
 
 ## Создаем таблицу products
-```php
-// Create TABLE products
-$sql = "CREATE TABLE products (
+```sql
+
+CREATE TABLE products (
     id int(11) NOT NULL AUTO_INCREMENT,
     name varchar(255) NOT NULL,
     status tinyint(1) NOT NULL,
@@ -206,107 +390,9 @@ $sql = "CREATE TABLE products (
     is_new tinyint(1) NOT NULL DEFAULT '1',
     is_recommended tinyint(1) NOT NULL DEFAULT '0'
     PRIMARY KEY (id)
-);";
-```
-## Параметры соединения db.php
-```
-return [
-    'database' => [
-        'name' => 'mydb',
-        'username' => 'dev',
-        'password' => 'ghbdtn',
-        'connection' => 'mysql:host=localhost',
-        'options' => [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        ]
-    ]
-];
-```
-## Класс Connection.php
-```php
-class Connection
- {
-  
-public static function make()
-  {
-    $db = include CONFIG.'db.php';
-    $config = $db['database'];
-
-    try {
-      return new PDO(
-        $config['connection'].';dbname='.$config['name'],
-        $config['username'],
-        $config['password'],
-        $config['options']
-      );
-
-    } catch (PDOException $e) {
-      die($e->getMessage());
-    }
-  }
- }
-```
-# Использование наследования
-Классы могут наследовать методы и свойства другого класса
-
-Наследование реализуется с помощью ключевого слова extends
-private свойства и методы не наследуются. 
-
-Это не мешает работать public геттерам и сеттерам, унаследованным от User, например: $student->setName() работает, но напрямую получить свойство name внутри класса потомка мы не сможем - это приведет к ошибке.
-
-Но если не устраивает - нужные нам свойства и методы можно объявить как protected - в этом случае они станут доступны в потомках, но по-прежнему не будут доступны извне.
-
-## class View
-
-```php
-
-<?php
-
-class View {
-   
-public function render($path, $data = [], $error = false){
-       extract($data);
-       return require VIEWS."/{$path}.php";
-   }
-
-}
-```
-## class Controller
-
-```php
-<?php
-class Controller {
-   protected $_view;
-  
-   function __construct()
-   {
-       $this->_view = new View();
-   }
-   // действие (action), вызываемое по умолчанию
-   function actionIndex()
-   {
-       // todo
-   }
-}
+);
 ```
 
-## Изменим bootstrap
-
-```php
-<?php
-if (function_exists('date_default_timezone_set')){
-   date_default_timezone_set('Europe/Kiev');   
-}
-// Общие настройки
-ini_set('display_errors',1);
-error_reporting(E_ALL);
-require_once realpath(__DIR__).'/../config/app.php';
-
-require_once CORE.'Connection.php';
-require_once CORE.'View.php';
-require_once CORE.'Controller.php';
-require_once CORE.'Router.php';
-```
 ## Наследование класса
 ```php
 <?php
@@ -366,124 +452,9 @@ return [
 ];
 
 ```
-## Router.php
-
-```php
-<?php
-$filename = CONFIG.'routes'.EXT;
-$result = null;
-
-function getURI(){
-   if (isset($_SERVER['REQUEST_URI']) and !empty($_SERVER['REQUEST_URI']))
-       return trim($_SERVER['REQUEST_URI'], '/');
-}
-
-if (file_exists($filename)) {
-   define('ROUTES',include($filename));
-} else {
-   echo "Файл $filename не существует";
-}
-```
-
-## Функция array_key_exists()
-
-```php
-function directPath($uri)
-   {
-     // Проверить наличие такого запроса в routes.php
-       if (array_key_exists($uri, ROUTES)) {
-           return ROUTES[$uri];
-       }
-       Throw new Exception('No route defined for this URI.');
-   }
-```
-http://php.net/manual/ru/function.array-key-exists.php 
-Функция array_key_exists() возвращает TRUE, если в массиве присутствует указанный ключ key. Параметр key может быть любым значением, которое подходит для индекса массива.
-
-## Конструкция list()
-```php
-//получаем строку запроса
-$uri = getURI();
-$path = directPath($uri);
-
-list($segments, $action) = explode('@', $path);
-```
-Подобно array(), это не функция, а языковая конструкция. list() используется для того, чтобы присвоить списку переменных значения за одну операцию.
-
-http://php.net/manual/ru/function.list.php 
 
 
-## Подключаем контроллер
-```php
-$segments = explode('\\', $segments);
-$controller = array_pop($segments);
-//Подключаем файл контроллера
-$controllerFile = '';
-do {
-   if(count($segments)==0){
-      $controllerFile = CONTROLLERS .$controllerFile.$controller . EXT;
-      break;
-   }
-   else{
-       $segment = array_shift($segments);
-       $controllerFile = $controllerFile.$segment.'/';
-   }
-}while ( count($segments) >= 0);
-```
-## Создаем экземпляр класса
-```php
-   try {
-     include_once($controllerFile);
-     $controller = new $controller;
-     try {
-         // код который может выбросить исключение
-         $controller->$action(); 
-         $result = true;
-     } catch (Exception $e) {
-       $result = false;
-         // код который может обработать исключение
-       if (! method_exists($controller, $action)) {
-         throw new Exception(
-         "{$controller} does not respond to the {$action} action."
-         );
-       }
-     }
-```   
-## Обработка исключений
 
-```php
-   catch (Exception $e) {
-       // код который может обработать исключение
-       $result = false;
-       if (! file_exists($controllerFile)) {
-         throw new Exception("{$controllerFile} does not respond.");
-     }
-   }
-   finally{
-     return  $result;
-   }
-
-if(!$result){
-    require_once VIEWS.'404'.EXT;
-}
-```
-## Функция PDO::query
-Если запрос будет запускаться многократно, для улучшения производительности приложения имеет смысл этот запрос один раз подготовить методом PDO::prepare(), а затем запускать на выполнение методом PDOStatement::execute() столько раз, сколько потребуется.
-
-Если после выполнения предыдущего запроса вы не выбрали все данные из результирующего набора, следующий вызов PDO::query() может потерпеть неудачу. В таких случаях следует вызывать метод PDOStatement::closeCursor(), который освободит ресурсы базы данных занятые предыдущим объектом PDOStatement. После этого можно безопасно вызывать PDO::query().
-
-
-Особенностью PDO::query() является то, что после выполнения SELECT запроса можно сразу работать с результирующим набором посредством курсора.
-```php
-function getFruit($conn) {
-    $sql = 'SELECT name, color, calories FROM fruit ORDER BY name';
-    foreach ($conn->query($sql) as $row) {
-        print $row['name'] . "\t";
-        print $row['color'] . "\t";
-        print $row['calories'] . "\n";
-    }
-}
-```
 ## Синтаксис оператора SELECT
 SELECT применяется для извлечения строк, выбранных из одной или нескольких таблиц.
 
