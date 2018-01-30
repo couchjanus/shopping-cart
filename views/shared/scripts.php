@@ -2,11 +2,11 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     
-    <script src="./js/jquery.min.js"></script>
-    <script src="./js/popper.min.js"></script>
-    <script src="./js/bootstrap.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="./js/ie10-viewport-bug-workaround.js"></script>
+    <script src="/js/ie10-viewport-bug-workaround.js"></script>
 <script id="productTemplate" type="text/template">
 
   <div class="contentItem text-center">
@@ -87,7 +87,7 @@
 
 </script>
   
-  <script src="js/app.js"></script>
+  <script src="/js/app.js"></script>
 
   <script type="text/javascript">
   
@@ -417,6 +417,5 @@
 
  
  });
-
  
  </script>

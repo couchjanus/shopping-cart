@@ -1,22 +1,16 @@
 <?php
 
-class BlogController
+class BlogController extends Controller
 {
 
-public function index()
-    {   
-        $conn = mysqli_connect(HOST, DBUSER, DBPASSWORD, DATABASE) 
-        or die("Ошибка " . mysqli_error($conn));
-        $posts = [];
-        $sql = "SELECT * FROM posts";
-        $result = mysqli_query($conn, $sql);
-        $resCount = mysqli_num_rows($result);
-        while($row = mysqli_fetch_assoc($result)){
-                array_push($posts, $row);
-            }
-        // закрываем подключение
-        mysqli_close($conn);
-
-        render('blog/index', ['title'=>'Our <b>Cats Blog</b>', 'posts'=>$posts, 'resCount'=>$resCount]);
+public function index () {
+        $db = Connection::make();
+        $sql = "SELECT * FROM posts ORDER BY id ASC";
+        $res = $db->query($sql);
+        $posts = $res->fetchAll(PDO::FETCH_ASSOC);
+        $data['title'] = 'Blog Page ';
+        $data['subtitle'] = 'Lorem Ipsum не є випадковим набором літер';
+        $data['posts'] = $posts;
+        $this->_view->render('blog/index', $data);
     }
 }

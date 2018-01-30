@@ -13,7 +13,7 @@ include_once VIEWS.'shared/admin/header.php';
         <div class="content-box-large">
                 <div class="panel-heading">
                     <div class="panel-title"><h3><?= $title;?></h3></div>
-                    <a href="/admin/categories/create"><button class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Add New</button></a>
+                    <a href="/admin/posts/create"><button class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Add New</button></a>
                 </div>
                 
                 <div class="panel-body">
@@ -22,16 +22,16 @@ include_once VIEWS.'shared/admin/header.php';
                           <thead>
                             <tr>
                               <th>#</th>
-                              <th>Category Name</th>
+                              <th>Post Title</th>
                               <th>Action</th>
                             </tr>
                           </thead>
 
                           <tbody class="table-items">
-                          <?php foreach ($categories as $category):?>
+                          <?php foreach ($posts as $post):?>
                             <tr>
-                              <td><?php echo $category['id']?></td>
-                              <td><?php echo $category['name']?></td>
+                              <td><?php echo $post['id']?></td>
+                              <td><?php echo $post['title']?></td>
                               <td>
                               <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
                               <button class="btn btn-info"><i class="glyphicon glyphicon-refresh"></i> Update</button>
@@ -46,3 +46,5 @@ include_once VIEWS.'shared/admin/header.php';
             </div>
 <?php
 include_once VIEWS.'shared/admin/footer.php';
+
+

@@ -9,10 +9,12 @@ return [
     'admin' => 'Admin\DashboardController@index',
 
     'admin/categories'=>'Admin\shop\CategoriesController@index',
-    'admin/category/add' => 'Admin\shop\CategoriesController@create',
+    'admin/categories/create' => 'Admin\shop\CategoriesController@create',
 
     'admin/products' => 'Admin\shop\ProductsController@index',
     'admin/product/add'=>'Admin\shop\ProductsController@create',
+    'admin/posts' => 'Admin\blog\PostsController@index',
+    'admin/posts/create'=>'Admin\blog\PostsController@create',
     //Главаня страница
     'index.php' => 'HomeController@index', 
     '' => 'HomeController@index',  

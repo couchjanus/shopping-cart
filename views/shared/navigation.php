@@ -18,7 +18,7 @@
                             
                             <li><a href="#" id="megacatalog">Catalog</a> </li>
                             <li><a href="/about" >About Us </a> </li>
-                            <li><a href="#blog" >Blog</a> </li>
+                            <li><a href="/blog" >Blog</a> </li>
                             <li><a href="/guestbook" >Guestbook</a> </li>
                             <li><a href="/contact" >Contact Us</a> </li>
                             
