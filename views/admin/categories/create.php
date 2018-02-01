@@ -12,14 +12,14 @@ include_once VIEWS.'shared/admin/header.php';
         <div class="content-box-large">
           <div class="panel-heading">
                 <div class="panel-title"><?= $title;?></div>
-                              
+
                 <div class="panel-options">
                     <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
                     <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
                 </div>
           </div>
-          <form class="form-horizontal" role="form" id="idForm">
-            
+          <form class="form-horizontal" method="POST" role="form" id="idForm">
+
             <div class="panel-body">
                 <div class="form-group">
                         <label for="name" class="col-sm-2 control-label">Category Name</label>

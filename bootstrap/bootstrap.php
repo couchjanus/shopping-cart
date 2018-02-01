@@ -1,7 +1,7 @@
 <?php
 
 if (function_exists('date_default_timezone_set')){
-    date_default_timezone_set('Europe/Kiev');    
+    date_default_timezone_set('Europe/Kiev');
 }
 
 
@@ -11,7 +11,9 @@ error_reporting(E_ALL);
 
 
 require_once realpath(__DIR__).'/../config/app.php';
-
+require_once MODELS.'Category.php';
+require_once MODELS.'Product.php';
+require_once MODELS.'Post.php';
 require_once CORE.'Connection.php';
 require_once CORE.'View.php';
 require_once CORE.'Controller.php';

@@ -12,16 +12,15 @@ include_once VIEWS.'shared/admin/header.php';
         <div class="content-box-large">
           <div class="panel-heading">
                 <div class="panel-title"><?= $title;?></div>
-                              
+
                 <div class="panel-options">
                     <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
                     <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
                 </div>
           </div>
-          <form class="form-horizontal" role="form" id="idForm">
-            
+          <form class="form-horizontal" role="form" method="POST"  id="idForm">
+
             <div class="panel-body">
-                <input type="hidden" name="id" id="id">
                 <div class="form-group">
                         <label for="title" class="col-sm-2 control-label">Post Title</label>
                         <div class="col-sm-10">

@@ -15,7 +15,7 @@ include_once VIEWS.'shared/admin/header.php';
                     <div class="panel-title"><h3><?= $title;?></h3></div>
                     <a href="/admin/posts/create"><button class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Add New</button></a>
                 </div>
-                
+
                 <div class="panel-body">
                     <div class="table-responsive">
                         <table class="table">
@@ -46,5 +46,3 @@ include_once VIEWS.'shared/admin/header.php';
             </div>
 <?php
 include_once VIEWS.'shared/admin/footer.php';
-
-

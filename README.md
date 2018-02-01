@@ -25,6 +25,24 @@ $sql = "CREATE TABLE categories (
 
 ### Создать папку models
 
+```PHP
+
+<?php
+
+    define('ROOT', realpath(__DIR__.'/../'));
+    define('VIEWS', ROOT.'/views/');
+    define('CONTROLLERS', ROOT.'/controllers/');
+    define('CONFIG', ROOT.'/config/');
+
+    define('MODELS', ROOT.'/models/');
+
+    define('CORE', ROOT.'/core/');
+    define('DB', ROOT.'/db/');
+    define('EXT', '.php');
+    define('APPNAME', 'Great Shopaholic');
+    define('SLOGAN', 'Lets Build Cool Site');
+```
+
 ### Создать в models файл Category.php
 
 ## Модель для работы с категориями
@@ -50,7 +68,7 @@ $sql = "CREATE TABLE categories (
 
 ```php
 
-/* Список категорий для админпанели
+/* Список категорий
    Возвращает массив всех категорий  
    @return array
 */
@@ -142,22 +160,40 @@ public static function getStatusText ($status) {
 
 ### Создать шаблон представления для списка категлрий
 
+
 ```php
 
 // views/admin/categories/index.php
 
- <?php include_once VIEWS.'shared/admin/header.php'; ?>
-         <main><h1><?= $title;?></h1></main>
-                   <article class='large'>
-                        <a href="/admin/category/add" class="add_item"><i class="fa fa-plus fa-2x" aria-hidden="true"></i> Добавить категорию</a>
+<?php
+include_once VIEWS.'shared/admin/header.php';
+?>
+    <div class="page-content">
+      <div class="row">
+      <div class="col-md-2">
+        <?php
+          include_once VIEWS.'shared/admin/_aside.php';
+        ?>
 
-                        <h4>Список категорий</h4>
-                        <table>
+      </div>
+      <div class="col-md-10">
+        <div class="content-box-large">
+                <div class="panel-heading">
+                    <div class="panel-title"><h3><?= $title;?></h3></div>
+                    <a href="/admin/categories/create"><button class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Add New</button></a>
+                </div>
+
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                          <thead>
                             <tr>
-                                <th>ID категории</th>
-                                <th>Название категории</th>
-                                <th>Статус</th>
+                              <th>#</th>
+                              <th>Category Name</th>
+                              <th>Action</th>
                             </tr>
+                          </thead>
+
 
 
 ```
@@ -165,22 +201,26 @@ public static function getStatusText ($status) {
 ## Построение списка категорий
 
 ```php
+<tbody class="table-items">
 <?php foreach ($categories as $category):?>
-    <tr>
-        <td><?php echo $category['id']?></td>
-        <td><?php echo $category['name']?></td>
-        <td>
-            <?php echo Category::getStatusText($category['status']);?>
-        </td>
-        <td><a title="Редактировать" href="" class="del">
-                <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true"></i>
-            </a></td>
-        <td><a title="Удалить" href="" class="del">
-                <i class="fa fa-times fa-2x" aria-hidden="true"></i>
-            </a></td>
-    </tr>
-<?php endforeach;?>
+  <tr>
+    <td><?php echo $category['id']?></td>
+    <td><?php echo $category['name']?></td>
+    <td>
+    <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
+    <button class="btn btn-info"><i class="glyphicon glyphicon-refresh"></i> Update</button>
+    <button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
+    <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button></td>
+  </tr>
+  <?php endforeach;?>
+</tbody>
 </table>
+</div>
+</div>
+</div>
+
+<?php
+include_once VIEWS.'shared/admin/footer.php';
 ```
 
 ## Оператор создания (create) INSERT  
@@ -223,14 +263,16 @@ tbl_name задает таблицу, в которую должны быть в
 */
 
 public static function store ($options) {
-   $db = Connection::make();
-   $db->exec("set names utf8");
-   $sql = "INSERT INTO categories(name, status)
-               VALUES (:name, :status) ";
-   $res = $db->prepare($sql);
-   $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
-   $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
-   return $res->execute();
+
+    $db = Connection::make();
+    $sql = "INSERT INTO categories(name, status)
+            VALUES (:name, :status)";
+
+    $res = $db->prepare($sql);
+    $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
+    $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
+
+    return $res->execute();
 }
 
 ```
@@ -243,18 +285,94 @@ public static function store ($options) {
 * @return bool
 */
 
-   public function create () {
-       if (isset($_POST) and !empty($_POST)) {
-           $options['name'] = trim(strip_tags($_POST['name']));
-           $options['status'] = trim(strip_tags($_POST['status']));
-           Category::store($options);
-           header('Location: /admin/categories');
-       }
-       $data['title'] = 'Admin Category Add New Category ';
-       $this->_view->render('admin/categories/create', $data);
+public function create () {
 
-   }
+    if (isset($_POST) and !empty($_POST)) {
+        $options['name'] = trim(strip_tags($_POST['name']));
+        $options['status'] = trim(strip_tags($_POST['status']));
+        Category::store($options);
+        header('Location: /admin/categories');
+    }
+    $data['title'] = 'Admin Add New Category ';
+    $this->_view->render('admin/categories/create', $data);
+
+}
 ```
+## Функция trim
+
+trim — Удаляет пробелы (или другие символы) из начала и конца строки
+Описание
+```
+string trim ( string $str [, string $character_mask = " \t\n\r\0\x0B" ] )
+```
+
+Эта функция возвращает строку str с удаленными из начала и конца строки пробелами. Если второй параметр не передан, trim() удаляет следующие символы:
+
+```
+    " " (ASCII 32 (0x20)), обычный пробел.
+    "\t" (ASCII 9 (0x09)), символ табуляции.
+    "\n" (ASCII 10 (0x0A)), символ перевода строки.
+    "\r" (ASCII 13 (0x0D)), символ возврата каретки.
+    "\0" (ASCII 0 (0x00)), NUL-байт.
+    "\x0B" (ASCII 11 (0x0B)), вертикальная табуляция.
+
+```
+Список параметров
+
+- str - Обрезаемая строка (string).
+- character_mask -  Можно также задать список символов для удаления с помощью необязательного аргумента character_mask. Просто перечислите все символы, которые вы хотите удалить. Можно указать конструкцию .. для обозначения диапазона символов.
+
+## Пример использования trim()
+
+```php
+<?php
+
+$text   = "\t\tThese are a few words :) ...  ";
+$binary = "\x09Example string\x0A";
+$hello  = "Hello World";
+var_dump($text, $binary, $hello);
+
+print "\n";
+
+$trimmed = trim($text);
+var_dump($trimmed);
+
+$trimmed = trim($text, " \t.");
+var_dump($trimmed);
+
+$trimmed = trim($hello, "Hdle");
+var_dump($trimmed);
+
+$trimmed = trim($hello, 'HdWr');
+var_dump($trimmed);
+
+// удаляем управляющие ASCII-символы с начала и конца $binary
+// (от 0 до 31 включительно)
+$clean = trim($binary, "\x00..\x1F");
+var_dump($clean);
+
+?>
+```
+
+
+## Обрезание значений массива с помощью trim()
+
+```php
+<?php
+function trim_value(&$value)
+{
+    $value = trim($value);
+}
+
+$fruit = array('apple','banana ', ' cranberry ');
+var_dump($fruit);
+
+array_walk($fruit, 'trim_value');
+var_dump($fruit);
+
+?>
+```
+
 ## Функция string strip_tags
 
 Эта функция пытается возвратить строку, из которой удалены все NULL-байты, HTML- и PHP-теги.
@@ -291,14 +409,35 @@ public static function store ($options) {
 
 Когда происходит отправка данных формы PHP-скрипту, информация из этой формы автоматически становится доступной этому скрипту.
 
+## Шаблон создания категории
+
 ```html
 
-<form action="#" method="post">
-    <p>Название категории</p>
-    <input required type="text" name="name">
+<form class="form-horizontal" method="POST" role="form" id="idForm">
 
-    <input type=submit name="submit" value="Сохранить" id="add_btn">
+  <div class="panel-body">
+      <div class="form-group">
+              <label for="name" class="col-sm-2 control-label">Category Name</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="name" name="name" placeholder="Category Name">
+              </div>
+      </div>
 
+      <div class="form-group">
+              <label for="status" class="col-sm-2 control-label">Status</label>
+              <div class="col-sm-10">
+                  <select name="status" class="form-control">
+                      <option value="1" selected>Отображается</option>
+                      <option value="0">Скрыт</option>
+                  </select>
+              </div>
+      </div>
+  </div>
+  <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button id="save" type="submit" class="save btn btn-primary">Add Category</button>
+      </div>
+  </div>
 </form>
 
 ```
@@ -308,11 +447,15 @@ PHP также понимает массивы в контексте перем�
 Можно сгруппировать связанные переменные вместе или использовать эту возможность для получения значений списка множественного выбора select.
 
 ```html
-            <p>Статус отображения</p>
-            <select name="status">
-                <option value="1" selected>Отображать</option>
-                <option value="0">Скрыть</option>
+<div class="form-group">
+        <label for="status" class="col-sm-2 control-label">Status</label>
+        <div class="col-sm-10">
+            <select name="status" class="form-control">
+                <option value="1" selected>Отображается</option>
+                <option value="0">Скрыт</option>
             </select>
+        </div>
+</div>
 ```
 
 GET-форма используется аналогично, за исключением того, что вместо POST, вам нужно будет использовать соответствующую предопределенную переменную GET.
@@ -323,31 +466,6 @@ GET относится также к QUERY_STRING (информация в URL �
 
 ```
 $_GET['id'].
-```
-
-## Шаблон создания категории
-
-```html
-
-<?php include_once VIEWS.'shared/admin/header.php'; ?>
-<main><h1><?= $title;?></h1></main>
-
-   <article class='large'>
-       <h1>Добавить новню категорию</h1>
-       <form action="" method="post" id="add_form">
-           <p>Название категории</p>
-           <input required type="text" name="name">
-           <p>Статус отображения</p>
-           <select name="status">
-               <option value="1" selected>Отображать</option>
-               <option value="0">Скрыть</option>
-           </select>
-           <input type=submit name="submit" value="Сохранить" id="add_btn">
-       </form>
-  </article>
-
-<?php include_once VIEWS.'shared/admin/footer.php';
-
 ```
 
 ## Create TABLE products
@@ -543,59 +661,117 @@ public function create () {
 
    $data['title'] = 'Admin Product Add New Product ';
    $data['categories'] = Category::index();
-   $this->_view->render('admin/products/add',$data);
+   $this->_view->render('admin/products/create',$data);
 
  }
 
 
 ```
-
+## Шаблон Добавление товара
 
 ```php
-    /views/admin/products/add.php
+    /views/admin/products/create.php
+    <?php
+    include_once VIEWS.'shared/admin/header.php';
+    ?>
+    <div class="page-content">
+       <div class="row">
+            <div class="col-md-2">
+            <?php
+              include_once VIEWS.'shared/admin/_aside.php';
+            ?>
+            </div>
+          <div class="col-md-10">
+            <div class="content-box-large">
+              <div class="panel-heading">
+                    <div class="panel-title"><?= $title;?></div>
 
+                    <div class="panel-options">
+                        <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+                        <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+                    </div>
+              </div>
+              <form class="form-horizontal" role="form" method="POST" id="idForm">
 
-    <?php include_once VIEWS.'shared/admin/header.php'; ?>
-    <main> <h1><?= $title;?></h1>  </main>
+                <div class="panel-body">
+                    <input type="hidden" name="id" id="id">
+                    <div class="form-group">
+                            <label for="name" class="col-sm-2 control-label">Product Name</label>
+                            <div class="col-sm-10">
+                              <input type="text" class="form-control" id="name" name="name" placeholder="Product Name">
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <label for="price" class="col-sm-2 control-label">Product Price</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="price" name="price" placeholder="Product Price">
+                            </div>
+                    </div>
+```
 
-      <article class='large'>
+## Product Category
 
-               <h1>Добавить новый товар</h1>
-               <form action="" method="post">
-                   <p>Название товара</p>
-                   <input required type="text" name="name">
-                   <p>Стоимость</p>
-                   <input required type="text" name="price">
+```php
+                    <div class="form-group">
+                      <label for="category" class="col-sm-2 control-label">Product Category</label>
+                      <div class="col-sm-10">
+                        <select class="form-control" id="category" name="category">
+                            <?php if (is_array($categories)): ?>
+                                <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo $category['id']; ?>">
+                                        <?php echo $category['name']; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                      </div>
 
+                    </div>
+                    <div class="form-group">
+                            <label for="brand" class="col-sm-2 control-label">Product Brand</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="brand" name="brand" placeholder="Product brand">
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <label class="col-sm-2 control-label" for="description">Product Description</label>
+                            <div class="col-sm-10">
+                               <input type="text" class="form-control" id="description" name="description" placeholder="Product Description">
+                            </div>
+                    </div>
 
-                                  <p>Категория</p>
-                                  <select name="category">
-                                      <?php if (is_array($data['categories'])): ?>
-                                          <?php foreach ($data['categories'] as $category): ?>
-                                              <option value="<?php echo $category['id']; ?>">
-                                                  <?php echo $category['name']; ?>
-                                              </option>
-                                          <?php endforeach; ?>
-                                      <?php endif; ?>
-                                  </select>
+                    <div class="form-group">
+                            <label for="is_new" class="col-sm-2 control-label">Is New</label>
+                            <div class="col-sm-10">
+                                <select name="is_new" class="form-control">
+                                    <option value="1" selected>Да</option>
+                                    <option value="0">Нет</option>
+                                </select>
+                            </div>
+                    </div>
+                    <div class="form-group">
+                            <label for="status" class="col-sm-2 control-label">Status</label>
+                            <div class="col-sm-10">
+                                <select name="status" class="form-control">
+                                    <option value="1" selected>Отображается</option>
+                                    <option value="0">Скрыт</option>
+                                </select>
+                            </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <button id="save" type="submit" class="save btn btn-primary">Add Product</button>
+                    </div>
+                </div>
+              </form>
+            </div>
+          </div>
+      </div>
+    </div>
 
-                                  <p>Производитель</p>
-                                  <input required type="text" name="brand">
-                                  <p>Детальное описание</p>
-                                  <textarea id="add_description" name="description"></textarea>
-                                  <p>Новинка</p>
-                                  <select name="is_new">
-                                      <option value="1" selected>Да</option>
-                                      <option value="0">Нет</option>
-                                  </select>
-                                  <p>Статус</p>
-                                  <select name="status">
-                                      <option value="1" selected>Отображается</option>
-                                      <option value="0">Скрыт</option>
-                                  </select>
-                                  <input type=submit name="submit" value="Сохранить" id="add_btn">
-                              </form>
-
+    <?php
+    include_once VIEWS.'shared/admin/footer.php';
 ```
 
 ## Функция header в php
@@ -683,94 +859,151 @@ require_once CORE.'Router.php';
 ```php
 
 <?php
+
 /**
-* Модель для работы с posts
-*/
+ * Модель для работы с posts
+ */
+
 class Post {
-     public static function index () {
 
-       $con = Connection::make();
 
-       //Подготавливаем данные
-       $sql = "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status FROM posts ORDER BY id ASC";
+    public static function index () {
 
-       //Выполняем запрос
-       $res = $con->query($sql);
+        $con = Connection::make();
+        //Подготавливаем данные
 
-       //Получаем и возвращаем результат
-       $posts = $res->fetchAll(PDO::FETCH_ASSOC);
-       return $posts;
-   }
+        $sql = "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status FROM posts ORDER BY id ASC";
+        //Выполняем запрос
+        $res = $con->query($sql);
+        //Получаем и возвращаем результат
+        $posts = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $posts;
+    }
+
+    public static function store ($options) {
+
+        $db = Connection::make();
+        $sql = "INSERT INTO posts(title, content, status)
+                VALUES (:title, :content, :status)";
+        $res = $db->prepare($sql);
+        $res->bindParam(':title', $options['title'], PDO::PARAM_STR);
+        $res->bindParam(':content', $options['content'], PDO::PARAM_STR);
+        $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
+
+        //Если запрос выполнен успешно
+        if ($res->execute()) {
+            return $db->lastInsertId();
+        } else {
+            return 0;
+        }
+    }
+
+    public static function getStatusText ($status) {
+        switch ($status) {
+            case '1':
+                return 'Отображается';
+                break;
+            case '0':
+                return 'Скрыта';
+                break;
+        }
+    }
+
+ }
+
 ```
 
 ## Контроллер для управления post
 
 ```php
-   <?php
-   /** controllers/Admin/posts/PostController.php
-   * Контроллер для управления post
-   */
-   class PostController extends Controller{
-      /* Главная страница управления post
-       * @return bool    */
-      public function index()
-      {      
-          $posts = Post::index();
-          $data['title'] = 'Admin Posts Page ';
-          $data['posts'] = $posts;
-          // print_r($posts);
-          $this->_view->render('admin/posts/index',$data);
+class PostsController extends Controller {
+
+  public function index()
+  {       
+      $posts = Post::index();
+      $data['title'] = 'Admin Posts Page ';
+      $data['posts'] = $posts;
+      $this->_view->render('admin/posts/index',$data);
+  }
+
+
+  public function create () {
+      //Принимаем данные из формы
+      if (isset($_POST) and !empty($_POST)) {
+          $options['title'] = trim(strip_tags($_POST['title']));
+          $options['content'] = trim($_POST['content']);
+          // $options['content'] = trim(strip_tags($_POST['content']));
+          $options['status'] = trim(strip_tags($_POST['status']));
+
+          $id = Post::store($options);
+          header('Location: /admin/posts');
+
       }
+      $data['title'] = 'Admin Add Post ';
 
+      $this->_view->render('admin/posts/create',$data);
 
-         public static function getStatusText ($status) {
-             switch ($status) {
-                 case '1':
-                     return 'Отображается';
-                     break;
-                 case '0':
-                     return 'Скрыта';
-                     break;
-             }
-         }
+  }
 ```
 
 ## Шаблон списка публикаций
 
 ```php
-<?php include_once VIEWS.'shared/admin/header.php';?>
-       <main> <h1><?= $title;?></h1>  </main>
-<article class='large'>
-       <a href="/admin/posts/add" class="add_item"><i class="fa fa-plus fa-2x" aria-hidden="true"></i> Добавить пост  </a>
-       <h4>Список публикаций</h4>
-       <table>
-           <tr>
-               <th>ID</th>
-               <th>Название</th>
-               <th>Статус</th>
-               <th colspan="2">Action</th>
-           </tr>
+<?php
+include_once VIEWS.'shared/admin/header.php';
+?>
+    <div class="page-content">
+      <div class="row">
+      <div class="col-md-2">
+        <?php
+          include_once VIEWS.'shared/admin/_aside.php';
+        ?>
 
-           <?php foreach ($data['posts'] as $post):?>
-               <tr>
-                   <td><?php echo $post['id']?></td>
-                   <td><?php echo $post['title']?></td>
-                   <td>
-                       <?php echo Post::getStatusText($post['status']);?>
-                   </td>
-                   <td><a title="Редактировать" href="" class="del">
-                           <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true"></i>
-                       </a></td>
-                   <td><a title="Удалить" href="" class="del">
-                           <i class="fa fa-times fa-2x" aria-hidden="true"></i>
-                       </a></td>
-               </tr>
-           <?php endforeach;?>
-       </table>
+      </div>
+      <div class="col-md-10">
+        <div class="content-box-large">
+                <div class="panel-heading">
+                    <div class="panel-title"><h3><?= $title;?></h3></div>
+                    <a href="/admin/posts/create"><button class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Add New</button></a>
+                </div>
+
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Post Title</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+
+                          <tbody class="table-items">
+                          <?php foreach ($posts as $post):?>
+                            <tr>
+                              <td><?php echo $post['id']?></td>
+                              <td><?php echo $post['title']?></td>
+                              <td>
+                              <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
+                              <button class="btn btn-info"><i class="glyphicon glyphicon-refresh"></i> Update</button>
+                              <button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
+                              <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button></td>
+                            </tr>
+                            <?php endforeach;?>
+                          </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+<?php
+include_once VIEWS.'shared/admin/footer.php';
+
 ```
 
 ## Создание блога
+
 ```php
+
 public static function store ($options) {
     $db = Connection::make();
 
@@ -787,8 +1020,10 @@ public static function store ($options) {
         return 0;
     }
 }
+```
 
-public function add () {
+```php
+public function create () {
     //Принимаем данные из формы
     if (isset($_POST) and !empty($_POST)) {
         $options['title'] = trim(strip_tags($_POST['title']));
@@ -808,40 +1043,92 @@ public function add () {
 ## Шаблон создания публикации
 
 ```php
-<?php include_once VIEWS.'shared/admin/header.php'; ?>
-<main> <h1><?= $title;?></h1></main>
-       <h1>Добавить новую публикацию</h1>
-       <form action='' method='post'>
-           <p><label>Заголовок</label><br />
-           <input type='text' name='title' value=''></p>
-           <p><label>Контент</label><br />
-           <textarea name='content' cols='60' rows='10'></textarea></p>
-           <p>Статус отображения</p>
-           <select name="status">
-               <option value="1" selected>Отображать</option>
-               <option value="0">Скрыть</option>
-           </select>
-           <p><input type='submit' name='submit' value='Сохранить'></p>
-       </form>
-<?php include_once VIEWS.'shared/admin/footer.php';
+<?php
+include_once VIEWS.'shared/admin/header.php';
+?>
+<div class="page-content">
+   <div class="row">
+        <div class="col-md-2">
+        <?php
+          include_once VIEWS.'shared/admin/_aside.php';
+        ?>
+        </div>
+      <div class="col-md-10">
+        <div class="content-box-large">
+          <div class="panel-heading">
+                <div class="panel-title"><?= $title;?></div>
+
+                <div class="panel-options">
+                    <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+                    <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+                </div>
+          </div>
+          <form class="form-horizontal" role="form" method="POST"  id="idForm">
+
+            <div class="panel-body">
+                <div class="form-group">
+                        <label for="title" class="col-sm-2 control-label">Post Title</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="title" name="title" placeholder="Post Title">
+                        </div>
+                </div>
+                <div class="form-group">
+                        <label class="col-sm-2 control-label" for="content">Post Content</label>
+                        <div class="col-sm-10">
+                           <textarea class="form-control" id="content" name="content">Post Content</textarea>
+                        </div>
+                </div>
+
+                <div class="form-group">
+                        <label for="status" class="col-sm-2 control-label">Status</label>
+                        <div class="col-sm-10">
+                            <select name="status" class="form-control">
+                                <option value="1" selected>Отображается</option>
+                                <option value="0">Скрыт</option>
+                            </select>
+                        </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button id="save" type="submit" class="save btn btn-primary">Add Post</button>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
+  </div>
+</div>
+
+<?php
+include_once VIEWS.'shared/admin/footer.php';
+
 ```
 ## Маршруты
 
 ```php
+<?php
+
 return [
-   'contact' => 'ContactController@index',
-   'about' => 'AboutController@index',
-   'blog' => 'BlogController@index',
-   'guestbook' => 'GuestbookController@index',
-   'admin' => 'Admin\DashboardController@index',
-   'admin/categories'=>'Admin\shop\CategoriesController@index',
-   'admin/category/add' => 'Admin\shop\CategoriesController@create',
-   'admin/products' => 'Admin\shop\ProductsController@index',
-   'admin/product/add'=>'Admin\shop\ProductsController@create',
-   'admin/posts' => 'Admin\posts\PostController@index',
-   'admin/posts/add' => 'Admin\posts\PostController@add',
-   //Главаня страница
-   'index.php' => 'HomeController@index',
-   '' => 'HomeController@index',
+    'contact' => 'ContactController@index',
+    'about' => 'AboutController@index',
+    'blog' => 'BlogController@index',
+    'guestbook' => 'GuestbookController@index',
+
+    'admin' => 'Admin\DashboardController@index',
+
+    'admin/categories'=>'Admin\shop\CategoriesController@index',
+    'admin/categories/create' => 'Admin\shop\CategoriesController@create',
+
+    'admin/products' => 'Admin\shop\ProductsController@index',
+    'admin/products/create'=>'Admin\shop\ProductsController@create',
+
+    'admin/posts' => 'Admin\blog\PostsController@index',
+    'admin/posts/create' => 'Admin\blog\PostsController@create',
+
+    //Главаня страница
+    'index.php' => 'HomeController@index',
+    '' => 'HomeController@index',
 ];
+
 ```

@@ -13,9 +13,9 @@ include_once VIEWS.'shared/admin/header.php';
         <div class="content-box-large">
                 <div class="panel-heading">
                     <div class="panel-title"><h3><?= $title;?></h3></div>
-                    <a href="/admin/product/add"><button class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Add New</button></a>
+                    <a href="/admin/products/create"><button class="btn btn-primary pull-right"><i class="glyphicon glyphicon-plus-sign"></i> Add New</button></a>
                 </div>
-                
+
                 <div class="panel-body">
                     <div class="table-responsive">
                         <table class="table">
@@ -28,7 +28,7 @@ include_once VIEWS.'shared/admin/header.php';
                             </tr>
                           </thead>
 
-        
+
                           <tbody class="table-items">
                           <?php foreach ($products as $product):?>
                             <tr>
@@ -42,7 +42,7 @@ include_once VIEWS.'shared/admin/header.php';
                               <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button></td>
                             </tr>
                             <?php endforeach;?>
-                            
+
                           </tbody>
                         </table>
                     </div>
@@ -52,8 +52,6 @@ include_once VIEWS.'shared/admin/header.php';
         <main>
 
         </main>
-       
+
 <?php
 include_once VIEWS.'shared/admin/footer.php';
-
-

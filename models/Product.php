@@ -17,8 +17,6 @@ class Product {
     public static function index() {
 
         $con = Connection::make();
-        $con->exec("set names utf8mb4");
-
         $sql = "SELECT id, name, price FROM products
                 ORDER BY id ASC";
 
@@ -45,8 +43,7 @@ class Product {
 
         $con = Connection::make();
 
-        $sql = "
-                SELECT id, name, price, is_new, description
+        $sql = "SELECT id, name, price, is_new, description
                   FROM products
                     WHERE status = 1
                       ORDER BY id DESC
@@ -79,8 +76,7 @@ class Product {
 
         $sql = "INSERT INTO products(
                 name, category_id, price, brand,
-                description, is_new, status
-                )
+                description, is_new, status)
                 VALUES (:name, :category_id, :price,
                 :brand, :description, :is_new, :status)";
 
@@ -101,7 +97,7 @@ class Product {
             return 0;
         }
     }
-    
+
      /**
      * Общее кол-во товаров в магазине
      *

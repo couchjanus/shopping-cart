@@ -8,15 +8,10 @@ class Category {
 
    public static function index () {
         $db = Connection::make();
-        $db->exec("set names utf8");
-
-        $sql = "SELECT id, name, status FROM categories               
+        $sql = "SELECT id, name, status FROM categories
                 ORDER BY id ASC";
-
         $res = $db->query($sql);
-
         $categories = $res->fetchAll(PDO::FETCH_ASSOC);
-
         return $categories;
     }
 
@@ -67,12 +62,8 @@ class Category {
     public static function store ($options) {
 
         $db = Connection::make();
-        $db->exec("set names utf8");
-
-        $sql = "
-                INSERT INTO categories(name, status)
-                VALUES (:name, :status)
-                ";
+        $sql = "INSERT INTO categories(name, status)
+                VALUES (:name, :status)";
 
         $res = $db->prepare($sql);
         $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
@@ -81,5 +72,5 @@ class Category {
         return $res->execute();
     }
 
- 
+
 }
