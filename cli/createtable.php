@@ -20,6 +20,7 @@ $sql = "CREATE TABLE posts (
     id int(11) NOT NULL AUTO_INCREMENT,
     title varchar(255) NOT NULL,
     content text NOT NULL,
+    status tinyint(1) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );";
