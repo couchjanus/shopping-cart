@@ -26,7 +26,9 @@ class CategoriesController extends Controller{
              $options['name'] = trim(strip_tags($_POST['name']));
              $options['status'] = trim(strip_tags($_POST['status']));
              Category::store($options);
-             header('Location: /admin/categories');
+             
+             $this->redirect('/admin/categories');
+            //  header('Location: /admin/categories');
          }
          $data['title'] = 'Admin Category Add New Category ';
          $this->_view->render('admin/categories/create', $data);

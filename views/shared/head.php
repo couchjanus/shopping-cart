@@ -12,7 +12,7 @@
       <meta name="description" content="">
       <meta name="author" content="">
       <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-      <link rel="icon" href="./favicon.ico">
+      <link rel="icon" href="/favicon.ico">
         <!-- Mobile Specific Metas
     ================================================== -->
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">

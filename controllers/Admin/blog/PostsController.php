@@ -20,7 +20,8 @@ class PostsController extends Controller {
           $options['status'] = trim(strip_tags($_POST['status']));
 
           $id = Post::store($options);
-          header('Location: /admin/posts');
+          $this->redirect('/admin/posts');
+        //   header('Location: /admin/posts');
 
       }
       $data['title'] = 'Admin Add Post ';

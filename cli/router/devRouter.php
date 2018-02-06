@@ -81,5 +81,7 @@ class Router
 $routesFile = realpath(__DIR__).'/routes.php';
 
 
-Router::load($routesFile)
-    ->directPath(Request::uri());
+print_r(Router::load($routesFile));
+
+// Router::load($routesFile)
+//     ->directPath(Request::uri());
