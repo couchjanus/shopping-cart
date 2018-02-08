@@ -89,14 +89,24 @@ class Product {
         $res->bindParam(':description', $options['description'], PDO::PARAM_STR);
         $res->bindParam(':is_new', $options['is_new'], PDO::PARAM_INT);
         $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
-        //Если запрос выполнен успешно
-        if ($res->execute()) {
-            //Возвращаем id последней записи, переходим на страницу этого товара, если все успешно
-            return $con->lastInsertId();
-        } else {
-            return 0;
-        }
+        $res->execute();
+        
     }
+
+    public static function lastId () {
+        
+        $con = Connection::make();
+
+        $res = $con->prepare("SELECT id FROM products ORDER BY id DESC LIMIT 1");
+
+        $res->execute();
+
+        return $res->fetch(PDO::FETCH_ASSOC)['id'];
+        // return $con->query("SELECT id FROM products ORDER BY id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC)+1;
+
+    }
+
+
 
      /**
      * Общее кол-во товаров в магазине

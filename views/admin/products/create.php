@@ -21,7 +21,7 @@ include_once VIEWS.'shared/admin/header.php';
           <form class="form-horizontal" role="form" method="POST" id="idForm">
 
             <div class="panel-body">
-                <input type="hidden" name="id" id="id">
+                
                 <div class="form-group">
                         <label for="name" class="col-sm-2 control-label">Product Name</label>
                         <div class="col-sm-10">
@@ -79,6 +79,37 @@ include_once VIEWS.'shared/admin/header.php';
                                 <option value="0">Скрыт</option>
                             </select>
                         </div>
+                </div>
+
+            
+                
+            </div>
+            <hr>
+            <div class="panel-body">
+                
+                <div class="form-group">
+                    <label for="meta_title" class="col-sm-2 control-label">Page Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_title" name="meta_title" placeholder="Page Title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_description" class="col-sm-2 control-label">Page meta description</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_description" name="meta_description" placeholder="Page meta description">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_keywords" class="col-sm-2 control-label">Page meta keywords</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" placeholder="Page meta keywords">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_links" class="col-sm-2 control-label">Page meta links</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_links" name="meta_links" placeholder="Page meta links">
+                    </div>
                 </div>
             </div>
             <div class="form-group">

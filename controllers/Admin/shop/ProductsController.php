@@ -5,10 +5,11 @@
  */
 class ProductsController extends Controller {
 
+    private $metas = [];
     /**
      * Просмотр всех товаров
      * @return bool
-     */
+    */
      public function index () {
          $data['products'] = Product::index();
          $data['title'] = 'Admin Product List Page ';
@@ -26,18 +27,32 @@ class ProductsController extends Controller {
 
          if (isset($_POST) and !empty($_POST)) {
 
-             $options['name'] = trim(strip_tags($_POST['name']));
-             $options['price'] = trim(strip_tags($_POST['price']));
-             $options['category'] = trim(strip_tags($_POST['category']));
-             $options['brand'] = trim(strip_tags($_POST['brand']));
-             $options['description'] = trim(strip_tags($_POST['description']));
+            $options['name'] = trim(strip_tags($_POST['name']));
+            $options['price'] = trim(strip_tags($_POST['price']));
+            $options['category'] = trim(strip_tags($_POST['category']));
+            $options['brand'] = trim(strip_tags($_POST['brand']));
+            $options['description'] = trim(strip_tags($_POST['description']));
 
-             $options['is_new'] = trim(strip_tags($_POST['is_new']));
-             $options['status'] = trim(strip_tags($_POST['status']));
+            $options['is_new'] = trim(strip_tags($_POST['is_new']));
+            $options['status'] = trim(strip_tags($_POST['status']));
 
-             Product::store($options);
+            Product::store($options);
+            
+            $product_id = (int)Product::lastId();
 
-             header('Location: /admin/products');
+            $this->metas['resource_id'] = $product_id;
+            
+            $this->metas['title'] = trim(strip_tags($_POST['meta_title']));
+            
+            $this->metas['description'] = trim(strip_tags($_POST['meta_description']));
+            
+            $this->metas['keywords'] = trim(strip_tags($_POST['meta_keywords']));
+            
+            $this->metas['links'] = trim(strip_tags($_POST['meta_links']));
+
+            Meta::store($this->metas);
+
+            header('Location: /admin/products');
          }
 
          $data['title'] = 'Admin Product Add New Product ';
