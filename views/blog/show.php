@@ -14,19 +14,11 @@ require_once VIEWS.'shared/navigation.php';
                 </div>
             </div>  <!-- Col-md-12 End -->
             <div class="items">
-            <?php 
-             if(count($posts)>0){
-                foreach ($posts as $post) {
+              <?php 
                   echo "<h2>".$post["title"]."</h2>"; 
-                  echo "<div class='added_at'> Added At: ".strip_tags($post["formated_date"])."</div>"; 
-
-                  echo "<p><a href=/blog/".$post["id"].">Read more</a></p>"; 
-                }
-             }
-             else{
-                echo "No posts yet.... ";
-             }
-           ?>
+                  echo "<div class='added_at'> Added At: ".$post["created_at"]."</div>"; 
+                  echo "<div class='content'>".$post["content"]."</div>"; 
+              ?>
             </div>
         </div>
     </div> <!-- Conatiner end -->

@@ -41,7 +41,7 @@ class ProductsController extends Controller {
             $product_id = (int)Product::lastId();
 
             $this->metas['resource_id'] = $product_id;
-            
+            $this->metas['resource'] = 'products';
             $this->metas['title'] = trim(strip_tags($_POST['meta_title']));
             
             $this->metas['description'] = trim(strip_tags($_POST['meta_description']));

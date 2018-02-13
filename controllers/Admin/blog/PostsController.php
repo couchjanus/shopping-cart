@@ -19,10 +19,24 @@ class PostsController extends Controller {
           // $options['content'] = trim(strip_tags($_POST['content']));
           $options['status'] = trim(strip_tags($_POST['status']));
 
-          $id = Post::store($options);
-          $this->redirect('/admin/posts');
-        //   header('Location: /admin/posts');
 
+          Post::store($options);
+          $post_id = (int)Post::lastId();
+
+          $this->metas['resource_id'] = $post_id;
+          $this->metas['resource'] = 'posts';
+          $this->metas['title'] = trim(strip_tags($_POST['meta_title']));
+          
+          $this->metas['description'] = trim(strip_tags($_POST['meta_description']));
+          
+          $this->metas['keywords'] = trim(strip_tags($_POST['meta_keywords']));
+          
+          $this->metas['links'] = trim(strip_tags($_POST['meta_links']));
+
+          Meta::store($this->metas);
+
+          $this->redirect('/admin/posts');
+        
       }
       $data['title'] = 'Admin Add Post ';
 

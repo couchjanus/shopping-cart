@@ -20,15 +20,16 @@ class Meta {
 
         $con = Connection::make();
         $sql = "INSERT INTO metas(
-                resource_id, title, links, keywords,
+                resource_id, resource, title, links, keywords,
                 description)
-                VALUES (:resource_id, :title, :links,
+                VALUES (:resource_id, :resource, :title, :links,
                 :keywords, :description)";
 
         $res = $con->prepare($sql);
         
         $res->bindParam(':resource_id', $options['resource_id'], PDO::PARAM_INT);
 
+        $res->bindParam(':resource', $options['resource'], PDO::PARAM_STR);
         $res->bindParam(':title', $options['title'], PDO::PARAM_STR);
         $res->bindParam(':keywords', $options['keywords'], PDO::PARAM_STR);
         $res->bindParam(':links', $options['links'], PDO::PARAM_STR);

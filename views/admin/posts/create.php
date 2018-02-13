@@ -43,6 +43,35 @@ include_once VIEWS.'shared/admin/header.php';
                             </select>
                         </div>
                 </div>
+                
+                <hr>
+            <div class="panel-body">
+                
+                <div class="form-group">
+                    <label for="meta_title" class="col-sm-2 control-label">Page Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_title" name="meta_title" placeholder="Page Title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_description" class="col-sm-2 control-label">Page meta description</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_description" name="meta_description" placeholder="Page meta description">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_keywords" class="col-sm-2 control-label">Page meta keywords</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" placeholder="Page meta keywords">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_links" class="col-sm-2 control-label">Page meta links</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_links" name="meta_links" placeholder="Page meta links">
+                    </div>
+                </div>                
+                
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
