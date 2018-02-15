@@ -38,7 +38,8 @@ include_once VIEWS.'shared/admin/header.php';
                               <td>
                               <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
                               <button class="btn btn-info"><i class="glyphicon glyphicon-refresh"></i> Update</button>
-                              <button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
+                              <a title="Редактировать" href="/admin/products/edit/<?= $product['id']?>">
+                              <button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button></a>
                               <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button></td>
                             </tr>
                             <?php endforeach;?>

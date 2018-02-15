@@ -42,12 +42,16 @@ class Meta {
         }
     }
 
-    public static function getMetas($resource)
+    public static function getMetas($resource, $resourceId)
     {
         $con = Connection::make();
-        $sql = "SELECT * FROM metas
-                WHERE resource_id = $resource";
-        $res = $con->query($sql);
+        $res = $con->prepare("SELECT * FROM metas WHERE (resource_id = :resource_id AND resource = :resource)");
+
+        $res->bindParam(':resource_id', $resourceId, PDO::PARAM_INT);
+
+        $res->bindParam(':resource', $resource, PDO::PARAM_STR);
+        
+        $res->execute();
 
         $metas = $res->fetch(PDO::FETCH_ASSOC);
         return $metas;

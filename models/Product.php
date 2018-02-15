@@ -93,20 +93,13 @@ class Product {
         
     }
 
-    public static function lastId () {
-        
+    public static function lastId () 
+    {
         $con = Connection::make();
-
         $res = $con->prepare("SELECT id FROM products ORDER BY id DESC LIMIT 1");
-
         $res->execute();
-
         return $res->fetch(PDO::FETCH_ASSOC)['id'];
-        // return $con->query("SELECT id FROM products ORDER BY id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC)+1;
-
     }
-
-
 
      /**
      * Общее кол-во товаров в магазине
@@ -128,6 +121,63 @@ class Product {
         $row = $res->fetch();
         return $row['count'];
     }
+    /**
+     * Выбираем товар по идентификатору
+     *
+     * @param $productId
+     * @return mixed
+     */
+    public static function getProductById ($productId) {
 
+        $con = Connection::make();
+
+        $sql = "SELECT * FROM products WHERE id = :id";
+
+        $res = $con->prepare($sql);
+        $res->bindParam(':id', $productId, PDO::PARAM_INT);
+        $res->execute();
+
+        $product = $res->fetch(PDO::FETCH_ASSOC);
+
+        return $product;
+    }
+
+    /**
+     * Изменение товара
+     *
+     * @param $id
+     * @param $options
+     * @return bool
+     */
+    public static function update ($id, $options) {
+
+        $con = Connection::make();
+
+        $sql = "
+                UPDATE products
+                SET
+                    name = :name,
+                    category_id = :category,
+                    price = :price,
+                    brand = :brand,
+                    description = :description,
+                    is_new = :is_new,
+                    status = :status
+                WHERE id = :id
+                ";
+
+        $res = $con->prepare($sql);
+
+        $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
+        $res->bindParam(':category', $options['category'], PDO::PARAM_INT);
+        $res->bindParam(':price', $options['price'], PDO::PARAM_INT);
+        $res->bindParam(':brand', $options['brand'], PDO::PARAM_STR);
+        $res->bindParam(':description', $options['description'], PDO::PARAM_STR);
+        $res->bindParam(':is_new', $options['is_new'], PDO::PARAM_INT);
+        $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
+        $res->bindParam(':id', $id, PDO::PARAM_INT);
+
+        return $res->execute();
+    }
 
 }

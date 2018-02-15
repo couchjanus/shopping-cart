@@ -1,826 +1,763 @@
 # shopping-cart
 
-# Регулярные выражения
+# CRUD-приложения
 
-Регулярные выражения - это выражения для поиска и замены подстроки по шаблону.
-
-В PHP используется название PCRE (Perl Compatible Regular Expressions - перл совместимые регулярные выражения). 
-Регулярные выражения PCRE http://php.net/manual/ru/pcre.pattern.php
-
-### Синтаксис регулярных выражений 
-http://php.net/manual/ru/reference.pcre.pattern.syntax.php
+Классическое приложение для работы с БД обычно называют CRUD - по первым буквам стандартных операций, Create, read, update and delete (Создание чтение обновление удаление).
 
 
-### Функции для работы с регулярными выражениями (Perl-совместимые)
-http://php.net/manual/ru/ref.pcre.php
-
-- preg_filter — Производит поиск и замену по регулярному выражению
-- preg_grep — Возвращает массив вхождений, которые соответствуют шаблону
-- preg_last_error — Возвращает код ошибки выполнения последнего регулярного выражения PCRE
-- preg_match_all — Выполняет глобальный поиск шаблона в строке
-- preg_match — Выполняет проверку на соответствие регулярному выражению
-- preg_quote — Экранирует символы в регулярных выражениях
-- preg_replace_callback_array — Выполняет поиск и замену по регулярному выражению с использованием функций обратного вызова
-- preg_replace_callback — Выполняет поиск по регулярному выражению и замену с использованием callback-функции
-- preg_replace — Выполняет поиск и замену по регулярному выражению
-- preg_split — Разбивает строку по регулярному выражению
+# Выборка из базы данных. 
+## Основы SELECT.
 
 
-## Строка для испытаний
+Выберем только title и content:
 
-```php
-// строка для испытаний
-$string = 'http://localhost:8000/posts';
- 
-// вывод
-echo $string;
-echo "\n";
+```sql
+
+    $sql = "SELECT title, content FROM posts";
 
 ```
 
-## preg_match
+## ИСПОЛЬЗОВАНИЕ ПСЕВДОНИМОВ В SQL.
 
-preg_match — Выполняет проверку на соответствие регулярному выражению http://php.net/manual/ru/function.preg-match.php
+Дадим колонке created_at имя formated_date при выводе с помощью команды AS, хотя она не обязательна, достаточно просто поставить пробел между именем колонки и псевдонимом. В самой базе изменений не произойдет. Измениться только конкретный вывод:
 
-Если нам нужно просто узнать есть ли шаблон 'posts' в строке $string
-мы можем набросать такой код:
+```sql
+
+    "SELECT id, title, content, 
+        
+        DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') 
+        AS formated_date, 
+        
+        status 
+        FROM posts";
+
+```
+
+
+## Сортировка данных SQL.
+
+
+Вывести все публикации и отсортировать их по возрастанию с помощью ключевого слова ORDER BY:
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+
+    ORDER BY id ASC";
+
+```
+
+
+А теперь по title:
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+
+    ORDER BY title ASC";
+
+```
+
+Можно сортировать по нескольким параметрам, например по title и created_at:
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+
+    ORDER BY created_at, title ASC";
+
+```
+
+можем отсортировать публикации по убыванию с помощью ключевого слова DESC:
+
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+
+    ORDER BY created_at DESC";
+
+```
+
+## ключевое слово LIMIT
+
+Представьте, что у вас тысячи записей, но вам, например, нужно вывести 5 записей начиная с 3 записи. Или вывести всего 4 записи из огромной базы. Для этого в SQL существует ключевое слово LIMIT.
+
+вывести 4 записи отсортированных по возрастанию.
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+
+    ORDER BY created_at ASC LIMIT 4";
+
+```
+
+выберем пять записей отсортированных по title начиная с 3:
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+
+    ORDER BY title ASC LIMIT 3,5";
+
+```
+
+Первая цифра после LIMIT означает номер записи, с которой начинается выборка, а вторая количество — выбираемых записей.
+
+## ИСПОЛЬЗОВАНИЕ КЛЮЧЕВОГО СЛОВА WHERE В SQL
+
+Представьте, что у вас есть таблица на 1000 записей, но вам нужно посмотреть только тех, чей id равен 30 или больше. 
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+    
+    WHERE id>=30
+    ;
+
+```
+
+нужно найти title, у которого идентификатор равен 11:
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+    
+    WHERE id=11
+    ;
+
+```
+
+## Ключевое слово AND
+
+Это логическое И. 
+
+```sql
+    "SELECT * FROM metas 
+        WHERE (resource_id = :resource_id 
+               AND 
+               resource = :resource)"
+
+```
+
+
+Или выберем title, чей id больше 20 и меньше 30.
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+
+    WHERE id>20 AND id<30";
+
+```
+
+## Ключевое слово OR
+
+Это логическое ИЛИ. 
+
+```sql
+
+    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
+
+    FROM posts 
+
+    WHERE id>20 AND created_at=2018-02-07 OR id<200 AND created_at=2016-02-29";
+
+```
+
+## Выбираем post по идентификатору
 
 ```php
+
+    public static function getPostById ($postId) {
+
+        $con = Connection::make();
+        $con->exec("set names utf8");
+        
+        $sql = "SELECT * FROM posts WHERE id = :id";
+    
+        $res = $con->prepare($sql);
+        $res->bindParam(':id', $postId, PDO::PARAM_INT);
+        $res->execute();
+        $post = $res->fetch(PDO::FETCH_ASSOC);
+        return $post;
+    }
+
+```
+
+## Выбираем товар по идентификатору
+
+```php
+
+    /**
+     * Выбираем товар по идентификатору
+     *
+     * @param $productId
+     * @return mixed
+     */
+    public static function getProductById ($productId) {
+
+        $con = Connection::make();
+
+        $sql = "SELECT * FROM products WHERE id = :id";
+
+        $res = $con->prepare($sql);
+        $res->bindParam(':id', $productId, PDO::PARAM_INT);
+        $res->execute();
+
+        $product = $res->fetch(PDO::FETCH_ASSOC);
+
+        return $product;
+    }
+
+
+```
+
+## Выбираем metas по идентификатору
+
+```php
+
+ public static function getMetas($resource, $resourceId)
+    {
+        $con = Connection::make();
+        
+        $res = $con->prepare(
+            "SELECT * FROM metas 
+                   WHERE (resource_id = :resource_id 
+                   AND resource = :resource)"
+            );
+
+        $res->bindParam(':resource_id', $resourceId, PDO::PARAM_INT);
+
+        $res->bindParam(':resource', $resource, PDO::PARAM_STR);
+        
+        $res->execute();
+
+        $metas = $res->fetch(PDO::FETCH_ASSOC);
+        return $metas;
+    }
+
+```
+
+
+## Обновление
+
+Обновление записей БД MySQL с помощью ключевого слова UPDATE:
+
+
+```sql
+
+    "
+     UPDATE products
+    
+            SET
+               name = :name,
+               category_id = :category,
+               price = :price,
+               brand = :brand,
+               description = :description,
+               is_new = :is_new,
+               status = :status
+            
+            WHERE id = :id
+            ";
+
+
+```
+
+Будьте внемательны, если вы не укажете условие WHERE, а просто напишите UPDATE human SET name = :name, то установите name всем записям в таблице.
+
+
+## UPDATE product по идентификатору
+
+```php
+
+public static function update ($id, $options) {
+
+        $con = Connection::make();
+
+        $sql = "
+                UPDATE products
+                SET
+                    name = :name,
+                    category_id = :category,
+                    price = :price,
+                    brand = :brand,
+                    description = :description,
+                    is_new = :is_new,
+                    status = :status
+                WHERE id = :id
+                ";
+
+        $res = $con->prepare($sql);
+
+        $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
+        $res->bindParam(':category', $options['category'], PDO::PARAM_INT);
+        $res->bindParam(':price', $options['price'], PDO::PARAM_INT);
+        $res->bindParam(':brand', $options['brand'], PDO::PARAM_STR);
+        $res->bindParam(':description', $options['description'], PDO::PARAM_STR);
+        $res->bindParam(':is_new', $options['is_new'], PDO::PARAM_INT);
+        $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
+        $res->bindParam(':id', $id, PDO::PARAM_INT);
+
+        return $res->execute();
+    }
+
+```
+## UPDATE post по идентификатору
+
+```php
+
+    public static function update ($id, $options) {
+
+        $con = Connection::make();
+
+        $sql = "
+                UPDATE posts
+                SET
+                    title = :title,
+                    content = :content,
+                    status = :status
+                WHERE id = :id
+                ";
+
+        $res = $con->prepare($sql);
+
+        $res->bindParam(':title', $options['title'], PDO::PARAM_STR);
+        $res->bindParam(':content', $options['content'], PDO::PARAM_STR);
+        $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
+        $res->bindParam(':id', $id, PDO::PARAM_INT);
+
+        $res->execute();
+    }
+
+```
+
+## Редатирование товара
+
+```php
+
+     /**
+     * Редатирование товара
+     *
+     * @param $id
+     * @return bool
+     */
+    public function edit ($vars) {
+
+        //Получаем информацию о выбранном товаре
+        extract($vars);
+
+        $product = Product::getProductById($id);
+
+        //Принимаем данные из формы
+        if (isset($_POST) and !empty($_POST)) {
+            $options['name'] = trim(strip_tags($_POST['name']));
+            $options['price'] = trim(strip_tags($_POST['price']));
+            $options['category'] = trim(strip_tags($_POST['category']));
+            $options['brand'] = trim(strip_tags($_POST['brand']));
+            $options['description'] = trim(strip_tags($_POST['description']));
+            
+            $options['is_new'] = trim(strip_tags($_POST['is_new']));
+            $options['status'] = trim(strip_tags($_POST['status']));
+
+            Product::update($id, $options);
+
+            $this->metas['resource_id'] = $id;
+            $this->metas['resource'] = $this->resource;
+            $this->metas['title'] = trim(strip_tags($_POST['meta_title']));
+            $this->metas['description'] = trim(strip_tags($_POST['meta_description']));
+            $this->metas['keywords'] = trim(strip_tags($_POST['meta_keywords']));
+            $this->metas['links'] = trim(strip_tags($_POST['meta_links']));
+
+            Meta::store($this->metas);
+     
+            header('Location: /admin/products');
+        }
+      
+        $data['product'] = Product::getProductById($id);
+        $data['categories'] = Category::index();
+        $data['metas']  = Meta::getMetas($this->resource, $id);
+        $data['title'] = 'Admin Product Edit Page ';
+        
+        $this->_view->render('admin/products/edit',$data);
+        
+    }
+
+
+```
+
+## Форма редактирования товара
+
+```php
+
 <?php
-
-// строка для испытаний
-$string = 'http://localhost:8000/posts';
- 
-// вывод
-echo $string;
-echo "\n";
-
-// Этот код выведет '1'. Потому что он нашел 1 (одно) вхождение шаблона в строке.
-
-echo "Этот код выведет 1\n";
-
-echo preg_match("/posts/", $string);
-echo "Потому что он нашел 1 (одно) вхождение шаблона в строке\n";
-
+include_once VIEWS.'shared/admin/header.php';
 ?>
-```
+<div class="page-content">
+   <div class="row">
+        <div class="col-md-2">
+        <?php
+          include_once VIEWS.'shared/admin/_aside.php';
+        ?>
+        </div>
+      <div class="col-md-10">
+        <div class="content-box-large">
+          <div class="panel-heading">
+                <div class="panel-title"><?= $title;?> <?= $product['name']?></div>
 
-Если шаблон в строке не обнаружен, preg_match вернет 0. При нахождении первого вхождения, функция сразу возвращает результат  Дальнейший поиск не продолжается
+                <div class="panel-options">
+                    <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+                    <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+                </div>
+          </div>
 
+          <form class="form-horizontal" role="form" method="POST" id="idForm">
 
-## Нахождение начала строки
-
-Символ начала строки в регулярках - '^' (caret - знак вставки).
-
-Пример:
-
-```php
-// Нахождение начала строки
-
-// Теперь мы желаем узнать, начинается ли строка с 'posts'.
-// Символ начала строки в регулярках - '^' (caret - знак вставки).
+            <div class="panel-body">
+                
+                <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label">Product Name</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="name" name="name" value="<?= $product['name']?>">
+                        </div>
+                </div>
+                <div class="form-group">
+                        <label for="price" class="col-sm-2 control-label">Product Price</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="price" name="price" value="<?= $product['price']?>">
+                        </div>
+                </div>
  
-// тест на начало строки
-$string = 'posts/1';
+                <div class="form-group">
+                  <label for="category" class="col-sm-2 control-label">Product Category</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" id="category" name="category">
+                        <?php if (is_array($categories)): ?>
+                            <?php foreach ($categories as $category): ?>
+                                <option value="<?= $category['id']; ?>"
+                                    <?php if ($product['category_id'] == $category['id']) echo ' selected'; ?>>
+                                    <?php echo $category['name']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                        <label for="brand" class="col-sm-2 control-label">Product Brand</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="brand" name="brand" value="<?= $product['brand']?>">
+                        </div>
+                </div>
+
+                <div class="form-group">
+                        <label class="col-sm-2 control-label" for="description">Product Description</label>
+                        <div class="col-sm-10">
+                           <input type="text" class="form-control" id="description" name="description" value="<?= $product['description']?>">
+                        </div>
+                </div>
+
+                <div class="form-group">
+                        <label for="is_new" class="col-sm-2 control-label">Is New</label>
+                        <div class="col-sm-10">
+                            <select name="is_new" class="form-control">
+                                <option value="1" <?php if($product['is_new'] == 1) echo 'selected'?>>Да</option>
+                                <option value="0" <?php if($product['is_new'] == 0) echo 'selected'?>>Нет</option>
+                            </select>
+                        </div>
+                </div>
+
+                <div class="form-group">
+                        <label for="status" class="col-sm-2 control-label">Status</label>
+                        <div class="col-sm-10">
+                            <select name="status" class="form-control">
+                                <option value="1" <?php if($product['status'] == 1) echo 'selected'?>>Отображается</option>
+                                <option value="0" <?php if($product['status'] == 0) echo 'selected'?>>Скрыт</option>
+                            </select>
+                        </div>
+                </div>
+            
+                
+            </div>
+            <hr>
+            <div class="panel-body">
+                
+                <div class="form-group">
+                <label for="meta_title" class="col-sm-2 control-label">Page Title</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="meta_title" name="meta_title" value="<?= $metas['title']?>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="meta_description" class="col-sm-2 control-label">Page meta description</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="meta_description" name="meta_description" value="<?= $metas['description']?>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="meta_keywords" class="col-sm-2 control-label">Page meta keywords</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" value="<?= $metas['keywords']?>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="meta_links" class="col-sm-2 control-label">Page meta links</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="meta_links" name="meta_links" value="<?= $metas['links']?>">
+                </div>
+            </div>                
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button id="save" type="submit" class="save btn btn-primary">Add Product</button>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
+  </div>
+</div>
 
-if(preg_match("/^posts/", $string))
-{
-    // окей, строка начинается с posts
-    echo "\nThe string begins with posts\n";
-   
-}
-else
-{
-    echo "\nThe string doesn't begin with posts\n";
-}
-
-```
-
-Пример выведет:
-
-The string begins with posts
-
-## Оборачивающие слэши
-
-Оборачивающие слэши - разделители, содержат регуряное выражение. Это могут быть любые парные символы,
-
-например 
-
-```
-@regex@, 
-
-#regex#, 
-
-/regex/
-```
-
-и .т.п.
-
-Символ ^ сразу после первого разделителя указывает что выражение начинается сначала строки и НИКАК иначе.
-
-
-## регистр символов (строчные-прописные)
-
-```php
-if(preg_match("/^POSTS/", $string))
-{
-    // окей, строка начинается с posts
-    echo "\nThe string begins with POSTS\n";
-   
-}
-else
-{
-    echo "\nThe string doesn't begin with POSTS\n";
-}
-
-```
-Скрипт вернет:
-
-The string doesn't begin with POSTS
-
-
-### модификатор 'i'
-
-Чтобы найти оба варианта, нужно использовать модификатор 'i', который нужно указать за закрывающим разделителем
-регулярного выражения.
-
-```php
-if(preg_match("/^POSTS/i", $string))
-{
-    // окей, строка начинается с posts
-    echo "\nThe string begins with POSTS\n";
-   
-}
-else
-{
-    echo "\nThe string doesn't begin with POSTS\n";
-}
-
-```
-
-Теперь скрипт найдет паттерн 'POSTS'. Также теперь будут попадать под шаблон строки вида posts, POSTS, Posts, poSts, и т.п.
-
-## конец строки в паттерне 
-
-Каретка (^) обозначает начало страки и доллар ($) - ее конец.
-
-```php
-// тест на конец строки
-
-$string = "posts";
-if(preg_match("/^posts$/", $string))
-{
-    echo 'The string endins with posts';
-    echo "\n";
-}
-else
-{
-    echo "\nThe string doesn't endin with POSTS\n";
-}
-
-$string = "posts/1";
-if(preg_match("/1$/", $string))
-{
-    echo 'The string endins with 1';
-    echo "\n";
-}
-else
-{
-    echo "\nThe string doesn't endin with 1\n";
-}
-
-// использовать утверждение \z
-
-$string = "posts/1";
-if(preg_match("/1\z/", $string))
-{
-    echo 'The string endins with 1';
-    echo "\n";
-}
-else
-{
-    echo "\nThe string doesn't endin with 1\n";
-}
-
-```
-
-Когда нам нужно получить в результате строку без "разделителей строк", $ не должен использоваться.
-
-```php
-
-$string = "posts/1\n";
-
-if(preg_match("/1\z/", $string))
-{
-    echo 'The string endins with 1';
-    echo "\n";
-}
-else
-{
-    echo "\nThe string doesn't endin with 1\n";
-}
-
-if(preg_match("/1$/", $string))
-{
-    echo 'The string endins with 1';
-    echo "\n";
-}
-else
-{
-    echo "\nThe string doesn't endin with 1\n";
-}
-
-```
-
-## Мета символы
-
-Список мета символов в регулярных выражениях:
-
-```
-    . (Точка, Full stop)
-    ^ (Каретка, Carat)
-    * (Звездочка, Asterix)
-    + (Plus)
-    ? (Question Mark)
-    { (Opening curly brace)
-    [ (Opening brace)
-    ] (Closing brace)
-    \ (Backslash)
-    | (Pipe)
-    ( (Opening parens)
-    ) (Closing parens)
-    } (Closing curly brace)
-```
-
-Если вам нужно составить шаблон в котором содержится такой символ, его необходимо экранировать
-
-```php
-$string = 'posts?id=1';
-
-
-if(preg_match("/posts\?id=1\z/", $string))
-{
-    echo 'The string endins with id=1';
-    echo "\n";
-}
-else
-{
-    echo "\nThe string doesn't endin with id=1\n";
-}
-
-```
-
-Результат скрипта:
-
-The string endins with id=1
-
-Потому что интерпретатор проигнорировал специальное значение символа "?", обозначенного символом экранирования "\".
-Если бы мы не добавили экран к ?, то preg_match("/posts?id=1\z/", $string) не нашло бы совпадений с шаблоном.
-
-Сам бэкслэш в свою очередь тоже нужно экранировать, если мы ищем именно этот символ "\\".
-
-## Мета символ "?"
-
-Знак вопроса совпадет с НУЛЕМ или ОДНИМ вхождением символа или регулярным выражением, указанным сразу перед ним. Полезен для указания опциональных символов (которых может и не быть).
-
-Например, телефонный номер: 1234-5678.
-```php
-// create a string
-$string = '1234-5678';
- 
-// look for a match
-echo preg_match("/1234-?5678/", $string, $matches);
-echo "\n";
-```
-
-## Квадратные скобки [ ]
-Квадратные скобки [ ] обозначают "символьный класс".
-
-Символьный класс - просто набор символов, которые должны совпасть в искомой строке. Они могут записываться индивидуально (по одному):
-
-```
-[abcdef]
-
-```
-Или как диапазон, разделенный символом "-":
-
-```
-[a-f]
-
-```
-
-```php
-$string = 'posts/1';
- 
-// Ищем шаблон
-echo preg_match("/[1234567890]$/", $string, $matches);
-
-echo "\n";
-
-```
-Результат скрипта:
-return 1
-
-Потому что preg_match() нашел совпадение.
-
-## Диапазон символов
-
-```php
-// Ищем шаблон
-echo preg_match("/[0-9]$/", $string, $matches);
-
-echo "\n";
-```
-
-Диапазон символов [a-f] равнозначен такой записи [abcdef]. Словами формулируется так [от 'a' до 'f'].
-выражения регистрозависимые, и [A-F] не тоже самое что и [a-f].
-
-Мета символы не работыют внутри классов, поэтому их не нужно экранировать внутри квадратных скобок [...].
-
-Например класс [abcdef$] совпадет с символами a b c d e f $. Доллар ($) внутри класса - это простой знак доллара без какого либо специального мета-свойства.
-
-## шаблон НЕ совпадающий с диапазоном символов
-
-Одна из полезных функций регулярных выражений - возможность указать шаблон НЕ совпадающий с диапазоном символов.
-Чтобы это сделать, нужно использовать каретку (^) первым символом класса.
-
-Найдем любые символы, кроме "b":
-```php
 <?php
-$string = 'abcefghijklmnopqrstuvwxyz0123456789';
- 
-// осуществляем поиск
-preg_match("/[^b]/", $string, $matches);
- 
-// выведем все совпадения в цикле foreach
-foreach ($matches as $key => $value) {
-    echo $key.' -> '.$value;
-}
+include_once VIEWS.'shared/admin/footer.php';
+
+
+```
+
+
+## Редатирование поста
+
+```php
+
+  public function edit ($vars) {
+    
+    extract($vars);
+    
+    if (isset($_POST) and !empty($_POST)) {
+        $options['title'] = trim(strip_tags($_POST['title']));
+        $options['content'] = trim($_POST['content']);
+        $options['status'] = trim(strip_tags($_POST['status']));
+        
+        Post::update($id, $options);
+
+        $this->metas['resource_id'] = $id;
+        $this->metas['resource'] = $this->resource;
+        $this->metas['title'] = trim(strip_tags($_POST['meta_title']));
+        $this->metas['description'] = trim(strip_tags($_POST['meta_description']));
+        $this->metas['keywords'] = trim(strip_tags($_POST['meta_keywords']));
+        $this->metas['links'] = trim(strip_tags($_POST['meta_links']));
+
+        Meta::store($this->metas);
+
+        $this->redirect('/admin/posts');
+      
+    }
+        
+    $data['title'] = 'Admin Edit Post ';
+    $data['metas']  = Meta::getMetas($this->resource, $id);
+    $data['post'] = Post::getPostById($id);
+    $this->_view->render('admin/posts/edit',$data);
+
+    }
+```
+
+## admin/posts/index.php
+
+```php
+
+<tbody class="table-items">
+    <?php foreach ($posts as $post):?>
+       <tr>
+           <td><?php echo $post['id']?></td>
+           <td><?php echo $post['title']?></td>
+           <td>
+               <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
+               <button class="btn btn-info"><i class="glyphicon glyphicon-refresh"></i> Update</button>
+               <a href="/admin/posts/edit/<?= $post['id']?>"><button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button></a>
+               <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button></td>
+        </tr>
+    <?php endforeach;?>
+ </tbody>
+
+```
+
+## Форма редактирования поста
+
+```php
+
+<?php
+include_once VIEWS.'shared/admin/header.php';
 ?>
+<div class="page-content">
+   <div class="row">
+        <div class="col-md-2">
+        <?php
+          include_once VIEWS.'shared/admin/_aside.php';
+        ?>
+        </div>
+      <div class="col-md-10">
+        <div class="content-box-large">
+          <div class="panel-heading">
+                <div class="panel-title"><?= $title;?></div>
 
-```
+                <div class="panel-options">
+                    <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+                    <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+                </div>
+          </div>
+          <form class="form-horizontal" role="form" method="POST"  id="idForm">
 
-Результат скрипта:
-0 -> a
+            <div class="panel-body">
+                <div class="form-group">
+                        <label for="title" class="col-sm-2 control-label">Post Title</label>
+                        <div class="col-sm-10">
+                          <input type="text" class="form-control" id="title" name="title" value="<?= $post['title']?>">
+                        </div>
+                </div>
+                <div class="form-group">
+                        <label class="col-sm-2 control-label" for="content">Post Content</label>
+                        <div class="col-sm-10">
+                           <textarea class="form-control" id="content" name="content"><?= $post['content']?></textarea>
+                        </div>
+                </div>
 
-Здесь preg_match() нашел первое совпадение с шаблоном /[^b]/.
+                <div class="form-group">
+                    <label for="status" class="col-sm-2 control-label">Status</label>
+                    <div class="col-sm-10">
+                      <select name="status" class="form-control">
+                        <option value="1" <?php if($post['status'] == 1) echo 'selected'?>>Отображать</option>
+                        <option value="0" <?php if($post['status'] == 0) echo 'selected'?>>Скрывать</option>
+                      </select>
+                    </div>
+                </div>
+                
+                <hr>
 
-## preg_match_all()
-Изменим скрипт и используем preg_match_all() для нахождения всех вхождений соответствующих шаблону /[^b]/.
-
-```php
-<?php
-$string = 'abcefghijklmnopqrstuvwxyz0123456789';
- 
-// ищем ВСЕ совпадения
-preg_match_all("/[^b]/", $string, $matches);
- 
-// выведем все совпадения в цикле foreach
-foreach ($matches[0] as $value) {
-    echo $value;
-}
-?>
-
-```
-Результат скрипта:
-acefghijklmnopqrstuvwxyz0123456789
-
-Выведет все символы, которые НЕ совпадают с шаблоном "b".
-
-Так мы можем отфильтровать все цифры в строке:
-
-```php
-<?php
-$string = 'abcefghijklmnopqrstuvwxyz0123456789';
- 
-// все символы не являющиеся цифрами от 0 до 9
-preg_match_all("/[^0-9]/", $string, $matches);
- 
- 
-foreach ($matches[0] as $value) {
-    echo $value;
-}
-?>
-
-```
-Результат скрипта:
-abcefghijklmnopqrstuvwxyz
-
-## Шаблон [^0-9]
-
-Шаблон [^0-9] расшифровывается как все НЕ включая цифры от 0 до 9.
-
-
-## Метасимвол Бэкслэш (\).
-
-Основное значение - экранирование других метасимволов.
-
-```php
-<?php
-// create a string
-$string = 'This is a [templateVar]';
- 
-// try to match our pattern
-preg_match_all("/[\[\]]/", $string, $matches);
- 
-// loop through the matches with foreach
-foreach ($matches[0] as $value) {
-    echo $value;
-}
-?>
-```
-
-Результат скрипта:
-[]
-
-Здесь мы хотели найти все символы []. Без экранирования шаблон выглядел бы так - "/[[]]/", но мы добавили бэеслэши к скобкам [], чтобы отменить их мета-статус.
-
-Бэкслэш также используется в строках для указания специальных последовательностей: \n, \r и др.
-
-## Символ "." (точка) - "полный стоп".
-
-Точка совпадает с любым символом кроме символов разрыва строки \r или \n.
-С помощью точки мы можем найти любой одиночный символ, за исключением разрыва строки.
-Чтобы точка также совпадала с переводом каретки и разрывом строки, можно использовать флаг /s.
-
-Совпадает один раз с любым символом (кроме разрыва строки)
-
-```php
-<?php
-// create a string
-$string = 'abcdefghijklmnopqrstuvwxyz0123456789';
- 
-// try to match any character
-if (preg_match("/./", $string)) {
-    echo 'The string contains at least on character';
-} else {
-    echo 'String does not contain anything';
-}
-?>
-
-```
-Результат скрипта:
-The string contains at least on character
-
-## Ищем одиночный символ
-```php
-// Ищем одиночный символ
-$string = 'regex';
- 
-echo preg_match("/r.g/", $string, $matches);
-
-echo "\n";
-```
-
-Результат скрипта:
-1
-
-preg_match() нашел одно совпадение.
-
-
-## preg_match_all()
-
-```php
-$string = 'regex rtgen regreg';
-
-echo preg_match_all("/r.g/", $string, $matches);
-echo "\n";
-
-```
-preg_match_all() нашел 4 совпадения. 
-
-## Символ - звездочка (*) asterisk
-
-Совпадает с 0 и/или БОЛЕЕ вхождений шаблона, находящегося перед звездочкой.
-
-"*" означает опциональный шаблон - допускается что символы могут быть, а могут и отсутствовать в строке.
-Так шаблон '.*' совпадает с любым количеством любых символов. 
-
-```php
+                
+                <div class="form-group">
+                    <label for="meta_title" class="col-sm-2 control-label">Page Title</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_title" name="meta_title" value="<?= $metas['title']?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_description" class="col-sm-2 control-label">Page meta description</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_description" name="meta_description" value="<?= $metas['description']?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_keywords" class="col-sm-2 control-label">Page meta keywords</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" value="<?= $metas['keywords']?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="meta_links" class="col-sm-2 control-label">Page meta links</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="meta_links" name="meta_links" value="<?= $metas['links']?>">
+                    </div>
+                </div>                
+                
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button id="save" type="submit" class="save btn btn-primary">Add Post</button>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
+  </div>
+</div>
 
 <?php
-// create a string
-$string = 'php';
- 
-// look for a match
-echo preg_match("/ph*p/", $string, $matches);
- 
-?>
+include_once VIEWS.'shared/admin/footer.php';
 
-```
-Результат скрипта:
-1
-
-Нашлось одно совпадение. В примере это один символ "h".
-Пример также совпадет также со строкой "pp" (ноль символов "h"), и "phhhp" (три символа "h").
-
-## Плюс символ "+"
-
-Плюс почти тоже самое что и звездочка, за исключением того что плюс совпадает с ОДНИМ и БОЛЬШЕ символом.
-Так в примере звездочка "*" совпала со строкой 'pp', с плюсом "+" такое не пройдет.
-
-```php
-<?php
-// create a string
-$string = 'pp';
- 
-// look for a match
-echo preg_match("/ph+p/", $string, $matches);
- 
-?>
-```
-
-Результат скрипта:
-0
-
-Потому что ни одного символа "h".
-
-
-## Фигурные скобки {}
-
-Указывает на количество совпавших символов или их интервал.
-Например, за фразой PHP должно следовать ТОЧНО ТРИ цифры:
-
-```php
-<?php
- 
-// create a string
-$string = 'PHP123';
- 
-// look for a match
-echo preg_match("/PHP[0-9]{3}/", $string, $matches);
- 
-?>
-```
-
-Результат скрипта:
-1
-
-Шаблон PHP 0-9(цифры от 0 до 9) {3} (три раза) совпал.
-
-## Специальные последовательности
-
-Бэкслэш (\) используется для спец. последовательностей:
-
-```
-* \d - любая цифра (тоже самое что и [0-9])
-* \D - любая НЕ цифра ([^0-9])
-* \s - все "недосимволы" - пробелы, переводы строки, табуляция ([ \t\n\r\f\v])
-* \S - все НЕ "недосимволы" ([^ \t\n\r\f\v])
-* \w - все альфа-цифровые символы (буквенно-числовые) ([a-zA-Z0-9_])
-* \W - все НЕ альфа-цифровые символы ([^a-zA-Z0-9_])
-```
-
-Используя последофательности (флаги) мы можем сократить наши регулярные выражения и улучшить их читабельность.
-
-
-```php
-<?php
-// create a string
-$string = 'ab-ce*fg@ hi & jkl(mnopqr)stu+vw?x yz0>1234<567890';
- 
-// match our pattern containing a special sequence
-preg_match_all("/[\w]/", $string, $matches);
- 
-// loop through the matches with foreach
-foreach ($matches[0] as $value) {
-    echo $value;
-}
-?>
-
-```
-Результат скрипта:
-abcefghijklmnopqrstuvwxyz0123456789
-
-Мы нашли (preg_match_all) все цифры и буквы (\w) класса ( [] ).
-
-## строка не содержит чисел.
-
-```php
-<?php
-// create a string
-$string = '2 bad for perl';
- 
-// echo our string
-if (preg_match("/^\d/", $string)) {
-    echo 'String begins with a number';
-} else {
-    echo 'String does not begin with a number';
-}
-?>
 
 ```
 
-## Модификаторы и утверждения
-
-Модификаторы изменяют поведения шаблонов регулярных выражений.
-
-### Модификаторы
- 
- ```
-     i - регистронезависимый (Ignore Case, case insensitive)
-     U - нежадный поиск (Make search ungreedy)
-     s - включая перевод строки (Includes New line)
-     m - мультистрока (Multiple lines)
-     x - Extended for comments and whitespace
-     e - Enables evaluation of replacement as PHP code. (preg_replace only)
-     S - Extra analysis of pattern
-``` 
-### Утверждения (Assertions)
-
-``` 
-     b - граница слова (Word Boundry)
-     B - НЕ граница слова (Not a word boundary)
-     A - начало шаблона (Start of subject)
-     Z - конец шаблона или разрыв строки (End of subject or newline at end)
-     z - конец шаблона (End of subject)
-     G - первая совпавшая позиция в шаблоне (First matching position in subject)
-```
-
-
-Пример модификатора "i"
-
-```php
-<?php
-// create a string
-$string = 'abcdefghijklmnopqrstuvwxyz0123456789';
- 
-// try to match our pattern
-if (preg_match("/^ABC/i", $string)) {
-    echo 'Совпадение, строка начинается с abc';
-} else {
-    echo 'Не думаю';
-}
-?>
-```
-
-# Вычисление с preg_replace
-## preg_replace
-
-preg_replace — Выполняет поиск и замену по регулярному выражению
-http://php.net/manual/ru/function.preg-replace.php
-
-```php
-<?php
-
-$string = 'We will replace the word foo';
- 
-// заменяем `for` на `bar`
-$string = preg_replace("/foo/", 'bar', $string);
- 
-echo $string;
-?>
-
-```
-Пример заменит в строке foo на bar. В таких простых заменах целесообразнее использовать функции обработки строк
-str_replace(), которые быстрее справляются с простыми задачами, но имеют некоторые ограничения, например не поддерживают юникод.
-
-заменяем все цифры помещенные в скобки на звездочки.
-
-```php
-// заменяем все цифры помещенные в скобки на звездочки.
-
-
-$str = "(945)-55-34-33(02)";
-$arr_str = preg_replace("/\([0-9]+\)/", "***",$str);
-print_r ($arr_str);
-echo "\n";
-
-```
-заменяем строку соответствующую всему шаблону, данными 
-соответствующими первой подмаске по ссылке \$1. 
-
-```php
-// заменяем строку соответствующую всему шаблону, данными 
-// соответствующими первой подмаске по ссылке \$1. 
-
-// "have 3 apples", соответствующие "/(\w+) (\d+) (\w+)/", 
-// будет заменено на "have", соответствующее (\w+).
-
-
-$str = "I have 3 apples";
-$pattern = "/(\w+) (\d+) (\w+)/";
-$replacement = "\$1";
-echo preg_replace($pattern, $replacement, $str);
-echo "\n";
-```
-
-### Вырезать повторяющиеся символы из текста
-
-Вырезаем повторяющиеся многократно символы .......... или ??????? или )))))))) или !!!!!!!! или ((((((((
-
-```php	
-$string = "Вырезаем повторяющиеся многократно символы .......... или ??????? или )))))))) или !!!!!!!! или ((((((((";
-echo $string;
-
-echo "\n";
-
-function cleanText($text){
-    $text = preg_replace("#(\.|\?|!|\(|\)){3,}#", "\$1 ", $text);
-    return $text;
-}
-
-echo cleanText($string);
-```
-### Конвертация тега переноса BR в символ новой строки
-
-```php	
-$string = '<br> We will<br /> replace<br/> the word foo';
-
-echo preg_replace("/<br(\s*+)?\/?\>/i", "\n", $string);
-
-echo "\n";
-
-```
+## routes.php
 
 
 ```php
 
 <?php
 
+$router->get('', 'HomeController@index');
 
-$string = 'posts/1';
+$router->get('about', 'AboutController@index');
+$router->get('contact', 'ContactController@index');
 
-echo preg_match("#[\w]+\/[0-9]#", $string, $matches);
+$router->get('guestbook', 'GuestbookController@index');
 
-echo "\n";
+$router->get('blog', 'BlogController@index');
+$router->get('blog/{id}', 'BlogController@view');
 
-print_r($matches);
+$router->get('admin', 'Admin\DashboardController@index');
 
-echo "\n";
+$router->get('admin/products', 'Admin\shop\ProductsController@index');
+$router->get('admin/products/create', 'Admin\shop\ProductsController@create');
+$router->post('admin/products/create', 'Admin\shop\ProductsController@create');
+$router->get('admin/products/edit/{id}', 'Admin\shop\ProductsController@edit');
+$router->post('admin/products/edit/{id}', 'Admin\shop\ProductsController@edit');
 
+$router->get('admin/products/delete/{id}', 'Admin\shop\ProductsController@delete');
+$router->post('admin/products/delete/{id}', 'Admin\shop\ProductsController@delete');
 
-$pattern = preg_replace('#\(/\)#', '/?', $string);
-print_r($pattern);
-echo "\n";
+$router->get('admin/categories', 'Admin\shop\CategoriesController@index');
+$router->get('admin/categories/create', 'Admin\shop\CategoriesController@create');
+$router->post('admin/categories/create', 'Admin\shop\CategoriesController@create');
+$router->get('admin/categories/edit/{id}', 'Admin\shop\CategoriesController@edit');
+$router->post('admin/categories/edit/{id}', 'Admin\shop\CategoriesController@edit');
+$router->get('admin/categories/delete/{id}', 'Admin\shop\CategoriesController@delete');
+$router->post('admin/categories/delete/{id}', 'AdminCategoriesController@delete');
 
-$pattern = preg_replace('/{([0-9]+)}/', '(?<$1>[0-9]+)', $pattern);
-print_r($pattern);
-echo "\n";
+$router->get('admin/posts', 'Admin\blog\PostsController@index');
+$router->get('admin/posts/create', 'Admin\blog\PostsController@create');
+$router->get('admin/posts/edit/{id}', 'Admin\blog\PostsController@edit');
+$router->get('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
+$router->post('admin/posts/create', 'Admin\blog\PostsController@add');
+$router->post('admin/posts/edit/{id}', 'Admin\blog\PostsController@edit');
+$router->post('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
 
-$uri = 'admin/posts/1';
-$key = 'admin/posts/{id}';
-
-$pattern = preg_replace('#\(/\)#', '/?', $uri);
-echo $pattern;
-echo "\n";
-
-$pattern = preg_replace('#\(/\)#', '/?', $key);
-echo $pattern;
-echo "\n";
-
-$pattern = "@^" .preg_replace('/{([a-zA-Z0-9\_\-]+)}/', '(?<$1>[a-zA-Z0-9\_\-]+)', $pattern). "$@D";
-echo $pattern;
-echo "\n";
-echo preg_match($pattern, $uri, $matches);
-echo "\n";
-print_r($matches);
-echo "\n";
-// array_shift($matches);
-print_r(array_shift($matches));
-echo "\n";
-print_r($matches);
-echo "\n";
 
 ```
 
-## routes
+## Router
 
 ```php
 
-$router->define([
-    'contact' => 'ContactController@index',
-    'about' => 'AboutController@index',
-    'blog' => 'BlogController@index',
-    'blog/{id}' => 'BlogController@view',
-    'blog/search' => 'BlogController@search',
-    'guestbook' => 'GuestbookController@index',
-    'admin' => 'Admin\DashboardController@index',
-    'admin/categories'=>'Admin\shop\CategoriesController@index',
-    'admin/categories/create' => 'Admin\shop\CategoriesController@create',
-    'admin/products' => 'Admin\shop\ProductsController@index',
-    'admin/products/create'=>'Admin\shop\ProductsController@create',
-    'admin/posts' => 'Admin\blog\PostsController@index',
-    'admin/posts/create' => 'Admin\blog\PostsController@create',
-    //Главаня страница
-    'index.php' => 'HomeController@index', 
-    '' => 'HomeController@index',  
-]);
-
-```
-## class Router
-
-```php
 <?php
+
 class Router
 {
-    protected $routes = [];
-    protected $result;
 
-    public function define($routes)
-    {
-        $this->routes = $routes;
-    }
+    public $routes = [
+        'GET' => [],
+        'POST' => []
+    ];
 
     public static function load($file)
     {
@@ -829,16 +766,34 @@ class Router
         return $router;
     }
 
-    public function directPath($uri)
+
+    public function define($routes)
     {
-        if (array_key_exists($uri, $this->routes)) {
+        $this->routes = $routes;
+    }
+
+
+    public function get($uri, $controller)
+    {
+        $this->routes['GET'][$uri] = $controller;
+    }
+
+    public function post($uri, $controller) {
+        $this->routes['POST'][$uri] = $controller;
+    }
+
+
+    public function directPath($uri, $requestType)
+    {   
+
+        if (array_key_exists($uri, $this->routes[$requestType])) {
             
             return $this->callAction(
-            ...$this->getPathAction($this->routes[$uri])
+            ...$this->getPathAction($this->routes[$requestType][$uri])
             );
-        }
-        else{
-              foreach ($this->routes as $key => $val){
+        }else{
+        
+            foreach ($this->routes[$requestType] as $key => $val){
                 $pattern = preg_replace('#\(/\)#', '/?', $key);
                 $pattern = "@^" .preg_replace('/{([a-zA-Z0-9\_\-]+)}/', '(?<$1>[a-zA-Z0-9\_\-]+)', $pattern). "$@D";
                 preg_match($pattern, $uri, $matches);
@@ -847,11 +802,9 @@ class Router
                     $getAction = $this->getPathAction($val);
                     return $this->callAction($getAction[0],$getAction[1],$getAction[2], $matches);
                 }
-            }  
-          
-      }
-      require_once VIEWS.'404'.EXT;
-      throw new Exception('No route defined for this URI.');
+            }
+        }
+        throw new Exception('No route defined for this URI.');
     }
 
 
@@ -869,6 +822,7 @@ class Router
                     $controllerFile = $controllerFile.$segment.'/';
                 }
             }while ( count($segments) >= 0);
+
     }
 
     protected function callAction($controller, $action, $controllerFile, $vars = []) 
@@ -883,124 +837,43 @@ class Router
             "{$controller} does not respond to the {$action} action."
             );
         }
-        return $controller->$action($vars); 
+        return $controller->$action($vars); // return $vars to the action
     }
-   
+
 }
+
 ```
 
-## Модель для работы с posts
+## class Request
 
 ```php
 
 <?php
 
-
-class Post {
-
-    public static function index () {
-        $con = Connection::make();
-        $con->exec("set names utf8");
-        $sql = "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status FROM posts ORDER BY id ASC";
-        $res = $con->query($sql);
-        $posts = $res->fetchAll(PDO::FETCH_ASSOC);
-        return $posts;
-    }
-
-    public static function show($id){
-        $con = Connection::make();
-        $con->exec("set names utf8");
-        $sql = "SELECT * FROM posts WHERE id = :id";
-        $res = $con->prepare($sql);
-        $res->bindParam(':id', $id, PDO::PARAM_INT);
-        $res->execute();
-        $post = $res->fetch(PDO::FETCH_ASSOC);
-        return $post;
-    }
-
-    public static function store ($options) {
-        $db = Connection::make();
-        $sql = "INSERT INTO posts(title, content, status)
-                VALUES (:title, :content, :status)";
-        $res = $db->prepare($sql);
-        $res->bindParam(':title', $options['title'], PDO::PARAM_STR);
-        $res->bindParam(':content', $options['content'], PDO::PARAM_STR);
-        $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
-        
-        $res->execute();
-
-    }
-
- }
-```
-
-## class BlogController
-
-```php
-
-class BlogController extends Controller
+class Request
 {
-
-    public function index()
+	
+    public static function uri()
+	{
+		if (isset($_SERVER["REQUEST_URI"]) and !empty($_SERVER["REQUEST_URI"]))
+            return trim($_SERVER["REQUEST_URI"], '/');
+	}
+    
+    public static function method()
     {
-        $posts = Post::index();
-        $data['title'] = 'Blog Page ';
-        $data['subtitle'] = 'Lorem Ipsum не є випадковим набором літер';
-        $data['posts'] = $posts;
-        $this->_view->render('blog/index',$data);
+        return $_SERVER['REQUEST_METHOD'];
     }
 
-    public function view($vars)
-	{
-		extract($vars);
-		$post = Post::show($id);
-        $data['title'] = 'Blog Post ';
-        $data['subtitle'] = 'Lorem Ipsum не є випадковим набором літер';
-        $data['post'] = $post;
-		$this->_view->render('blog/show', $data);
-	}    
-    
 }
 ```
-## blog/index
 
-```php
-    <div class="items">
-        <?php 
-            if(count($posts)>0){
-                foreach ($posts as $post) {
-                  echo "<h2>".$post["title"]."</h2>"; 
-                  echo "<div class='added_at'> Added At: ".strip_tags($post["formated_date"])."</div>"; 
-
-                  echo "<p><a href=/blog/".$post["id"].">Read more</a></p>"; 
-                }
-            }
-            else{
-                echo "No posts yet.... ";
-            }
-        ?>
-    </div>
-```
-
-## blog/show
+## bootstrap.php
 
 ```php
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="feature_header text-center">
-                    <h3 class="feature_title"><?=$title;?></h3>
-                    <h4 class="feature_sub"><?=$subtitle;?></h4>
-                    <div class="divider"></div>
-                </div>
-            </div>  <!-- Col-md-12 End -->
-            <div class="items">
-              <?php 
-                  echo "<h2>".$post["title"]."</h2>"; 
-                  echo "<div class='added_at'> Added At: ".$post["created_at"]."</div>"; 
-                  echo "<div class='content'>".$post["content"]."</div>"; 
-              ?>
-            </div>
-        </div>
-```
+$routesFile = CONFIG.'routes.php';
 
+Router::load($routesFile)
+            ->directPath(Request::uri(), Request::method());
+
+```
