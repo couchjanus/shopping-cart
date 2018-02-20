@@ -2,12 +2,13 @@
 
 /**
  * Модель для работы с posts
- */
+ * 
+*/
 
 class Post {
 
-
-    public static function index () {
+    public static function index() 
+    {
         $con = Connection::make();
         $con->exec("set names utf8");
         $sql = "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status FROM posts ORDER BY id ASC";
@@ -100,6 +101,16 @@ class Post {
         $res->bindParam(':id', $id, PDO::PARAM_INT);
 
         $res->execute();
+    }
+    
+    public static function destroy($resource, $id) 
+    {
+        $con = Connection::make();
+        $sql = "DELETE FROM posts WHERE id = :id";
+        $res = $con->prepare($sql);
+        $res->bindParam(':id', $id, PDO::PARAM_INT);
+        Meta::destroy($resource, $id);
+        return $res->execute();
     }
 
  }

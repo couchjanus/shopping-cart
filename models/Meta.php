@@ -57,4 +57,14 @@ class Meta {
         return $metas;
     }
 
+    public static function destroy($resource, $resourceId) 
+    {
+        $con = Connection::make();
+        $sql = "DELETE FROM metas WHERE (resource_id = :resource_id AND resource = :resource)";
+        $res = $con->prepare($sql);
+        $res->bindParam(':resource_id', $resourceId, PDO::PARAM_INT);
+        $res->bindParam(':resource', $resource, PDO::PARAM_STR);
+        return $res->execute();
+    }
+
 }

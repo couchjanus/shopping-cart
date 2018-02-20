@@ -14,6 +14,86 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+
+		<!-- <script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
+    <script>tinymce.init({ selector:'textarea' });</script> -->
+		
+		<!-- <script type="text/javascript" src="/vendors/tinymce/js/tinymce/tinymce.min.js"></script> -->
+
+		<!-- <script src="/js/tinymce/tinymce.min.js"></script> -->
+
+    <script>
+
+			// tinymce.init({
+			// 	selector : "textarea",
+			// 	theme : "modern"
+			// });
+			var cur_lang = "<?= LANGUAGE; ?>";
+
+			// tinymce.init({
+			// 		selector: "textarea", theme: "modern", height: 300,
+			// 		plugins: [
+			// 				"advlist autolink link image lists charmap print preview hr anchor pagebreak",
+			// 				"searchreplace wordcount visualblocks visualchars insertdatetime media nonbreaking",
+			// 				"table contextmenu directionality emoticons paste textcolor responsivefilemanager code"
+			// 	],
+			// 	toolbar1: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | styleselect",
+			// 	toolbar2: "| responsivefilemanager | link unlink anchor | image media | forecolor backcolor  | print preview code ",
+			// 	image_advtab: true ,
+
+			// 	external_filemanager_path:"/filemanager/",
+			// 	filemanager_title:"Responsive Filemanager" ,
+			// 	external_plugins: { "filemanager" : "/filemanager/plugin.min.js"}
+			// });
+
+
+			// tinymce.init({
+			// 			selector: "textarea",
+			// 			theme: 'modern',
+			// 			height: 300,
+			// 			language : cur_lang, // Здесь добавлен параметр языка, значение которого соответствует языку сайта
+
+			// 			image_advtab: true,
+		
+      //       plugins: [
+      //           "advlist autolink lists link image charmap print preview anchor",
+      //           "searchreplace visualblocks code fullscreen",
+      //           "insertdatetime media table contextmenu paste"
+      //       ],
+			// 			toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+						
+			// 			content_css: [
+			// 			'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+			// 			]
+      //   });
+
+			
+			// tinymce.init({
+			// 	selector: 'textarea',
+			// 	theme: 'modern',
+			// 	height: 300,
+				
+			// 	language : cur_lang, // Здесь добавлен параметр языка, значение которого соответствует языку сайта
+
+			// 	// plugins: 'image media table link paste contextmenu textpattern autolink codesample',
+				
+			// 	plugins: [
+      //       'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+      //       'searchreplace wordcount visualblocks visualchars code fullscreen',
+      //       'insertdatetime media nonbreaking save table contextmenu directionality',
+      //       'emoticons template paste textcolor colorpicker textpattern imagetools codesample toc'
+      //   ],
+				
+			// 	// insert_toolbar: 'quickimage quicktable media codesample',
+			// 	// selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
+
+			// 	image_advtab: true,
+			// 	content_css: [
+			// 		'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+			// 		]
+			// });
+
+    </script>
   </head>
   <body>
   	<div class="header">

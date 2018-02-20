@@ -2,878 +2,450 @@
 
 # CRUD-приложения
 
-Классическое приложение для работы с БД обычно называют CRUD - по первым буквам стандартных операций, Create, read, update and delete (Создание чтение обновление удаление).
+CRUD - Create, read, update and delete (Создание чтение обновление удаление).
 
+## Синтаксис оператора DELETE
 
-# Выборка из базы данных. 
-## Основы SELECT.
+```sql
+DELETE [LOW_PRIORITY | QUICK] FROM table_name
+       [WHERE where_definition]
+       [ORDER BY ...]
+       [LIMIT rows]
 
-
-Выберем только title и content:
+```
+или
 
 ```sql
 
-    $sql = "SELECT title, content FROM posts";
+DELETE [LOW_PRIORITY | QUICK] table_name[.*] [,table_name[.*] ...]
+       FROM table-references
+       [WHERE where_definition]
+```
+или
 
+```sql
+DELETE [LOW_PRIORITY | QUICK]
+       FROM table_name[.*], [table_name[.*] ...]
+       USING table-references
+       [WHERE where_definition]
 ```
 
-## ИСПОЛЬЗОВАНИЕ ПСЕВДОНИМОВ В SQL.
+Оператор DELETE удаляет из таблицы table_name строки, удовлетворяющие заданным в where_definition условиям, и возвращает число удаленных записей.
 
-Дадим колонке created_at имя formated_date при выводе с помощью команды AS, хотя она не обязательна, достаточно просто поставить пробел между именем колонки и псевдонимом. В самой базе изменений не произойдет. Измениться только конкретный вывод:
+Если оператор DELETE запускается без определения WHERE, то удаляются все строки. При работе в режиме AUTOCOMMIT это будет аналогично использованию оператора TRUNCATE. 
+
+Если действительно необходимо знать число удаленных записей при удалении всех строк, и если допустимы потери в скорости, то можно использовать команду DELETE в следующей форме:
+
+```sql
+mysql> DELETE FROM table_name WHERE 1>0;
+
+```
+Следует учитывать, что эта форма работает намного медленнее, чем DELETE FROM table_name без выражения WHERE, поскольку строки удаляются поочередно по одной.
+
+Если указано ключевое слово LOW_PRIORITY, выполнение данной команды DELETE будет задержано до тех пор, пока другие клиенты не завершат чтение этой таблицы.
+
+Если задан параметр QUICK, то обработчик таблицы при выполнении удаления не будет объединять индексы - в некоторых случаях это может ускорить данную операцию.
+
+## Выражение ORDER BY
+
+Если применяется выражение ORDER BY, то строки будут удалены в указанном порядке. В действительности это выражение полезно только в сочетании с LIMIT. Например:
+
+```sql
+DELETE FROM somelog
+        WHERE user = 'jcole'
+        ORDER BY timestamp
+        LIMIT 1
+```
+Данный оператор удалит самую старую запись (по timestamp), в которой строка соответствует указанной в выражении WHERE.
+
+Специфическая для MySQL опция LIMIT для команды DELETE указывает серверу максимальное количество строк, которые следует удалить до возврата управления клиенту. Эта опция может использоваться для гарантии того, что данная команда DELETE не потребует слишком много времени для выполнения. Можно просто повторять команду DELETE до тех пор, пока количество удаленных строк меньше, чем величина LIMIT. 
+
+## Синтаксис оператора TRUNCATE
 
 ```sql
 
-    "SELECT id, title, content, 
-        
-        DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') 
-        AS formated_date, 
-        
-        status 
-        FROM posts";
+TRUNCATE TABLE table_name
 
 ```
 
+TRUNCATE TABLE имеет следующие отличия от DELETE FROM ...:
 
-## Сортировка данных SQL.
+- Эта операция удаляет и воссоздает таблицу, что намного быстрее, чем поочередное удаление строк.
+- Операция является нетранзакционной; если одновременно выполняется транзакция или активная блокировка таблицы, то можно получить ошибку.
+- Не возвращает количество удаленных строк.
+- Пока существует корректный файл 'table_name.frm', таблицу можно воссоздать с его с помощью, даже если файлы данных или индексов повреждены. 
 
+TRUNCATE является расширением Oracle SQL. 
 
-Вывести все публикации и отсортировать их по возрастанию с помощью ключевого слова ORDER BY:
+### admin/posts/index.php
+```php
 
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-
-    ORDER BY id ASC";
-
-```
-
-
-А теперь по title:
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-
-    ORDER BY title ASC";
+    <?php foreach ($posts as $post):?>
+        <tr>
+                             
+            <a href="/admin/posts/delete/<?= $post['id']?>">
+                <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button>
+            </a>
+          </td>
+        </tr>
+    <?php endforeach;?>
 
 ```
 
-Можно сортировать по нескольким параметрам, например по title и created_at:
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-
-    ORDER BY created_at, title ASC";
-
-```
-
-можем отсортировать публикации по убыванию с помощью ключевого слова DESC:
-
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-
-    ORDER BY created_at DESC";
-
-```
-
-## ключевое слово LIMIT
-
-Представьте, что у вас тысячи записей, но вам, например, нужно вывести 5 записей начиная с 3 записи. Или вывести всего 4 записи из огромной базы. Для этого в SQL существует ключевое слово LIMIT.
-
-вывести 4 записи отсортированных по возрастанию.
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-
-    ORDER BY created_at ASC LIMIT 4";
-
-```
-
-выберем пять записей отсортированных по title начиная с 3:
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-
-    ORDER BY title ASC LIMIT 3,5";
-
-```
-
-Первая цифра после LIMIT означает номер записи, с которой начинается выборка, а вторая количество — выбираемых записей.
-
-## ИСПОЛЬЗОВАНИЕ КЛЮЧЕВОГО СЛОВА WHERE В SQL
-
-Представьте, что у вас есть таблица на 1000 записей, но вам нужно посмотреть только тех, чей id равен 30 или больше. 
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-    
-    WHERE id>=30
-    ;
-
-```
-
-нужно найти title, у которого идентификатор равен 11:
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-    
-    WHERE id=11
-    ;
-
-```
-
-## Ключевое слово AND
-
-Это логическое И. 
-
-```sql
-    "SELECT * FROM metas 
-        WHERE (resource_id = :resource_id 
-               AND 
-               resource = :resource)"
-
-```
-
-
-Или выберем title, чей id больше 20 и меньше 30.
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-
-    WHERE id>20 AND id<30";
-
-```
-
-## Ключевое слово OR
-
-Это логическое ИЛИ. 
-
-```sql
-
-    "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status 
-
-    FROM posts 
-
-    WHERE id>20 AND created_at=2018-02-07 OR id<200 AND created_at=2016-02-29";
-
-```
-
-## Выбираем post по идентификатору
+### routes.php
 
 ```php
 
-    public static function getPostById ($postId) {
+    $router->get('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
 
-        $con = Connection::make();
-        $con->exec("set names utf8");
+    $router->post('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
+
+```
+
+## Admin\blog\PostsController
+
+```php
+    public function delete($vars) 
+    {
+        extract($vars);
         
-        $sql = "SELECT * FROM posts WHERE id = :id";
+        // Checking if form has been submitted    
+        
+        if (isset($_POST['submit'])) {
+            Post::destroy($this->resource, $id);
+            $this->redirect('/admin/posts');
+            
+        }
+        
+        // Checking if form has been reseted    
+
+        elseif (isset($_POST['reset'])) {
+            $this->redirect('/admin/posts');            
+        }
+
+        $data['title'] = 'Admin Delete Post ';
+        $data['post'] = Post::getPostById($id);
+        $this->_view->render('admin/posts/delete', $data);
     
-        $res = $con->prepare($sql);
-        $res->bindParam(':id', $postId, PDO::PARAM_INT);
-        $res->execute();
-        $post = $res->fetch(PDO::FETCH_ASSOC);
-        return $post;
     }
 
 ```
 
-## Выбираем товар по идентификатору
+### admin/posts/delete
 
 ```php
 
-    /**
-     * Выбираем товар по идентификатору
-     *
-     * @param $productId
-     * @return mixed
-     */
-    public static function getProductById ($productId) {
-
-        $con = Connection::make();
-
-        $sql = "SELECT * FROM products WHERE id = :id";
-
-        $res = $con->prepare($sql);
-        $res->bindParam(':id', $productId, PDO::PARAM_INT);
-        $res->execute();
-
-        $product = $res->fetch(PDO::FETCH_ASSOC);
-
-        return $product;
-    }
-
+  <form class="form-horizontal" role="form" method="POST">
+    
+    <div class="panel-body">
+        <div class="form-group">
+            <label class="col-sm-12 control-label"><h2>This Post will be deleted! Are You Sure?</h2></label>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button name="submit" type="submit" class="save btn btn-danger">Delete Post</button>
+            <button name="reset" class="save btn btn-info">Cansel</button>
+        </div>
+    </div>
+  </form>
 
 ```
-
-## Выбираем metas по идентификатору
+## class Post 
 
 ```php
 
- public static function getMetas($resource, $resourceId)
+    public static function destroy($resource, $id) 
     {
         $con = Connection::make();
-        
-        $res = $con->prepare(
-            "SELECT * FROM metas 
-                   WHERE (resource_id = :resource_id 
-                   AND resource = :resource)"
-            );
 
-        $res->bindParam(':resource_id', $resourceId, PDO::PARAM_INT);
-
-        $res->bindParam(':resource', $resource, PDO::PARAM_STR);
-        
-        $res->execute();
-
-        $metas = $res->fetch(PDO::FETCH_ASSOC);
-        return $metas;
-    }
-
-```
-
-
-## Обновление
-
-Обновление записей БД MySQL с помощью ключевого слова UPDATE:
-
-
-```sql
-
-    "
-     UPDATE products
+        $sql = "DELETE FROM posts WHERE id = :id";
     
-            SET
-               name = :name,
-               category_id = :category,
-               price = :price,
-               brand = :brand,
-               description = :description,
-               is_new = :is_new,
-               status = :status
-            
-            WHERE id = :id
-            ";
-
-
-```
-
-Будьте внемательны, если вы не укажете условие WHERE, а просто напишите UPDATE human SET name = :name, то установите name всем записям в таблице.
-
-
-## UPDATE product по идентификатору
-
-```php
-
-public static function update ($id, $options) {
-
-        $con = Connection::make();
-
-        $sql = "
-                UPDATE products
-                SET
-                    name = :name,
-                    category_id = :category,
-                    price = :price,
-                    brand = :brand,
-                    description = :description,
-                    is_new = :is_new,
-                    status = :status
-                WHERE id = :id
-                ";
-
         $res = $con->prepare($sql);
-
-        $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
-        $res->bindParam(':category', $options['category'], PDO::PARAM_INT);
-        $res->bindParam(':price', $options['price'], PDO::PARAM_INT);
-        $res->bindParam(':brand', $options['brand'], PDO::PARAM_STR);
-        $res->bindParam(':description', $options['description'], PDO::PARAM_STR);
-        $res->bindParam(':is_new', $options['is_new'], PDO::PARAM_INT);
-        $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
         $res->bindParam(':id', $id, PDO::PARAM_INT);
-
+        
+        Meta::destroy($resource, $id);
+        
         return $res->execute();
     }
 
 ```
-## UPDATE post по идентификатору
+## class Meta
 
 ```php
 
-    public static function update ($id, $options) {
-
+    public static function destroy($resource, $resourceId) 
+    {
         $con = Connection::make();
-
-        $sql = "
-                UPDATE posts
-                SET
-                    title = :title,
-                    content = :content,
-                    status = :status
-                WHERE id = :id
-                ";
-
+        $sql = "DELETE FROM metas WHERE (resource_id = :resource_id AND resource = :resource)";
         $res = $con->prepare($sql);
-
-        $res->bindParam(':title', $options['title'], PDO::PARAM_STR);
-        $res->bindParam(':content', $options['content'], PDO::PARAM_STR);
-        $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
-        $res->bindParam(':id', $id, PDO::PARAM_INT);
-
-        $res->execute();
+        $res->bindParam(':resource_id', $resourceId, PDO::PARAM_INT);
+        $res->bindParam(':resource', $resource, PDO::PARAM_STR);
+        return $res->execute();
     }
 
 ```
 
-## Редатирование товара
+# TinyMCE
+TinyMCE (Tiny Moxiecode Content Editor) — платформонезависимый JavaScript HTML WYSIWYG редактор на основе Web. К основным характеристикам программы относятся поддержка тем/шаблонов, языковая поддержка и возможность подключения модулей (плагинов). Используется в различных системах управления содержимым (CMS).
 
-```php
+Редактор позволяет вставлять рисунки, таблицы, указывать стили оформления текста, видео.
 
-     /**
-     * Редатирование товара
-     *
-     * @param $id
-     * @return bool
-     */
-    public function edit ($vars) {
+Заявлена поддержка следующих браузеров:
 
-        //Получаем информацию о выбранном товаре
-        extract($vars);
+- Internet Explorer
+- Mozilla Firefox
+- Opera
+- Safari
+- Google Chrome
 
-        $product = Product::getProductById($id);
+## Quick install
 
-        //Принимаем данные из формы
-        if (isset($_POST) and !empty($_POST)) {
-            $options['name'] = trim(strip_tags($_POST['name']));
-            $options['price'] = trim(strip_tags($_POST['price']));
-            $options['category'] = trim(strip_tags($_POST['category']));
-            $options['brand'] = trim(strip_tags($_POST['brand']));
-            $options['description'] = trim(strip_tags($_POST['description']));
-            
-            $options['is_new'] = trim(strip_tags($_POST['is_new']));
-            $options['status'] = trim(strip_tags($_POST['status']));
+https://www.tinymce.com/
 
-            Product::update($id, $options);
+Copy & paste the snippet below into your HTML page.
 
-            $this->metas['resource_id'] = $id;
-            $this->metas['resource'] = $this->resource;
-            $this->metas['title'] = trim(strip_tags($_POST['meta_title']));
-            $this->metas['description'] = trim(strip_tags($_POST['meta_description']));
-            $this->metas['keywords'] = trim(strip_tags($_POST['meta_keywords']));
-            $this->metas['links'] = trim(strip_tags($_POST['meta_links']));
+```html
 
-            Meta::store($this->metas);
-     
-            header('Location: /admin/products');
-        }
-      
-        $data['product'] = Product::getProductById($id);
-        $data['categories'] = Category::index();
-        $data['metas']  = Meta::getMetas($this->resource, $id);
-        $data['title'] = 'Admin Product Edit Page ';
-        
-        $this->_view->render('admin/products/edit',$data);
-        
-    }
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
+    <script>tinymce.init({ selector:'textarea' });</script>
+    </head>
+    <body>
+    <textarea>Next, start a free trial!</textarea>
+    </body>
+    </html>
+```
 
+This domain is not registered with TinyMCE Cloud. Start a free trial to discover our premium cloud services and pro support.
+https://store.ephox.com/signup/
+
+
+## Установка редактора TinyMCE 
+
+1. Скачиваем пакет редактора TinyMCE с сайта https://www.tinymce.com/download/.
+
+2. Распаковываем пакет в папку на вашем сайте. Пусть это будет /public/vendor/tiny_mce. Именно в этой папке должен оказаться файл tiny_mce.js.
+
+3. Пакет редактора можно привязать к тегу textarea или div. 
+
+Простейший html или php файл будет выглядеть так:
+
+```html
+
+  <head>
+    <title>Подключение редактора TinyMCE</title>
+    <!-- TinyMCE -->
+
+    <script type="text/javascript" src="/vendors/tinymce/js/tinymce/tinymce.min.js"></script>
+
+    <script type="text/javascript">
+			tinymce.init({
+				selector : "textarea",
+				theme : "modern"
+			});
+    </script>
+
+    <!-- /TinyMCE -->
+  </head>
 
 ```
 
-## Форма редактирования товара
+Здесь mode:"textarea" и theme:"modern" - директивы конфигурации. 
+
+## Настройка редактора TinyMCE
+
+- width - директива явно определяет ширину окна редактора. Размерность указывается в пикселях, указывать ее явно не надо.
+
+- height - директива явно определяет высоту окна редактора. Размерность указывается в пикселях, указывать ее явно не надо.
+
+- selector - директива определяет способ подключения редактора к тэгу.
+
+- theme - директива определяет "тему" редактора. Имеется 3 встроенных темы: inlite, mobile и modern. Темы можно создавать самостоятельно.
+
+- skin - определяет оформление вашего редактора. доступно оформление lightgray.
+
+```js
+    <script>
+			tinymce.init({
+				selector: 'textarea',
+				theme: 'modern',
+				height: 300,
+			});
+
+    </script>
+
+```
+- plugins - определяет список подключаемых плугинов.
+
+```js
+tinymce.init({
+  selector: 'textarea',
+  height: 500,
+  menubar: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor textcolor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table contextmenu paste code help wordcount'
+  ],
+
+});
+```
+- toolbar
+
+```js
+tinymce.init({
+  selector: 'textarea',
+  height: 500,
+  menubar: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor textcolor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table contextmenu paste code help wordcount'
+  ],
+  toolbar: 'insert | undo redo |  formatselect | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+
+});
+```
+- content_css - прикрепляет пользовательский стиль.
+
+```js
+tinymce.init({
+  selector: 'textarea',
+  height: 500,
+  menubar: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor textcolor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table contextmenu paste code help wordcount'
+  ],
+  toolbar: 'insert | undo redo |  formatselect | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+  content_css: [
+    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+    ]
+});
+```
+
+## TinyMCE на Ukrane
+
+TinyMCE большой визуальный wysiwyg редактор, который предоставляет локализованные файлы почти для всех известных языков.
+
+Для начала, нужно скачать дополнительный пакет с языками и скопировать его в каталог редактора TinyMCE.
+https://www.tinymce.com/download/language-packages/?ctrl=lang&act=download&pr_id=1
+
+
+### Вы должны добавить const LANGUAGE:
 
 ```php
 
-<?php
-include_once VIEWS.'shared/admin/header.php';
-?>
-<div class="page-content">
-   <div class="row">
-        <div class="col-md-2">
-        <?php
-          include_once VIEWS.'shared/admin/_aside.php';
-        ?>
-        </div>
-      <div class="col-md-10">
-        <div class="content-box-large">
-          <div class="panel-heading">
-                <div class="panel-title"><?= $title;?> <?= $product['name']?></div>
+    define('ROOT', realpath(__DIR__.'/../'));
+    define('VIEWS', ROOT.'/views/');
+    define('CONTROLLERS', ROOT.'/controllers/');
+    define('CONFIG', ROOT.'/config/');
+    define('MODELS', ROOT.'/models/');
 
-                <div class="panel-options">
-                    <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
-                    <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
-                </div>
-          </div>
+    define('CORE', ROOT.'/core/');
+    define('DB', ROOT.'/db/');
+    define('EXT', '.php');
+    define('APPNAME', 'Great Shopaholic');
+    define('SLOGAN', 'Lets Build Cool Site');
 
-          <form class="form-horizontal" role="form" method="POST" id="idForm">
-
-            <div class="panel-body">
-                
-                <div class="form-group">
-                        <label for="name" class="col-sm-2 control-label">Product Name</label>
-                        <div class="col-sm-10">
-                          <input type="text" class="form-control" id="name" name="name" value="<?= $product['name']?>">
-                        </div>
-                </div>
-                <div class="form-group">
-                        <label for="price" class="col-sm-2 control-label">Product Price</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="price" name="price" value="<?= $product['price']?>">
-                        </div>
-                </div>
- 
-                <div class="form-group">
-                  <label for="category" class="col-sm-2 control-label">Product Category</label>
-                  <div class="col-sm-10">
-                    <select class="form-control" id="category" name="category">
-                        <?php if (is_array($categories)): ?>
-                            <?php foreach ($categories as $category): ?>
-                                <option value="<?= $category['id']; ?>"
-                                    <?php if ($product['category_id'] == $category['id']) echo ' selected'; ?>>
-                                    <?php echo $category['name']; ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                        <label for="brand" class="col-sm-2 control-label">Product Brand</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="brand" name="brand" value="<?= $product['brand']?>">
-                        </div>
-                </div>
-
-                <div class="form-group">
-                        <label class="col-sm-2 control-label" for="description">Product Description</label>
-                        <div class="col-sm-10">
-                           <input type="text" class="form-control" id="description" name="description" value="<?= $product['description']?>">
-                        </div>
-                </div>
-
-                <div class="form-group">
-                        <label for="is_new" class="col-sm-2 control-label">Is New</label>
-                        <div class="col-sm-10">
-                            <select name="is_new" class="form-control">
-                                <option value="1" <?php if($product['is_new'] == 1) echo 'selected'?>>Да</option>
-                                <option value="0" <?php if($product['is_new'] == 0) echo 'selected'?>>Нет</option>
-                            </select>
-                        </div>
-                </div>
-
-                <div class="form-group">
-                        <label for="status" class="col-sm-2 control-label">Status</label>
-                        <div class="col-sm-10">
-                            <select name="status" class="form-control">
-                                <option value="1" <?php if($product['status'] == 1) echo 'selected'?>>Отображается</option>
-                                <option value="0" <?php if($product['status'] == 0) echo 'selected'?>>Скрыт</option>
-                            </select>
-                        </div>
-                </div>
-            
-                
-            </div>
-            <hr>
-            <div class="panel-body">
-                
-                <div class="form-group">
-                <label for="meta_title" class="col-sm-2 control-label">Page Title</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="meta_title" name="meta_title" value="<?= $metas['title']?>">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="meta_description" class="col-sm-2 control-label">Page meta description</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="meta_description" name="meta_description" value="<?= $metas['description']?>">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="meta_keywords" class="col-sm-2 control-label">Page meta keywords</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" value="<?= $metas['keywords']?>">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="meta_links" class="col-sm-2 control-label">Page meta links</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="meta_links" name="meta_links" value="<?= $metas['links']?>">
-                </div>
-            </div>                
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <button id="save" type="submit" class="save btn btn-primary">Add Product</button>
-                </div>
-            </div>
-          </form>
-        </div>
-      </div>
-  </div>
-</div>
-
-<?php
-include_once VIEWS.'shared/admin/footer.php';
-
+    define('LANGUAGE', 'uk');
 
 ```
 
+Нам нужно импортировать нашу const LANGUAGE в наш JS код:
 
-## Редатирование поста
+```js
+<script>
 
-```php
+var cur_lang = "<?= LANGUAGE; ?>"; // не забывайте двойные кавычки
 
-  public function edit ($vars) {
-    
-    extract($vars);
-    
-    if (isset($_POST) and !empty($_POST)) {
-        $options['title'] = trim(strip_tags($_POST['title']));
-        $options['content'] = trim($_POST['content']);
-        $options['status'] = trim(strip_tags($_POST['status']));
-        
-        Post::update($id, $options);
-
-        $this->metas['resource_id'] = $id;
-        $this->metas['resource'] = $this->resource;
-        $this->metas['title'] = trim(strip_tags($_POST['meta_title']));
-        $this->metas['description'] = trim(strip_tags($_POST['meta_description']));
-        $this->metas['keywords'] = trim(strip_tags($_POST['meta_keywords']));
-        $this->metas['links'] = trim(strip_tags($_POST['meta_links']));
-
-        Meta::store($this->metas);
-
-        $this->redirect('/admin/posts');
-      
-    }
-        
-    $data['title'] = 'Admin Edit Post ';
-    $data['metas']  = Meta::getMetas($this->resource, $id);
-    $data['post'] = Post::getPostById($id);
-    $this->_view->render('admin/posts/edit',$data);
-
-    }
-```
-
-## admin/posts/index.php
-
-```php
-
-<tbody class="table-items">
-    <?php foreach ($posts as $post):?>
-       <tr>
-           <td><?php echo $post['id']?></td>
-           <td><?php echo $post['title']?></td>
-           <td>
-               <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
-               <button class="btn btn-info"><i class="glyphicon glyphicon-refresh"></i> Update</button>
-               <a href="/admin/posts/edit/<?= $post['id']?>"><button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button></a>
-               <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button></td>
-        </tr>
-    <?php endforeach;?>
- </tbody>
+tinyMCE.init({
+...
 
 ```
 
-## Форма редактирования поста
+Дальше, мы добавим параметры языка:
 
-```php
+```js
+<script>
 
-<?php
-include_once VIEWS.'shared/admin/header.php';
-?>
-<div class="page-content">
-   <div class="row">
-        <div class="col-md-2">
-        <?php
-          include_once VIEWS.'shared/admin/_aside.php';
-        ?>
-        </div>
-      <div class="col-md-10">
-        <div class="content-box-large">
-          <div class="panel-heading">
-                <div class="panel-title"><?= $title;?></div>
+    var cur_lang = "<?= LANGUAGE; ?>";
 
-                <div class="panel-options">
-                    <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
-                    <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
-                </div>
-          </div>
-          <form class="form-horizontal" role="form" method="POST"  id="idForm">
+	tinymce.init({
+		selector: 'textarea',
+	    theme: 'modern',
+		height: 300,
+				
+		language : cur_lang, // Здесь добавлен параметр языка, значение которого соответствует языку сайта
 
-            <div class="panel-body">
-                <div class="form-group">
-                        <label for="title" class="col-sm-2 control-label">Post Title</label>
-                        <div class="col-sm-10">
-                          <input type="text" class="form-control" id="title" name="title" value="<?= $post['title']?>">
-                        </div>
-                </div>
-                <div class="form-group">
-                        <label class="col-sm-2 control-label" for="content">Post Content</label>
-                        <div class="col-sm-10">
-                           <textarea class="form-control" id="content" name="content"><?= $post['content']?></textarea>
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="status" class="col-sm-2 control-label">Status</label>
-                    <div class="col-sm-10">
-                      <select name="status" class="form-control">
-                        <option value="1" <?php if($post['status'] == 1) echo 'selected'?>>Отображать</option>
-                        <option value="0" <?php if($post['status'] == 0) echo 'selected'?>>Скрывать</option>
-                      </select>
-                    </div>
-                </div>
-                
-                <hr>
-
-                
-                <div class="form-group">
-                    <label for="meta_title" class="col-sm-2 control-label">Page Title</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="meta_title" name="meta_title" value="<?= $metas['title']?>">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="meta_description" class="col-sm-2 control-label">Page meta description</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="meta_description" name="meta_description" value="<?= $metas['description']?>">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="meta_keywords" class="col-sm-2 control-label">Page meta keywords</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" value="<?= $metas['keywords']?>">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="meta_links" class="col-sm-2 control-label">Page meta links</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="meta_links" name="meta_links" value="<?= $metas['links']?>">
-                    </div>
-                </div>                
-                
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                  <button id="save" type="submit" class="save btn btn-primary">Add Post</button>
-                </div>
-            </div>
-          </form>
-        </div>
-      </div>
-  </div>
-</div>
-
-<?php
-include_once VIEWS.'shared/admin/footer.php';
-
+		plugins: 'image media table link paste contextmenu textpattern autolink codesample',
+				
+		insert_toolbar: 'quickimage quicktable media codesample',
+		selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
+			
+		paste_data_images: true,
+		content_css: [
+			'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+		]
+	});
 
 ```
 
-## routes.php
+После этого, интерфейс вашего редактора TinyMCE будет отображаться на языке вашего веб-сайта или веб-приложения. 
 
+## Image Upload
+
+## plugins/filemanager
 
 ```php
 
-<?php
+//**********************
+//Path configuration
+//**********************
+// In this configuration the folder tree is
+// root
+//   |- tinymce
+//   |    |- source <- upload folder
+//   |    |- js
+//   |    |   |- tinymce
+//   |    |   |    |- plugins
+//   |    |   |    |-   |- filemanager
+//   |    |   |    |-   |-      |- thumbs <- folder of thumbs [must have the write permission]
 
-$router->get('', 'HomeController@index');
+$base_url=""; //url base of site if you want only relative url leave empty
 
-$router->get('about', 'AboutController@index');
-$router->get('contact', 'ContactController@index');
+$upload_dir = '/media/'; // path from base_url to upload base dir
+$current_path = '../../../../media'; // relative path from filemanager folder to upload files folder
 
-$router->get('guestbook', 'GuestbookController@index');
-
-$router->get('blog', 'BlogController@index');
-$router->get('blog/{id}', 'BlogController@view');
-
-$router->get('admin', 'Admin\DashboardController@index');
-
-$router->get('admin/products', 'Admin\shop\ProductsController@index');
-$router->get('admin/products/create', 'Admin\shop\ProductsController@create');
-$router->post('admin/products/create', 'Admin\shop\ProductsController@create');
-$router->get('admin/products/edit/{id}', 'Admin\shop\ProductsController@edit');
-$router->post('admin/products/edit/{id}', 'Admin\shop\ProductsController@edit');
-
-$router->get('admin/products/delete/{id}', 'Admin\shop\ProductsController@delete');
-$router->post('admin/products/delete/{id}', 'Admin\shop\ProductsController@delete');
-
-$router->get('admin/categories', 'Admin\shop\CategoriesController@index');
-$router->get('admin/categories/create', 'Admin\shop\CategoriesController@create');
-$router->post('admin/categories/create', 'Admin\shop\CategoriesController@create');
-$router->get('admin/categories/edit/{id}', 'Admin\shop\CategoriesController@edit');
-$router->post('admin/categories/edit/{id}', 'Admin\shop\CategoriesController@edit');
-$router->get('admin/categories/delete/{id}', 'Admin\shop\CategoriesController@delete');
-$router->post('admin/categories/delete/{id}', 'AdminCategoriesController@delete');
-
-$router->get('admin/posts', 'Admin\blog\PostsController@index');
-$router->get('admin/posts/create', 'Admin\blog\PostsController@create');
-$router->get('admin/posts/edit/{id}', 'Admin\blog\PostsController@edit');
-$router->get('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
-$router->post('admin/posts/create', 'Admin\blog\PostsController@add');
-$router->post('admin/posts/edit/{id}', 'Admin\blog\PostsController@edit');
-$router->post('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
-
-
+$MaxSizeUpload=100; //Mb
 ```
-
-## Router
-
-```php
-
-<?php
-
-class Router
-{
-
-    public $routes = [
-        'GET' => [],
-        'POST' => []
-    ];
-
-    public static function load($file)
-    {
-        $router = new static;
-        require $file;
-        return $router;
-    }
-
-
-    public function define($routes)
-    {
-        $this->routes = $routes;
-    }
-
-
-    public function get($uri, $controller)
-    {
-        $this->routes['GET'][$uri] = $controller;
-    }
-
-    public function post($uri, $controller) {
-        $this->routes['POST'][$uri] = $controller;
-    }
-
-
-    public function directPath($uri, $requestType)
-    {   
-
-        if (array_key_exists($uri, $this->routes[$requestType])) {
-            
-            return $this->callAction(
-            ...$this->getPathAction($this->routes[$requestType][$uri])
-            );
-        }else{
-        
-            foreach ($this->routes[$requestType] as $key => $val){
-                $pattern = preg_replace('#\(/\)#', '/?', $key);
-                $pattern = "@^" .preg_replace('/{([a-zA-Z0-9\_\-]+)}/', '(?<$1>[a-zA-Z0-9\_\-]+)', $pattern). "$@D";
-                preg_match($pattern, $uri, $matches);
-                array_shift($matches);
-                if($matches){
-                    $getAction = $this->getPathAction($val);
-                    return $this->callAction($getAction[0],$getAction[1],$getAction[2], $matches);
-                }
-            }
-        }
-        throw new Exception('No route defined for this URI.');
-    }
-
-
-    private function getPathAction($route){
-        list($segments, $action) = explode('@', $route);
-        $segments = explode('\\', $segments);
-        $controller = array_pop($segments);
-        $controllerFile = '/';
-        do {
-            if(count($segments)==0){
-              return array ($controller, $action, $controllerFile);
-                }
-                else{
-                    $segment = array_shift($segments);
-                    $controllerFile = $controllerFile.$segment.'/';
-                }
-            }while ( count($segments) >= 0);
-
-    }
-
-    protected function callAction($controller, $action, $controllerFile, $vars = []) 
-    {
-        
-        include(CONTROLLERS.$controllerFile.'/'.$controller.EXT);
-        
-        $controller = new $controller;
-        
-        if (! method_exists($controller, $action)) {
-            throw new Exception(
-            "{$controller} does not respond to the {$action} action."
-            );
-        }
-        return $controller->$action($vars); // return $vars to the action
-    }
-
-}
-
-```
-
-## class Request
+## admin/header.php
 
 ```php
 
-<?php
+<script src="/js/tinymce/tinymce.min.js"></script>
 
-class Request
-{
-	
-    public static function uri()
-	{
-		if (isset($_SERVER["REQUEST_URI"]) and !empty($_SERVER["REQUEST_URI"]))
-            return trim($_SERVER["REQUEST_URI"], '/');
-	}
-    
-    public static function method()
-    {
-        return $_SERVER['REQUEST_METHOD'];
-    }
+    <script>
 
-}
-```
+			tinymce.init({
+					selector: "textarea", theme: "modern", height: 300,
+					plugins: [
+							"advlist autolink link image lists charmap print preview hr anchor pagebreak",
+							"searchreplace wordcount visualblocks visualchars insertdatetime media nonbreaking",
+							"table contextmenu directionality emoticons paste textcolor responsivefilemanager code"
+				],
+				toolbar1: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | styleselect",
+				toolbar2: "| responsivefilemanager | link unlink anchor | image media | forecolor backcolor  | print preview code ",
+				image_advtab: true ,
 
-## bootstrap.php
-
-```php
-
-$routesFile = CONFIG.'routes.php';
-
-Router::load($routesFile)
-            ->directPath(Request::uri(), Request::method());
+				external_filemanager_path:"/filemanager/",
+				filemanager_title:"Responsive Filemanager" ,
+				external_plugins: { "filemanager" : "/filemanager/plugin.min.js"}
+			});
 
 ```

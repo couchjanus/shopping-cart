@@ -26,5 +26,3 @@ $routesFile = CONFIG.'routes.php';
 
 Router::load($routesFile)
             ->directPath(Request::uri(), Request::method());
-// Router::load($routesFile)
-//     ->directPath(Request::uri());

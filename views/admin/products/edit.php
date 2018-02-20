@@ -1,11 +1,11 @@
 <?php
-include_once VIEWS.'shared/admin/header.php';
+    require_once VIEWS.'shared/admin/header.php';
 ?>
 <div class="page-content">
    <div class="row">
         <div class="col-md-2">
         <?php
-          include_once VIEWS.'shared/admin/_aside.php';
+          require_once VIEWS.'shared/admin/_aside.php';
         ?>
         </div>
       <div class="col-md-10">
@@ -88,34 +88,11 @@ include_once VIEWS.'shared/admin/header.php';
             
                 
             </div>
+            
             <hr>
-            <div class="panel-body">
-                
-                <div class="form-group">
-                <label for="meta_title" class="col-sm-2 control-label">Page Title</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="meta_title" name="meta_title" value="<?= $metas['title']?>">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="meta_description" class="col-sm-2 control-label">Page meta description</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="meta_description" name="meta_description" value="<?= $metas['description']?>">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="meta_keywords" class="col-sm-2 control-label">Page meta keywords</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" value="<?= $metas['keywords']?>">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="meta_links" class="col-sm-2 control-label">Page meta links</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="meta_links" name="meta_links" value="<?= $metas['links']?>">
-                </div>
-            </div>                
-            </div>
+            <?php
+                require_once VIEWS.'shared/admin/_metas.php';
+            ?>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                   <button id="save" type="submit" class="save btn btn-primary">Add Product</button>
@@ -128,4 +105,4 @@ include_once VIEWS.'shared/admin/header.php';
 </div>
 
 <?php
-include_once VIEWS.'shared/admin/footer.php';
+require_once VIEWS.'shared/admin/footer.php';

@@ -1,11 +1,11 @@
 <?php
-include_once VIEWS.'shared/admin/header.php';
+require_once VIEWS.'shared/admin/header.php';
 ?>
     <div class="page-content">
       <div class="row">
       <div class="col-md-2">
         <?php
-          include_once VIEWS.'shared/admin/_aside.php';
+          require_once VIEWS.'shared/admin/_aside.php';
         ?>
 
       </div>
@@ -34,9 +34,17 @@ include_once VIEWS.'shared/admin/header.php';
                               <td><?php echo $post['title']?></td>
                               <td>
                               <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
+                              
                               <button class="btn btn-info"><i class="glyphicon glyphicon-refresh"></i> Update</button>
-                              <a href="/admin/posts/edit/<?= $post['id']?>"><button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button></a>
-                              <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button></td>
+                              
+                              <a href="/admin/posts/edit/<?= $post['id']?>">
+                                <button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
+                              </a>
+                              
+                              <a href="/admin/posts/delete/<?= $post['id']?>">
+                                <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button>
+                              </a>
+                              </td>
                             </tr>
                             <?php endforeach;?>
                           </tbody>
@@ -45,4 +53,4 @@ include_once VIEWS.'shared/admin/header.php';
                 </div>
             </div>
 <?php
-include_once VIEWS.'shared/admin/footer.php';
+require_once VIEWS.'shared/admin/footer.php';

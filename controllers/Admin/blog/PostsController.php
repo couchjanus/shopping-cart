@@ -2,19 +2,19 @@
 
 class PostsController extends Controller {
   
-  private $resource = 'posts';
-  private $metas = [];
+    private $resource = 'posts';
+    private $metas = [];
 
-  public function index()
-  {
+    public function index()
+    {
       $posts = Post::index();
       $data['title'] = 'Admin Posts Page ';
       $data['posts'] = $posts;
       $this->_view->render('admin/posts/index',$data);
-  }
+    }
 
 
-  public function create () {
+    public function create () {
       //Принимаем данные из формы
       if (isset($_POST) and !empty($_POST)) {
           $options['title'] = trim(strip_tags($_POST['title']));
@@ -45,11 +45,12 @@ class PostsController extends Controller {
 
   }
 
-  public function edit ($vars) {
+    public function edit($vars)
+    {
     
-    extract($vars);
+        extract($vars);
     
-    if (isset($_POST) and !empty($_POST)) {
+        if (isset($_POST) and !empty($_POST)) {
         $options['title'] = trim(strip_tags($_POST['title']));
         $options['content'] = trim($_POST['content']);
         $options['status'] = trim(strip_tags($_POST['status']));
@@ -67,12 +68,31 @@ class PostsController extends Controller {
 
         $this->redirect('/admin/posts');
       
-    }
+        }
         
-    $data['title'] = 'Admin Edit Post ';
-    $data['metas']  = Meta::getMetas($this->resource, $id);
-    $data['post'] = Post::getPostById($id);
-    $this->_view->render('admin/posts/edit',$data);
+        $data['title'] = 'Admin Edit Post ';
+        $data['metas']  = Meta::getMetas($this->resource, $id);
+        $data['post'] = Post::getPostById($id);
+        $this->_view->render('admin/posts/edit', $data);
 
+    }
+
+    public function delete($vars) 
+    {
+        extract($vars);
+    
+        if (isset($_POST['submit'])) {
+            Post::destroy($this->resource, $id);
+            $this->redirect('/admin/posts');
+            
+        }
+        elseif (isset($_POST['reset'])) {
+            $this->redirect('/admin/posts');            
+        }
+
+        $data['title'] = 'Admin Delete Post ';
+        $data['post'] = Post::getPostById($id);
+        $this->_view->render('admin/posts/delete', $data);
+    
     }
 }
