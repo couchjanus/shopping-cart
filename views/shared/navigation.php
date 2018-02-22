@@ -22,10 +22,23 @@
                             <li><a href="/guestbook" >Guestbook</a> </li>
                             <li><a href="/contact" >Contact Us</a> </li>
                             
-                            <li id="cart-trigger"><a href="#" ><i class="fa fa-shopping-cart shopping-cart"></i></a></li>
-                        
+                            <li id="cart-trigger"><a href="#" ><i class="fa fa-shopping-cart"></i></a></li>
+                            
+                            <li><a href="#">
+                                <label for="toggle-user" class="animate">
+                                <i class="fa fa-user"></i></label></a>
+                            </li>
                         </ul>
 
                      </nav>
     </div><!-- /.container-fluid -->
+
   </header>
+                        <dropdown>
+                            <input id="toggle-user" type="checkbox">
+                            <ul class="animate">
+                                <li class="animate"><a href="/register">Sign Up <i class="fa fa-user-plus float-right"></i><a></li>
+                                <li class="animate"><a href="/login">Sign In <i class="fa fa-sign-in float-right"></i></a></li>
+                                <li class="animate">Profile <i class="fa fa-cog float-right"></i></li>
+                            </ul>
+                        </dropdown>

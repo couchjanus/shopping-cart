@@ -37,22 +37,16 @@ $router->post('admin/posts/create', 'Admin\blog\PostsController@add');
 $router->post('admin/posts/edit/{id}', 'Admin\blog\PostsController@edit');
 $router->post('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
 
+$router->get('admin/users', 'Admin\users\UsersController@index');
+$router->get('admin/users/create', 'Admin\users\UsersController@create');
+$router->get('admin/users/edit/{id}', 'Admin\users\UsersController@edit');
+$router->get('admin/users/delete/{id}', 'Admin\users\UsersController@delete');
+$router->post('admin/users/create', 'Admin\users\UsersController@create');
+$router->post('admin/users/edit/{id}', 'Admin\users\UsersController@edit');
+$router->post('admin/users/delete/{id}', 'Admin\users\UsersController@delete');
 
-// $router->define([
-//     'contact' => 'ContactController@index',
-//     'about' => 'AboutController@index',
-//     'blog' => 'BlogController@index',
-//     'blog/{id}' => 'BlogController@view',
-//     'blog/search' => 'BlogController@search',
-//     'guestbook' => 'GuestbookController@index',
-//     'admin' => 'Admin\DashboardController@index',
-//     'admin/categories'=>'Admin\shop\CategoriesController@index',
-//     'admin/categories/create' => 'Admin\shop\CategoriesController@create',
-//     'admin/products' => 'Admin\shop\ProductsController@index',
-//     'admin/products/create'=>'Admin\shop\ProductsController@create',
-//     'admin/posts' => 'Admin\blog\PostsController@index',
-//     'admin/posts/create' => 'Admin\blog\PostsController@create',
-//     //Главаня страница
-//     'index.php' => 'HomeController@index', 
-//     '' => 'HomeController@index',  
-// ]);
+$router->get('login', 'UsersController@login');
+$router->post('login', 'UsersController@login');
+
+$router->get('register', 'UsersController@signup');
+$router->post('register', 'UsersController@signup');

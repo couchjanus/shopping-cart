@@ -1,451 +1,439 @@
 # shopping-cart
 
-# CRUD-приложения
-
-CRUD - Create, read, update and delete (Создание чтение обновление удаление).
-
-## Синтаксис оператора DELETE
+# TABLE `users`
 
 ```sql
-DELETE [LOW_PRIORITY | QUICK] FROM table_name
-       [WHERE where_definition]
-       [ORDER BY ...]
-       [LIMIT rows]
+SET NAMES utf8mb4;
 
-```
-или
+DROP TABLE IF EXISTS `users`;
 
-```sql
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role_id` int(11) unsigned NOT NULL DEFAULT '2',
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DELETE [LOW_PRIORITY | QUICK] table_name[.*] [,table_name[.*] ...]
-       FROM table-references
-       [WHERE where_definition]
-```
-или
-
-```sql
-DELETE [LOW_PRIORITY | QUICK]
-       FROM table_name[.*], [table_name[.*] ...]
-       USING table-references
-       [WHERE where_definition]
-```
-
-Оператор DELETE удаляет из таблицы table_name строки, удовлетворяющие заданным в where_definition условиям, и возвращает число удаленных записей.
-
-Если оператор DELETE запускается без определения WHERE, то удаляются все строки. При работе в режиме AUTOCOMMIT это будет аналогично использованию оператора TRUNCATE. 
-
-Если действительно необходимо знать число удаленных записей при удалении всех строк, и если допустимы потери в скорости, то можно использовать команду DELETE в следующей форме:
-
-```sql
-mysql> DELETE FROM table_name WHERE 1>0;
-
-```
-Следует учитывать, что эта форма работает намного медленнее, чем DELETE FROM table_name без выражения WHERE, поскольку строки удаляются поочередно по одной.
-
-Если указано ключевое слово LOW_PRIORITY, выполнение данной команды DELETE будет задержано до тех пор, пока другие клиенты не завершат чтение этой таблицы.
-
-Если задан параметр QUICK, то обработчик таблицы при выполнении удаления не будет объединять индексы - в некоторых случаях это может ускорить данную операцию.
-
-## Выражение ORDER BY
-
-Если применяется выражение ORDER BY, то строки будут удалены в указанном порядке. В действительности это выражение полезно только в сочетании с LIMIT. Например:
-
-```sql
-DELETE FROM somelog
-        WHERE user = 'jcole'
-        ORDER BY timestamp
-        LIMIT 1
-```
-Данный оператор удалит самую старую запись (по timestamp), в которой строка соответствует указанной в выражении WHERE.
-
-Специфическая для MySQL опция LIMIT для команды DELETE указывает серверу максимальное количество строк, которые следует удалить до возврата управления клиенту. Эта опция может использоваться для гарантии того, что данная команда DELETE не потребует слишком много времени для выполнения. Можно просто повторять команду DELETE до тех пор, пока количество удаленных строк меньше, чем величина LIMIT. 
-
-## Синтаксис оператора TRUNCATE
-
-```sql
-
-TRUNCATE TABLE table_name
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role_id`, `status`) VALUES
+(1,	'Janus',	'couchjanus@gmail.com',	'$2y$12$C/UMJOWWyb1S7Sqtcl5pI.X9U12fMfx1jgUZ6UB.crsGGkWxGvXZW',	3,	1);
 
 ```
 
-TRUNCATE TABLE имеет следующие отличия от DELETE FROM ...:
+# Модель User 
 
-- Эта операция удаляет и воссоздает таблицу, что намного быстрее, чем поочередное удаление строк.
-- Операция является нетранзакционной; если одновременно выполняется транзакция или активная блокировка таблицы, то можно получить ошибку.
-- Не возвращает количество удаленных строк.
-- Пока существует корректный файл 'table_name.frm', таблицу можно воссоздать с его с помощью, даже если файлы данных или индексов повреждены. 
-
-TRUNCATE является расширением Oracle SQL. 
-
-### admin/posts/index.php
 ```php
 
-    <?php foreach ($posts as $post):?>
-        <tr>
-                             
-            <a href="/admin/posts/delete/<?= $post['id']?>">
-                <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button>
-            </a>
-          </td>
-        </tr>
-    <?php endforeach;?>
+class User 
+{
+    private $role;
+    
+    public static function index() 
+    {
+        $con = Connection::make();
+        $sql = "SELECT * FROM users ORDER BY id ASC";
+        $con->exec("set names utf8mb4");
+        $res = $con->query($sql);
+        $users = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $users;
+    }
+```
+# Хэширование паролей
+
+Хеширование паролей является одним из основных соображений безопасности, которые необходимо сделать, при разработке приложения, принимающего пароли от пользователей. Без хеширования, пароли, хранящиеся в базе вашего приложения, могут быть украдены, например, если ваша база данных была скомпрометирована, а затем немедленно могут быть применены для компрометации не только вашего приложения, но и аккаунтов ваших пользователей на других сервисах, если они не используют уникальных паролей.
+
+Применяя хеширующий алгоритм к пользовательским паролям перед сохранением их в своей базе данных, вы делаете невозможным разгадывание оригинального пароля для атакующего вашу базу данных, в то же время сохраняя возможность сравнения полученного хеша с оригинальным паролем.
+
+## MD5, SHA1 и SHA256
+Почему популярные хеширующие функции, такие как md5() и sha1() не подходят для паролей?
+
+Такие хеширующие алгоритмы как MD5, SHA1 и SHA256 были спроектированы очень быстрыми и эффективными. При наличии современных технологий и оборудования, стало довольно просто выяснить результат этих алгоритмов методом "грубой силы" для определения оригинальных вводимых данных.
+
+Из-за той скорости, с которой современные компьютеры могут "обратить" эти хеширующие алгоритмы, многие профессионалы компьютерной безопасности строго не рекомендуют использовать их для хеширования паролей.
+
+## как хешировать свои пароли?
+
+При хешировании паролей существует два важных соображения: это стоимость вычисления и соль. Чем выше стоимость вычисления хеширующего алгоритма, тем больше времени требуется для взлома его вывода методом "грубой силы".
+
+PHP предоставляет встроенное API хеширования паролей, которое безопасно работает и с хешированием и с проверкой паролей.
+
+## Необратимое хеширование строки
+
+http://php.net/manual/ru/function.crypt.php
+Другой возможностью является функция crypt(), которая поддерживает несколько алгоритмов хеширования в PHP. При использовании этой функции вы можете быть уверенным, что выбранный вами алгоритм доступен, так как PHP содержит собственную реализацию каждого поддерживаемого алгоритма, даже в случае, если какие-то из них не поддерживаются вашей системой.
+
+При хешировании паролей рекомендуется применять алгоритм Blowfish, который также используется по умолчанию в API хеширования паролей, так как он значительно большей вычислительной сложности, чем MD5 или SHA1.
+
+## Что такое соль?
+
+Криптографическая соль представляет собой данные, которые применяются в процессе хеширования для предотвращения возможности разгадать оригинальный ввод с помощью поиска результата хеширования в списке заранее вычисленных пар ввод-хеш, известном также как "радужная" таблица.
+
+Криптографическая соль - это кусочек дополнительных данных, которые делают ваши хеши намного более устойчивыми к взлому. Существует много онлайн-сервисов, предоставляющих обширные списки заранее вычисленных хешей вместе с их оригинальным вводом. Использование соли делает поиск результирующего хеша в таком списке маловероятным или даже невозможным.
+
+password_hash() создает случайную соль в случае, если она не была передана, и чаще всего это наилучший и безопасный выбор.
+
+## Как я должен хранить свою соль?
+
+При использовании функции password_hash() или crypt(), возвращаемое значение уже содержит соль как часть созданного хеша. Это значение нужно хранить как есть в вашей базе данных, так как оно содержит также информацию о хеширующей функции, которая использовалась, и может быть непосредственно передано в функции password_verify() или crypt() при проверке пароля.
+    
+## password_hash
+password_hash() — используется для хэширования пароля.
+http://php.net/manual/ru/function.password-hash.php
+
+## password_verify
+password_verify() — используется для проверки пароля на соответствие хэшу. http://php.net/manual/ru/function.password-verify.php
+
+## password_needs_rehash
+password_needs_rehash() — используется для проверки необходимости создать новый хэш.
+http://php.net/manual/ru/function.password-needs-rehash.php
+
+## password_get_info
+password_get_info() — возвращает имя алгоритма хеширования и различные параметры, используемые при хэшировании.
+http://php.net/manual/ru/function.password-get-info.php
+
+### Функция password_hash()
+
+```php
+<?php
+// наш пароль
+$pass="123456";
+$hash=password_hash($pass, PASSWORD_DEFAULT);
+?>
+```
+Первым параметр - строка пароля, который необходимо хэшировать, а второй параметр определяет алгоритм, который должен быть использован для генерирования хэша.
+
+## salt
+Если вы хотите использовать вашу собственную соль (или стоимость вычисления), вы можете сделать это путем передачи третьего аргумента функции:
+
+```php
+$options = [
+   'salt' => custom_function_for_salt(), //write your own code to generate a suitable salt
+   'cost' => 12 // the default cost is 10
+];
+$hash = password_hash($password, PASSWORD_DEFAULT, $options);
+```
+Если PHP позже примет решение о применении более мощного алгоритма хеширования, ваш код может воспользоваться им без изменений.
+
+# Предопределенные константы
+
+- PASSWORD_BCRYPT (integer) = 1
+- PASSWORD_BCRYPT используется для создания нового хэш пароля с использованием алгоритма CRYPT_BLOWFISH.
+
+# Алгоритм по умолчанию
+
+Алгоритм по умолчанию - BCrypt, но более сильный алгоритм может быть установлен по умолчанию.
+
+## PASSWORD_DEFAULT
+
+PASSWORD_DEFAULT (integer) = PASSWORD_BCRYPT
+
+Используется алгоритм хэширования по умолчанию, если алгоритм не задан. Он может измениться в новых версиях PHP, когда будут поддерживаться новые, более эффективные алгоритмы хэширования.
+
+Если вы используете PASSWORD_DEFAULT, обязательно храните хэш в колонке, размером больше 60 символов. Лучше всего установить размер 255. 
+
+## PASSWORD_BCRYPT
+Также можете использовать PASSWORD_BCRYPT в качестве второго параметра. В этом случае результат всегда будет 60 символов.
+
+```php
+    
+    // generate new password
+
+    $hash = password_hash($options['password'], PASSWORD_DEFAULT, ["cost" => 12]);
+
+    $res->bindParam(':password', $hash, PDO::PARAM_STR);
+    $res->bindParam(':role', $options['role'], PDO::PARAM_INT);
+
+    return $res->execute();
+   }
 
 ```
+
+```php
+
+    public static function store($options) 
+    {
+
+        $db = Connection::make();
+
+        $sql = "INSERT INTO users(name, email, password, role_id)
+                VALUES(:name, :email, :password, :role)";
+               
+        $password = password_hash($options['password'], PASSWORD_DEFAULT);
+        
+        $res = $db->prepare($sql);
+        $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
+        $res->bindParam(':email', $options['email'], PDO::PARAM_STR);
+        $res->bindParam(':password', $password, PDO::PARAM_STR);
+        $res->bindParam(':role', $options['role'], PDO::PARAM_INT);
+
+        return $res->execute();
+    }
+
+```
+
+```php
+    public static function update($userId, $options)
+    {
+
+        $db = Connection::make();
+
+        $sql = "UPDATE users
+                SET name = :name, 
+                    password = :password, 
+                    email = :email, 
+                    role_id = :role, 
+                    status = :status
+                WHERE id = :id
+               ";
+
+
+        $res = $db->prepare($sql);
+
+        $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
+        $res->bindParam(':password', $options['password'], PDO::PARAM_STR);
+        $res->bindParam(':email', $options['email'], PDO::PARAM_STR);
+        $res->bindParam(':role', $options['role'], PDO::PARAM_INT);
+        
+        $status = $options['status']? 1:0;
+        
+        $res->bindParam(':status', $status, PDO::PARAM_INT);
+        $res->bindParam(':id', $userId, PDO::PARAM_INT);
+
+        return $res->execute();
+    }
+```
+
+```php
+    public static function destroy($id) 
+    {
+        $con = Connection::make();
+        $sql = "DELETE FROM users WHERE id = :id";
+        $res = $con->prepare($sql);
+        $res->bindParam(':id', $id, PDO::PARAM_INT);
+        
+        return $res->execute();
+    }
+
+```
+
+
+# CRUD-приложения
+
+```php
+<?php
+
+class UsersController extends Controller
+{
+```
+
+# SELECT
+
+```php
+    public function index()
+    {
+            $data['users'] = User::index();
+            $data['title'] = 'Admin User List Page ';
+            $this->_view->render('admin/users/index', $data);
+    }
+```    
+# CREATE
+
+```php
+    public function create() 
+    {
+
+        if (isset($_POST) and !empty($_POST)) {
+            $options['name'] = trim(strip_tags($_POST['name']));
+            $options['email'] = trim(strip_tags($_POST['email']));
+            $options['role'] = $_POST['role'];
+            
+            $options['password'] = trim(strip_tags($_POST['password']));
+            
+            User::store($options);
+
+            header('Location: /admin/users');
+        }
+        
+        $data['title'] = 'Admin User Add Page ';
+        
+        $this->_view->render('admin/users/create', $data);
+        
+    }
+```
+
+# UPDATE
+```php
+    public function edit($vars) 
+    {
+        
+        extract($vars);
+
+        $user = User::get($id);
+
+        if (isset($_POST) and !empty($_POST)) {
+            $options['name'] = trim(strip_tags($_POST['name']));
+            $options['email'] = trim(strip_tags($_POST['email']));
+            $options['password'] = trim(strip_tags($_POST['password']));
+            $options['role'] = $_POST['role'];
+            $options['status'] = $_POST['status'];
+            
+            User::update($id, $options);
+
+            header('Location: /admin/users');
+        }
+        
+        $data['title'] = 'Admin User Edit Page ';
+        
+        $data['user'] = $user;
+        
+        $this->_view->render('admin/users/edit', $data);
+    }
+```
+
+## DELETE
+
+```php
+    public function delete($vars) 
+    {
+
+        extract($vars);
+
+        if (isset($_POST['submit'])) {
+            
+            User::destroy($id);
+            
+            header('Location: /admin/users');
+        }
+        
+        $data['title'] = 'Admin User Delete Page ';
+        $data['user_id'] = $id;
+
+        $this->_view->render('admin/users/delete', $data);
+
+    }
+```
+
 
 ### routes.php
 
 ```php
 
-    $router->get('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
+    $router->get('admin/users', 'Admin\users\UsersController@index');
+    $router->get('admin/users/create', 'Admin\users\UsersController@create');
+    $router->get('admin/users/edit/{id}', 'Admin\users\UsersController@edit');
+    $router->get('admin/users/delete/{id}', 'Admin\users\UsersController@delete');
+    $router->post('admin/users/create', 'Admin\users\UsersController@create');
+    $router->post('admin/users/edit/{id}', 'Admin\users\UsersController@edit');
+    $router->post('admin/users/delete/{id}', 'Admin\users\UsersController@delete');
 
-    $router->post('admin/posts/delete/{id}', 'Admin\blog\PostsController@delete');
-
-```
-
-## Admin\blog\PostsController
-
-```php
-    public function delete($vars) 
-    {
-        extract($vars);
-        
-        // Checking if form has been submitted    
-        
-        if (isset($_POST['submit'])) {
-            Post::destroy($this->resource, $id);
-            $this->redirect('/admin/posts');
-            
-        }
-        
-        // Checking if form has been reseted    
-
-        elseif (isset($_POST['reset'])) {
-            $this->redirect('/admin/posts');            
-        }
-
-        $data['title'] = 'Admin Delete Post ';
-        $data['post'] = Post::getPostById($id);
-        $this->_view->render('admin/posts/delete', $data);
-    
-    }
 
 ```
 
-### admin/posts/delete
-
+### admin/users/index.php
 ```php
 
-  <form class="form-horizontal" role="form" method="POST">
-    
-    <div class="panel-body">
-        <div class="form-group">
-            <label class="col-sm-12 control-label"><h2>This Post will be deleted! Are You Sure?</h2></label>
-        </div>
-    </div>
-    
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <button name="submit" type="submit" class="save btn btn-danger">Delete Post</button>
-            <button name="reset" class="save btn btn-info">Cansel</button>
-        </div>
-    </div>
-  </form>
+ <?php foreach ($users as $user):?>
+    <tr>
+        <td><?php echo $user['id']?></td>
+        <td><?php echo $user['name']?></td>
+        <td><?php echo $user['status']?></td>
+        <td>
+            <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
+                  
+            <a href="/admin/users/edit/<?= $user['id']?>">
+                <button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
+            </a>
+                              
+            <a href="/admin/users/delete/<?= $user['id']?>">
+                <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button>
+            </a>
+        </td>
+    </tr>
+<?php endforeach;?>
 
 ```
-## class Post 
+
+## password_verify()
+Мы просто берем хэш из базы, и пароль, введенный пользователем и передаем их в эту функцию. 
+
+password_verify() возвращает true, если хэш соответствует указанному паролю.
 
 ```php
-
-    public static function destroy($resource, $id) 
-    {
-        $con = Connection::make();
-
-        $sql = "DELETE FROM posts WHERE id = :id";
-    
-        $res = $con->prepare($sql);
-        $res->bindParam(':id', $id, PDO::PARAM_INT);
-        
-        Meta::destroy($resource, $id);
-        
-        return $res->execute();
-    }
-
+if (password_verify($password, $hash)) {
+   // Success!
+}else {
+   // Invalid credentials
+}
 ```
-## class Meta
+Соль является частью хэша и поэтому нам не придется возиться с ней отдельно.
+
+## password_needs_rehash()
+
+Вы решили усилить безопасность и увеличить стоимость вычисления или изменить соль, или PHP изменил алгоритм хэширования, используемый по умолчанию.
+Во этих случаях вы хотели бы изменить существующие хэши паролей. Функция password_needs_rehash() проверяет, использует ли хэш пароля конкретный алгоритм, соль и стоимость вычисления.
 
 ```php
+<?php
+if (password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => 12])) {
+   // the password needs to be rehashed as it was not generated with
+   // the current default algorithm or not created with the cost
+   // parameter 12
+   $hash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
+   // don't forget to store the new hash!
+}
+```
+## password_get_info()
+Функция password_get_info() принимает хэш и возвращает ассоциативный массив из трех элементов
+http://php.net/manual/ru/function.password-get-info.php
 
-    public static function destroy($resource, $resourceId) 
-    {
-        $con = Connection::make();
-        $sql = "DELETE FROM metas WHERE (resource_id = :resource_id AND resource = :resource)";
-        $res = $con->prepare($sql);
-        $res->bindParam(':resource_id', $resourceId, PDO::PARAM_INT);
-        $res->bindParam(':resource', $resource, PDO::PARAM_STR);
-        return $res->execute();
-    }
+- algo — константа, которая идентифицирует конкретный алгоритм http://php.net/manual/ru/password.constants.php
+- algoName — название используемого алгоритма
+- options — различные опции, используемые при генерации хэша
+   
+```php   
 
+ if(!password_verify($password, $passwordFromDatabase)){
+
+ // update hash from database - replace old hash 
+ // $passwordFromDatabase with new hash 
+
+ $password = password_hash($options['password'], PASSWORD_DEFAULT, ["cost" => 12]);
+
+ }
 ```
 
-# TinyMCE
-TinyMCE (Tiny Moxiecode Content Editor) — платформонезависимый JavaScript HTML WYSIWYG редактор на основе Web. К основным характеристикам программы относятся поддержка тем/шаблонов, языковая поддержка и возможность подключения модулей (плагинов). Используется в различных системах управления содержимым (CMS).
-
-Редактор позволяет вставлять рисунки, таблицы, указывать стили оформления текста, видео.
-
-Заявлена поддержка следующих браузеров:
-
-- Internet Explorer
-- Mozilla Firefox
-- Opera
-- Safari
-- Google Chrome
-
-## Quick install
-
-https://www.tinymce.com/
-
-Copy & paste the snippet below into your HTML page.
-
-```html
-
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <script src="https://cloud.tinymce.com/stable/tinymce.min.js"></script>
-    <script>tinymce.init({ selector:'textarea' });</script>
-    </head>
-    <body>
-    <textarea>Next, start a free trial!</textarea>
-    </body>
-    </html>
-```
-
-This domain is not registered with TinyMCE Cloud. Start a free trial to discover our premium cloud services and pro support.
-https://store.ephox.com/signup/
+## filter_var
+filter_var — Фильтрует переменную с помощью определенного фильтра
 
 
-## Установка редактора TinyMCE 
-
-1. Скачиваем пакет редактора TinyMCE с сайта https://www.tinymce.com/download/.
-
-2. Распаковываем пакет в папку на вашем сайте. Пусть это будет /public/vendor/tiny_mce. Именно в этой папке должен оказаться файл tiny_mce.js.
-
-3. Пакет редактора можно привязать к тегу textarea или div. 
-
-Простейший html или php файл будет выглядеть так:
-
-```html
-
-  <head>
-    <title>Подключение редактора TinyMCE</title>
-    <!-- TinyMCE -->
-
-    <script type="text/javascript" src="/vendors/tinymce/js/tinymce/tinymce.min.js"></script>
-
-    <script type="text/javascript">
-			tinymce.init({
-				selector : "textarea",
-				theme : "modern"
-			});
-    </script>
-
-    <!-- /TinyMCE -->
-  </head>
-
-```
-
-Здесь mode:"textarea" и theme:"modern" - директивы конфигурации. 
-
-## Настройка редактора TinyMCE
-
-- width - директива явно определяет ширину окна редактора. Размерность указывается в пикселях, указывать ее явно не надо.
-
-- height - директива явно определяет высоту окна редактора. Размерность указывается в пикселях, указывать ее явно не надо.
-
-- selector - директива определяет способ подключения редактора к тэгу.
-
-- theme - директива определяет "тему" редактора. Имеется 3 встроенных темы: inlite, mobile и modern. Темы можно создавать самостоятельно.
-
-- skin - определяет оформление вашего редактора. доступно оформление lightgray.
-
-```js
-    <script>
-			tinymce.init({
-				selector: 'textarea',
-				theme: 'modern',
-				height: 300,
-			});
-
-    </script>
-
-```
-- plugins - определяет список подключаемых плугинов.
-
-```js
-tinymce.init({
-  selector: 'textarea',
-  height: 500,
-  menubar: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor textcolor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table contextmenu paste code help wordcount'
-  ],
-
-});
-```
-- toolbar
-
-```js
-tinymce.init({
-  selector: 'textarea',
-  height: 500,
-  menubar: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor textcolor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table contextmenu paste code help wordcount'
-  ],
-  toolbar: 'insert | undo redo |  formatselect | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-
-});
-```
-- content_css - прикрепляет пользовательский стиль.
-
-```js
-tinymce.init({
-  selector: 'textarea',
-  height: 500,
-  menubar: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor textcolor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table contextmenu paste code help wordcount'
-  ],
-  toolbar: 'insert | undo redo |  formatselect | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_css: [
-    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-    ]
-});
-```
-
-## TinyMCE на Ukrane
-
-TinyMCE большой визуальный wysiwyg редактор, который предоставляет локализованные файлы почти для всех известных языков.
-
-Для начала, нужно скачать дополнительный пакет с языками и скопировать его в каталог редактора TinyMCE.
-https://www.tinymce.com/download/language-packages/?ctrl=lang&act=download&pr_id=1
-
-
-### Вы должны добавить const LANGUAGE:
+### Пример использования filter_var()
 
 ```php
-
-    define('ROOT', realpath(__DIR__.'/../'));
-    define('VIEWS', ROOT.'/views/');
-    define('CONTROLLERS', ROOT.'/controllers/');
-    define('CONFIG', ROOT.'/config/');
-    define('MODELS', ROOT.'/models/');
-
-    define('CORE', ROOT.'/core/');
-    define('DB', ROOT.'/db/');
-    define('EXT', '.php');
-    define('APPNAME', 'Great Shopaholic');
-    define('SLOGAN', 'Lets Build Cool Site');
-
-    define('LANGUAGE', 'uk');
+var_dump(filter_var('bob@example.com', FILTER_VALIDATE_EMAIL));
+var_dump(filter_var('http://example.com', FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED));
+```
+Результат выполнения данного примера:
+```
+string(15) "bob@example.com"
+bool(false)
 
 ```
+## FILTER_VALIDATE_EMAIL
+Проверяет, что значение является корректным e-mail.
 
-Нам нужно импортировать нашу const LANGUAGE в наш JS код:
-
-```js
-<script>
-
-var cur_lang = "<?= LANGUAGE; ?>"; // не забывайте двойные кавычки
-
-tinyMCE.init({
-...
-
-```
-
-Дальше, мы добавим параметры языка:
-
-```js
-<script>
-
-    var cur_lang = "<?= LANGUAGE; ?>";
-
-	tinymce.init({
-		selector: 'textarea',
-	    theme: 'modern',
-		height: 300,
-				
-		language : cur_lang, // Здесь добавлен параметр языка, значение которого соответствует языку сайта
-
-		plugins: 'image media table link paste contextmenu textpattern autolink codesample',
-				
-		insert_toolbar: 'quickimage quicktable media codesample',
-		selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
-			
-		paste_data_images: true,
-		content_css: [
-			'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-		]
-	});
-
-```
-
-После этого, интерфейс вашего редактора TinyMCE будет отображаться на языке вашего веб-сайта или веб-приложения. 
-
-## Image Upload
-
-## plugins/filemanager
+В целом, происходит проверка синтаксиса адреса в соответствии с RFC 822, с тем исключением, что не поддерживаются комментарии, схлопывание пробельных символов и доменные имена без точек.
 
 ```php
-
-//**********************
-//Path configuration
-//**********************
-// In this configuration the folder tree is
-// root
-//   |- tinymce
-//   |    |- source <- upload folder
-//   |    |- js
-//   |    |   |- tinymce
-//   |    |   |    |- plugins
-//   |    |   |    |-   |- filemanager
-//   |    |   |    |-   |-      |- thumbs <- folder of thumbs [must have the write permission]
-
-$base_url=""; //url base of site if you want only relative url leave empty
-
-$upload_dir = '/media/'; // path from base_url to upload base dir
-$current_path = '../../../../media'; // relative path from filemanager folder to upload files folder
-
-$MaxSizeUpload=100; //Mb
-```
-## admin/header.php
-
-```php
-
-<script src="/js/tinymce/tinymce.min.js"></script>
-
-    <script>
-
-			tinymce.init({
-					selector: "textarea", theme: "modern", height: 300,
-					plugins: [
-							"advlist autolink link image lists charmap print preview hr anchor pagebreak",
-							"searchreplace wordcount visualblocks visualchars insertdatetime media nonbreaking",
-							"table contextmenu directionality emoticons paste textcolor responsivefilemanager code"
-				],
-				toolbar1: "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | styleselect",
-				toolbar2: "| responsivefilemanager | link unlink anchor | image media | forecolor backcolor  | print preview code ",
-				image_advtab: true ,
-
-				external_filemanager_path:"/filemanager/",
-				filemanager_title:"Responsive Filemanager" ,
-				external_plugins: { "filemanager" : "/filemanager/plugin.min.js"}
-			});
+   /**
+    * Проверяем поле Email на корректность
+    */
+   public static function checkEmail ($email) {
+       if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+           return true;
+       }
+       return false;
+   }
 
 ```

@@ -16,6 +16,7 @@ require_once MODELS.'Category.php';
 require_once MODELS.'Product.php';
 require_once MODELS.'Post.php';
 require_once MODELS.'Meta.php';
+require_once MODELS.'User.php';
 require_once CORE.'Connection.php';
 require_once CORE.'View.php';
 require_once CORE.'Controller.php';
