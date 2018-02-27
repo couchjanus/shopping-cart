@@ -17,11 +17,15 @@ require_once MODELS.'Product.php';
 require_once MODELS.'Post.php';
 require_once MODELS.'Meta.php';
 require_once MODELS.'User.php';
+require_once CORE.'Session.php';
 require_once CORE.'Connection.php';
 require_once CORE.'View.php';
 require_once CORE.'Controller.php';
 require_once CORE.'Request.php';
 require_once CORE.'Router.php';
+
+// Запускаем сессию
+Session::init();
 
 $routesFile = CONFIG.'routes.php';
 

@@ -2,17 +2,17 @@
 
 /**
  * Class UserController для работы с пользователем
- */
+*/
+class UsersController extends Controller
+{
 
- class UsersController extends Controller 
- {
-
-     protected $user;
+    protected $user;
 
     /**
      * Регистрация пользователя
     */
-    public function signup() {
+    public function signup()
+    {
 
         $result = false;
         
@@ -58,18 +58,23 @@
      * Авторизация пользователя
      *
      * @return bool
-     */
-    public function login () 
+    */
+    public function login() 
     {
-
         $email = '';
         $password = '';
-    
+
+        if (Session::get('logged') == true) {
+            header("Location: /profile"); //перенаправляем в личный кабинет
+        }
+
         if (isset($_POST) and (!empty($_POST))) {
 
             $email = trim(strip_tags($_POST['email']));
-            $password = $_POST['password'];
 
+            $password = trim(strip_tags($_POST['password']));
+
+            
             //Флаг ошибок
             $data['errors'] = false;
 
@@ -83,15 +88,30 @@
 
             if ($userId == false) {
                 $data['errors'][] = "Пользователя с таким email или паролем не существует";
-            }else{
+            } else {
                 $this->user = User::get($userId);
 
-                header("Location: /"); //перенаправляем в личный кабинет
+                User::auth($userId); //записываем пользователя в сессию
+
+                header("Location: /profile"); //перенаправляем в личный кабинет
             }
         }
         $data['title'] = 'Login Page ';
+
         $this->_view->render('user/login', $data);
 
+    }
+
+    /**
+     * Выход из учетной записи
+     *
+     * @return bool
+    */
+    public function logout()
+    {
+        Session::destroy();
+        header('Location: /');
+        return true;
     }
 
 }

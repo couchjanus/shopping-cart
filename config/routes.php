@@ -50,3 +50,10 @@ $router->post('login', 'UsersController@login');
 
 $router->get('register', 'UsersController@signup');
 $router->post('register', 'UsersController@signup');
+
+$router->get('profile', 'ProfileController@index');
+$router->get('profile/edit', 'ProfileController@edit');
+
+$router->get('logout', 'UsersController@logout');
+$router->post('logout', 'UsersController@logout');
+

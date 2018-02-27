@@ -12,3 +12,4 @@
     define('APPNAME', 'Great Shopaholic');
     define('SLOGAN', 'Lets Build Cool Site');
     define('LANGUAGE', 'uk');
+    define('SESSION_PREFIX', 'shop_');

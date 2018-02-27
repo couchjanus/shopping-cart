@@ -37,8 +37,11 @@
                         <dropdown>
                             <input id="toggle-user" type="checkbox">
                             <ul class="animate">
-                                <li class="animate"><a href="/register">Sign Up <i class="fa fa-user-plus float-right"></i><a></li>
-                                <li class="animate"><a href="/login">Sign In <i class="fa fa-sign-in float-right"></i></a></li>
-                                <li class="animate">Profile <i class="fa fa-cog float-right"></i></li>
+                            <?php if(User::isGuest()):?>
+                                    <li class="animate"><a href="/register">SignUp<i class="fa fa-user-plus float-right"></i></a></li>
+                                    <li class="animate"><a href="/login">LogIn<i class="fa fa-sign-in float-right"></i></a></li>
+                                <?php else:?>
+                                    <li class="animate"><a href="/logout">LogOut<i class="fa fa-sign-out float-right"></i></a></li>
+                                <?php endif;?>
                             </ul>
                         </dropdown>

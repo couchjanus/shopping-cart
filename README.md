@@ -1,439 +1,504 @@
 # shopping-cart
 
-# TABLE `users`
+# Сессии
+Сессии являются простым способом хранения информации для отдельных пользователей с уникальным идентификатором сессии. Это может использоваться для сохранения состояния между запросами страниц. 
 
-```sql
-SET NAMES utf8mb4;
+Идентификаторы сессий обычно отправляются браузеру через сессионный cookie и используются для получения имеющихся данных сессии. 
 
-DROP TABLE IF EXISTS `users`;
+Отсутствие идентификатора сессии или сессионного cookie сообщает PHP о том, что необходимо создать новую сессию и сгенерировать новый идентификатор сессии.
 
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role_id` int(11) unsigned NOT NULL DEFAULT '2',
-  `status` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+Когда сессия создана, PHP будет либо получать существующую сессию, используя переданный идентификатор (обычно из сессионного cookie) или, если ничего не передавалось, будет создана новая сессия. 
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role_id`, `status`) VALUES
-(1,	'Janus',	'couchjanus@gmail.com',	'$2y$12$C/UMJOWWyb1S7Sqtcl5pI.X9U12fMfx1jgUZ6UB.crsGGkWxGvXZW',	3,	1);
+PHP заполнит суперглобальную переменную $_SESSION сессионной информацией после того, как будет запущена сессия. 
 
-```
+## session_start()
 
-# Модель User 
+Сессии могут запускаться вручную с помощью функции session_start(). 
+Эта команда говорит серверу, что данная страница нуждается во всех переменных, которые связаны с данным пользователем (браузером). Сервер берёт эти переменные из файла и делает их доступными. 
+
+Очень важно открыть сессию до того, как какие-либо данные будут посылаться пользователю; на практике это значит, что функцию session_start() желательно вызывать в самом начале страницы:
 
 ```php
 
-class User 
-{
-    private $role;
-    
-    public static function index() 
-    {
-        $con = Connection::make();
-        $sql = "SELECT * FROM users ORDER BY id ASC";
-        $con->exec("set names utf8mb4");
-        $res = $con->query($sql);
-        $users = $res->fetchAll(PDO::FETCH_ASSOC);
-        return $users;
-    }
+<?php
+session_start();
+
 ```
-# Хэширование паролей
 
-Хеширование паролей является одним из основных соображений безопасности, которые необходимо сделать, при разработке приложения, принимающего пароли от пользователей. Без хеширования, пароли, хранящиеся в базе вашего приложения, могут быть украдены, например, если ваша база данных была скомпрометирована, а затем немедленно могут быть применены для компрометации не только вашего приложения, но и аккаунтов ваших пользователей на других сервисах, если они не используют уникальных паролей.
+Если директива session.auto_start установлена в 1, сессия автоматически запустится, в начале запроса.
 
-Применяя хеширующий алгоритм к пользовательским паролям перед сохранением их в своей базе данных, вы делаете невозможным разгадывание оригинального пароля для атакующего вашу базу данных, в то же время сохраняя возможность сравнения полученного хеша с оригинальным паролем.
+Запустите браузер, и откройте в нём Developer Tools, далее перейдите в Storage — вы должны увидеть заголовки которые нам прислал сервер:
 
-## MD5, SHA1 и SHA256
-Почему популярные хеширующие функции, такие как md5() и sha1() не подходят для паролей?
+## Browser session cookie
 
-Такие хеширующие алгоритмы как MD5, SHA1 и SHA256 были спроектированы очень быстрыми и эффективными. При наличии современных технологий и оборудования, стало довольно просто выяснить результат этих алгоритмов методом "грубой силы" для определения оригинальных вводимых данных.
+браузер хранит у себя cookie с именем `PHPSESSID`:
 
-Из-за той скорости, с которой современные компьютеры могут "обратить" эти хеширующие алгоритмы, многие профессионалы компьютерной безопасности строго не рекомендуют использовать их для хеширования паролей.
+```
+Name: PHPSESSID 
+Domain: 127.0.0.1
+Expires on: Session
+Value: 95bok2h8eu4u7prdkpbfpr9rqp
+Last accessed on: 27.02.2018
+HttpOnly: false
+```
 
-## как хешировать свои пароли?
+PHPSESSID – имя сессии по умолчанию, регулируется из конфига php.ini директивой session.name, при необходимости имя можно изменить в самом конфигурационном файле или с помощью функции session_name() 
 
-При хешировании паролей существует два важных соображения: это стоимость вычисления и соль. Чем выше стоимость вычисления хеширующего алгоритма, тем больше времени требуется для взлома его вывода методом "грубой силы".
 
-PHP предоставляет встроенное API хеширования паролей, которое безопасно работает и с хешированием и с проверкой паролей.
-
-## Необратимое хеширование строки
-
-http://php.net/manual/ru/function.crypt.php
-Другой возможностью является функция crypt(), которая поддерживает несколько алгоритмов хеширования в PHP. При использовании этой функции вы можете быть уверенным, что выбранный вами алгоритм доступен, так как PHP содержит собственную реализацию каждого поддерживаемого алгоритма, даже в случае, если какие-то из них не поддерживаются вашей системой.
-
-При хешировании паролей рекомендуется применять алгоритм Blowfish, который также используется по умолчанию в API хеширования паролей, так как он значительно большей вычислительной сложности, чем MD5 или SHA1.
-
-## Что такое соль?
-
-Криптографическая соль представляет собой данные, которые применяются в процессе хеширования для предотвращения возможности разгадать оригинальный ввод с помощью поиска результата хеширования в списке заранее вычисленных пар ввод-хеш, известном также как "радужная" таблица.
-
-Криптографическая соль - это кусочек дополнительных данных, которые делают ваши хеши намного более устойчивыми к взлому. Существует много онлайн-сервисов, предоставляющих обширные списки заранее вычисленных хешей вместе с их оригинальным вводом. Использование соли делает поиск результирующего хеша в таком списке маловероятным или даже невозможным.
-
-password_hash() создает случайную соль в случае, если она не была передана, и чаще всего это наилучший и безопасный выбор.
-
-## Как я должен хранить свою соль?
-
-При использовании функции password_hash() или crypt(), возвращаемое значение уже содержит соль как часть созданного хеша. Это значение нужно хранить как есть в вашей базе данных, так как оно содержит также информацию о хеширующей функции, которая использовалась, и может быть непосредственно передано в функции password_verify() или crypt() при проверке пароля.
-    
-## password_hash
-password_hash() — используется для хэширования пароля.
-http://php.net/manual/ru/function.password-hash.php
-
-## password_verify
-password_verify() — используется для проверки пароля на соответствие хэшу. http://php.net/manual/ru/function.password-verify.php
-
-## password_needs_rehash
-password_needs_rehash() — используется для проверки необходимости создать новый хэш.
-http://php.net/manual/ru/function.password-needs-rehash.php
-
-## password_get_info
-password_get_info() — возвращает имя алгоритма хеширования и различные параметры, используемые при хэшировании.
-http://php.net/manual/ru/function.password-get-info.php
-
-### Функция password_hash()
+## Регистрация переменной с помощью $_SESSION.
 
 ```php
 <?php
-// наш пароль
-$pass="123456";
-$hash=password_hash($pass, PASSWORD_DEFAULT);
+session_start();
+if (!isset($_SESSION['count'])) {
+  $_SESSION['count'] = 0;
+} else {
+  $_SESSION['count']++;
+}
 ?>
 ```
-Первым параметр - строка пароля, который необходимо хэшировать, а второй параметр определяет алгоритм, который должен быть использован для генерирования хэша.
-
-## salt
-Если вы хотите использовать вашу собственную соль (или стоимость вычисления), вы можете сделать это путем передачи третьего аргумента функции:
+## Отмена объявления переменной с помощью $_SESSION.
 
 ```php
-$options = [
-   'salt' => custom_function_for_salt(), //write your own code to generate a suitable salt
-   'cost' => 12 // the default cost is 10
-];
-$hash = password_hash($password, PASSWORD_DEFAULT, $options);
+<?php
+session_start();
+unset($_SESSION['count']);
+?>
+
+
 ```
-Если PHP позже примет решение о применении более мощного алгоритма хеширования, ваш код может воспользоваться им без изменений.
+## Регистрация переменной
 
-# Предопределенные константы
-
-- PASSWORD_BCRYPT (integer) = 1
-- PASSWORD_BCRYPT используется для создания нового хэш пароля с использованием алгоритма CRYPT_BLOWFISH.
-
-# Алгоритм по умолчанию
-
-Алгоритм по умолчанию - BCrypt, но более сильный алгоритм может быть установлен по умолчанию.
-
-## PASSWORD_DEFAULT
-
-PASSWORD_DEFAULT (integer) = PASSWORD_BCRYPT
-
-Используется алгоритм хэширования по умолчанию, если алгоритм не задан. Он может измениться в новых версиях PHP, когда будут поддерживаться новые, более эффективные алгоритмы хэширования.
-
-Если вы используете PASSWORD_DEFAULT, обязательно храните хэш в колонке, размером больше 60 символов. Лучше всего установить размер 255. 
-
-## PASSWORD_BCRYPT
-Также можете использовать PASSWORD_BCRYPT в качестве второго параметра. В этом случае результат всегда будет 60 символов.
+После начала сессии можно задавать глобальные переменные. При присвоении какого-либо значения любому полю массива $_SESSION, переменная с таким же именем автоматически регистрируется, как переменная сессии. Этот массив доступен на всех страницах, использующих сессию.
 
 ```php
-    
-    // generate new password
+    public static function set($key,$value){
+		$_SESSION[SESSION_PREFIX.$key] = $value;
+	}
+```
+При использовании сессий вся информация хранится не на стороне клиента, а на стороне сервера. 
 
-    $hash = password_hash($options['password'], PASSWORD_DEFAULT, ["cost" => 12]);
+В броузере клиента, хранится лишь уникальный идентификатор номера сессии, либо в форме cookie, либо в виде переменной в адресной строке броузера, какой из двух способов использовать для передачи идентификатора сессии между страницами интерпретатор PHP выбирает сам. Это безопасно, так как идентификатор сессии уникален, и подделать его практически невозможно.
 
-    $res->bindParam(':password', $hash, PDO::PARAM_STR);
-    $res->bindParam(':role', $options['role'], PDO::PARAM_INT);
+Чтобы идентифицировать пользователей, сервер использует уникальные пользовательские идентификаторы/userID, которые хранятся в куках. 
 
-    return $res->execute();
-   }
+```
+Value: 95bok2h8eu4u7prdkpbfpr9rqp
+
+```
+## session.save_path
+По умолчанию PHP использует внутренний обработчик files для сохранения сессий, который установлен в INI-переменной session.save_handler. Этот обработчик сохраняет данные на сервере в директории, указанной в конфигурационной директиве session.save_path.
+
+Для задания директории в которой будут сохраняться файлы сессий используется функция session_save_path():
+
+```php
+session_save_path($_SERVER['DOCUMENT_ROOT'].'/session');
 
 ```
 
+Сессии, использующие файлы (по умолчанию в PHP), блокируют файл сессии сразу при открытии сессии функцией session_start() или косвенно при указании session.auto_start. После блокировки, ни один другой скрипт не может получить доступ к этому же файлу сессии, пока он не будет закрыт или при завершении скрипта или при вызове функции session_write_close().
+
+
 ```php
 
-    public static function store($options) 
-    {
+private static $_sessionStarted = false;
 
-        $db = Connection::make();
+	public static function init(){
 
-        $sql = "INSERT INTO users(name, email, password, role_id)
-                VALUES(:name, :email, :password, :role)";
-               
-        $password = password_hash($options['password'], PASSWORD_DEFAULT);
-        
-        $res = $db->prepare($sql);
-        $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
-        $res->bindParam(':email', $options['email'], PDO::PARAM_STR);
-        $res->bindParam(':password', $password, PDO::PARAM_STR);
-        $res->bindParam(':role', $options['role'], PDO::PARAM_INT);
+		if(self::$_sessionStarted == false){
+			session_start();
+			self::$_sessionStarted = true;
+		}
 
-        return $res->execute();
-    }
+	}
+
 
 ```
+- после вызова session_start() PHP ищет в cookie идентификатор сессии по имени прописанном в session.name – это PHPSESSID
+- если нет идентификатора – то он создаётся, и создаёт пустой файл сессии по пути session.save_path с именем sess_{session_id()}, в ответ сервера будет добавлены заголовки, для установки cookie {session_name()}={session_id()}
+- если идентификатор присутствует, то ищем файл сессии в папке session.save_path:
+- если не находим – создаём пустой файл с именем sess_{$_COOKIE[session_name()]} (идентификатор может содержать лишь символы из диапазонов a-z, A-Z, 0-9, запятую и знак минус)
+- если находим, читаем файл и распаковываем данные в супер-глобальную переменную $_SESSION
+- когда скрипт закончил свою работу, то все данные из $_SESSION запаковывают с использованием session_encode() в файл по пути session.save_path с именем sess_{session_id()}
+
+
+Когда PHP завершает работу, он автоматически сериализует содержимое суперглобальной переменной $_SESSION и отправит для сохранения, используя сессионный обработчик для записи сессии.
+
+Сессия обычно завершает свою работу, когда PHP заканчивает исполнять скрипт, но может быть завершена и вручную с помощью функции session_write_close().
+
+## session_destroy();
+По умолчанию сессия длится, пока пользователь не закроет окно браузера, и тогда она загибается автоматически. Но если вы хотите принудительно завершить сессию, её всегда можно замочить таким образом:
+
 
 ```php
-    public static function update($userId, $options)
-    {
-
-        $db = Connection::make();
-
-        $sql = "UPDATE users
-                SET name = :name, 
-                    password = :password, 
-                    email = :email, 
-                    role_id = :role, 
-                    status = :status
-                WHERE id = :id
-               ";
-
-
-        $res = $db->prepare($sql);
-
-        $res->bindParam(':name', $options['name'], PDO::PARAM_STR);
-        $res->bindParam(':password', $options['password'], PDO::PARAM_STR);
-        $res->bindParam(':email', $options['email'], PDO::PARAM_STR);
-        $res->bindParam(':role', $options['role'], PDO::PARAM_INT);
-        
-        $status = $options['status']? 1:0;
-        
-        $res->bindParam(':status', $status, PDO::PARAM_INT);
-        $res->bindParam(':id', $userId, PDO::PARAM_INT);
-
-        return $res->execute();
-    }
+		if(self::$_sessionStarted == true){
+			session_unset();
+			session_destroy();
+		}
 ```
+
+Сессия заканчивается/(dies), если пользователь не запрашивает страниц в течение какого-то времени (стандартное значение - 20 минут). 
+
+## Управление сессиями 
+http://php.net/manual/ru/book.session.php
+
+Другие полезные функции для работы с сессиями:
+
+- unset($_SESSION['a']) - сессия "забывает" значение заданной сессионой переменной;
+- session_destroy() - сессия уничтожается (если пользователь покинул систему, нажав кнопку "выход");
+- session_set_cookie_params(int lifetime [, string path [, string domain]]) - с помощью этой функции можно установить, как долго будет "жить" сессия, задав unix_timestamp определяющий время "смерти" сессии. По умолчанию, сессия "живёт" до тех пор, пока клиент не закроет окно браузера.
+- session_write_close() - запись переменных сесии и закрытие ее. Это необходимо для открытия сайта в новом окне, если страница выполняет длительную обработу и заблокировала для вашего браузера файл сессий.
+
+## config/app.php
 
 ```php
-    public static function destroy($id) 
-    {
-        $con = Connection::make();
-        $sql = "DELETE FROM users WHERE id = :id";
-        $res = $con->prepare($sql);
-        $res->bindParam(':id', $id, PDO::PARAM_INT);
-        
-        return $res->execute();
-    }
+
+define('SESSION_PREFIX', 'shop_');
 
 ```
-
-
-# CRUD-приложения
+# class Session
 
 ```php
 <?php
 
-class UsersController extends Controller
-{
+class Session {
+
+	private static $_sessionStarted = false;
+
+	public static function init(){
+
+		if(self::$_sessionStarted == false){
+			session_start();
+			self::$_sessionStarted = true;
+		}
+
+	}
+
+	public static function set($key,$value){
+		$_SESSION[SESSION_PREFIX.$key] = $value;
+	}
+
+	public static function get($key,$secondkey = false){
+
+		if($secondkey == true){
+
+			if(isset($_SESSION[SESSION_PREFIX.$key][$secondkey])){
+				return $_SESSION[SESSION_PREFIX.$key][$secondkey];
+			}
+
+		} else {
+
+			if(isset($_SESSION[SESSION_PREFIX.$key])){
+				return $_SESSION[SESSION_PREFIX.$key];
+			}
+
+		}
+
+		return false;
+
+	}
+
+	public static function display(){
+		return $_SESSION;
+	}
+
+	public static function destroy(){
+
+		if(self::$_sessionStarted == true){
+			session_unset();
+			session_destroy();
+		}
+
+	}
+
+}
+
 ```
 
-# SELECT
+## Логин в систему с сессиями
+
+### Форма входа в систему:
+
+```html
+
+<?php
+require_once VIEWS.'shared/head.php';
+require_once VIEWS.'shared/navigation.php';
+?>
+
+<section class="product">
+    <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+
+          <?php if (isset($data['errors']) && is_array($data['errors'])):?>
+            <div class="jumbotron">
+              <h4>Eroors:</h4>
+            </div>
+            <div class="row">
+              <ul class="errors">
+                  <?php foreach($data['errors'] as $error):?>
+                      <li> - <?php echo $error;?></li>
+                  <?php endforeach;?>
+              </ul>
+            </div>
+          <?php endif;?>
+
+        <div class="jumbotron">
+           <h1><?=$title;?></h1>
+        </div>
+
+      <div class="row">
+            <div class="form">
+                    <div id="login">
+                      <h1>Welcome Back!</h1>
+
+                      <form method="post" autocomplete="off">
+
+                        <div class="field-wrap">
+                        <label for="email">Email Address 
+                          <span class="req">*</span>
+                        </label>
+                        <input type="email" name="email" id="email" required autocomplete="new-password" placeholder = ''/>
+                      </div>
+
+                      <div class="field-wrap">
+                        <label>
+                          Password<span class="req">*</span>
+                        </label>
+                        <input type="password" name="password" required autocomplete="new-password"/>
+                      </div>
+
+                      <p class="forgot"><a href="#">Forgot Password?</a></p>
+
+                      <input type="submit" class="button button-block" value="Log In" />
+
+                      </form>
+                  </div><!-- content -->
+
+            </div> <!-- /form -->
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<?php
+require_once VIEWS.'shared/footer.php';
+
+```
+## Метод login
 
 ```php
+
+    public function login() 
+    {
+        $email = '';
+        $password = '';
+
+        if (Session::get('logged') == true) {
+           
+            //перенаправляем в личный кабинет
+            header("Location: /profile"); 
+
+        }
+
+        if (isset($_POST) and (!empty($_POST))) {
+            $email = trim(strip_tags($_POST['email']));
+            $password = trim(strip_tags($_POST['password']));
+
+            //Флаг ошибок
+            $data['errors'] = false;
+
+            //Валидация полей
+            if (!User::checkEmail($email)) {
+                $data['errors'][] = "Некорректный Email";
+            }
+
+            // Проверяем, существует ли пользователь
+
+            $userId = User::checkUserData($email, $password);
+
+            if ($userId == false) {
+                $data['errors'][] = "Пользователя с таким email или паролем не существует";
+            } else {
+                $this->user = User::get($userId);
+
+                // записываем пользователя в сессию
+            
+                User::auth($userId); 
+
+                //перенаправляем в личный кабинет
+
+                header("Location: /profile"); 
+            }
+        }
+        $data['title'] = 'Login Page ';
+        $this->_view->render('user/login', $data);
+
+    }
+
+```
+
+
+## Проверить корректность username и password
+
+```php
+
+    /**
+     * Проверка на существовние введенных данных
+     *
+     * @param $email
+     * @param $password
+     * 
+     * @return bool
+     */
+    public static function checkUserData($email, $password)
+    {
+
+        $db = Connection::make();
+        $sql = "SELECT * FROM users WHERE email = :email";
+        $res = $db->prepare($sql);
+        $res->bindParam(':email', $email, PDO::PARAM_STR);
+        $res->execute();
+        $user = $res->fetch();
+
+        if (!self::checkPw($password, $user['password'])) {
+            return $user['id'];
+        }
+        return false;
+    }
+
+```
+
+
+```php
+
+    protected static function checkPw($userpassword, $dbpassword)
+    {
+        $resp = password_verify($userpassword, $dbpassword);
+        return $resp;
+    }
+
+```
+	 
+## Если корректны, устанавливаем значение ключей сессии
+
+```php
+
+    /**
+     *Запись пользователя в сессию
+     *
+     * @param $userId
+    */
+    public static function auth($userId)
+    {
+        Session::set('userId', $userId);
+        Session::set('logged', true);
+    }
+
+```
+
+При работе с защищёнными файлами мы проверяем, вошёл ли пользователь с корректным логином. Если нет, the пользователь отправляется обратно к логин-форме:
+
+```php
+
+    /**
+     * Проверяем, авторизован ли пользователь при переходе в личный кабинет
+     *
+     * @return mixed
+    */
+    public static function checkLog()
+    {
+        //Если сессия есть, то возвращаем id пользователя
+
+        if ((Session::get('userId'))) {
+            return Session::get('userId');
+        }
+        
+        // Если пользователь не зашёл, отправить его/её к логин-форме
+        
+        header('Location: user/login');
+    }
+
+```
+
+### Проверяем наличие открытой сессии у пользователя
+
+```php
+    /**
+     * Проверяем наличие открытой сессии у пользователя для
+     * отображения на сайте необходимой информации
+     *
+     * @return bool
+    */
+    public static function isGuest()
+    {
+
+        if (Session::get('logged') == true) {
+            return false;
+        }
+        return true;
+    }
+
+```
+
+### navigation
+
+```html
+
+<dropdown>
+    <input id="toggle-user" type="checkbox">
+        <ul class="animate">
+            <?php if(User::isGuest()):?>
+                <li class="animate"><a href="/register">SignUp<i class="fa fa-user-plus float-right"></i></a></li>
+                <li class="animate"><a href="/login">LogIn<i class="fa fa-sign-in float-right"></i></a></li>
+            <?php else:?>
+                <li class="animate"><a href="/logout">LogOut<i class="fa fa-sign-out float-right"></i></a></li>
+            <?php endif;?>
+        </ul>
+    </dropdown>
+```
+
+## Контроллер для работы с личным кабинетом
+
+```php
+
+class ProfileController extends Controller
+{
+    private $_userId;
+    private $_user;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        //Получаем id пользователя из сессии
+        $this->_userId = User::checkLog();
+        
+        //Получаем всю информацию о пользователе из БД
+        $this->_user = User::getUserById($this->_userId);
+    }
+
+```
+
+## Основная страница личного кабинета
+```php
+    /**
+    * Основная страница личного кабинета
+    *
+    * @return bool
+    */
     public function index()
     {
-            $data['users'] = User::index();
-            $data['title'] = 'Admin User List Page ';
-            $this->_view->render('admin/users/index', $data);
-    }
-```    
-# CREATE
+        $data['title'] = 'Личный кабинет ';
+        $data['subtitle'] = 'Edit Your Private Things ';
+        $data['user'] = $this->_user;
 
-```php
-    public function create() 
-    {
-
-        if (isset($_POST) and !empty($_POST)) {
-            $options['name'] = trim(strip_tags($_POST['name']));
-            $options['email'] = trim(strip_tags($_POST['email']));
-            $options['role'] = $_POST['role'];
-            
-            $options['password'] = trim(strip_tags($_POST['password']));
-            
-            User::store($options);
-
-            header('Location: /admin/users');
+        if ($data['user']['role_id']==1) {
+            $this->_view->render('admin/index', $data);   
+        } else {
+            $this->_view->render('profile/index', $data);
         }
-        
-        $data['title'] = 'Admin User Add Page ';
-        
-        $this->_view->render('admin/users/create', $data);
-        
     }
-```
-
-# UPDATE
-```php
-    public function edit($vars) 
-    {
-        
-        extract($vars);
-
-        $user = User::get($id);
-
-        if (isset($_POST) and !empty($_POST)) {
-            $options['name'] = trim(strip_tags($_POST['name']));
-            $options['email'] = trim(strip_tags($_POST['email']));
-            $options['password'] = trim(strip_tags($_POST['password']));
-            $options['role'] = $_POST['role'];
-            $options['status'] = $_POST['status'];
-            
-            User::update($id, $options);
-
-            header('Location: /admin/users');
-        }
-        
-        $data['title'] = 'Admin User Edit Page ';
-        
-        $data['user'] = $user;
-        
-        $this->_view->render('admin/users/edit', $data);
-    }
-```
-
-## DELETE
-
-```php
-    public function delete($vars) 
-    {
-
-        extract($vars);
-
-        if (isset($_POST['submit'])) {
-            
-            User::destroy($id);
-            
-            header('Location: /admin/users');
-        }
-        
-        $data['title'] = 'Admin User Delete Page ';
-        $data['user_id'] = $id;
-
-        $this->_view->render('admin/users/delete', $data);
-
-    }
-```
-
-
-### routes.php
-
-```php
-
-    $router->get('admin/users', 'Admin\users\UsersController@index');
-    $router->get('admin/users/create', 'Admin\users\UsersController@create');
-    $router->get('admin/users/edit/{id}', 'Admin\users\UsersController@edit');
-    $router->get('admin/users/delete/{id}', 'Admin\users\UsersController@delete');
-    $router->post('admin/users/create', 'Admin\users\UsersController@create');
-    $router->post('admin/users/edit/{id}', 'Admin\users\UsersController@edit');
-    $router->post('admin/users/delete/{id}', 'Admin\users\UsersController@delete');
-
-
-```
-
-### admin/users/index.php
-```php
-
- <?php foreach ($users as $user):?>
-    <tr>
-        <td><?php echo $user['id']?></td>
-        <td><?php echo $user['name']?></td>
-        <td><?php echo $user['status']?></td>
-        <td>
-            <button class="btn btn-default"><i class="glyphicon glyphicon-eye-open"></i> View</button>
-                  
-            <a href="/admin/users/edit/<?= $user['id']?>">
-                <button class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i> Edit</button>
-            </a>
-                              
-            <a href="/admin/users/delete/<?= $user['id']?>">
-                <button class="btn btn-danger"><i class="glyphicon glyphicon-remove"></i> Delete</button>
-            </a>
-        </td>
-    </tr>
-<?php endforeach;?>
-
-```
-
-## password_verify()
-Мы просто берем хэш из базы, и пароль, введенный пользователем и передаем их в эту функцию. 
-
-password_verify() возвращает true, если хэш соответствует указанному паролю.
-
-```php
-if (password_verify($password, $hash)) {
-   // Success!
-}else {
-   // Invalid credentials
-}
-```
-Соль является частью хэша и поэтому нам не придется возиться с ней отдельно.
-
-## password_needs_rehash()
-
-Вы решили усилить безопасность и увеличить стоимость вычисления или изменить соль, или PHP изменил алгоритм хэширования, используемый по умолчанию.
-Во этих случаях вы хотели бы изменить существующие хэши паролей. Функция password_needs_rehash() проверяет, использует ли хэш пароля конкретный алгоритм, соль и стоимость вычисления.
-
-```php
-<?php
-if (password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => 12])) {
-   // the password needs to be rehashed as it was not generated with
-   // the current default algorithm or not created with the cost
-   // parameter 12
-   $hash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
-   // don't forget to store the new hash!
-}
-```
-## password_get_info()
-Функция password_get_info() принимает хэш и возвращает ассоциативный массив из трех элементов
-http://php.net/manual/ru/function.password-get-info.php
-
-- algo — константа, которая идентифицирует конкретный алгоритм http://php.net/manual/ru/password.constants.php
-- algoName — название используемого алгоритма
-- options — различные опции, используемые при генерации хэша
-   
-```php   
-
- if(!password_verify($password, $passwordFromDatabase)){
-
- // update hash from database - replace old hash 
- // $passwordFromDatabase with new hash 
-
- $password = password_hash($options['password'], PASSWORD_DEFAULT, ["cost" => 12]);
-
- }
-```
-
-## filter_var
-filter_var — Фильтрует переменную с помощью определенного фильтра
-
-
-### Пример использования filter_var()
-
-```php
-var_dump(filter_var('bob@example.com', FILTER_VALIDATE_EMAIL));
-var_dump(filter_var('http://example.com', FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED));
-```
-Результат выполнения данного примера:
-```
-string(15) "bob@example.com"
-bool(false)
-
-```
-## FILTER_VALIDATE_EMAIL
-Проверяет, что значение является корректным e-mail.
-
-В целом, происходит проверка синтаксиса адреса в соответствии с RFC 822, с тем исключением, что не поддерживаются комментарии, схлопывание пробельных символов и доменные имена без точек.
-
-```php
-   /**
-    * Проверяем поле Email на корректность
-    */
-   public static function checkEmail ($email) {
-       if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-           return true;
-       }
-       return false;
-   }
-
 ```

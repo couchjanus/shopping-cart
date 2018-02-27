@@ -29,7 +29,7 @@ require_once VIEWS.'shared/navigation.php';
                     <div id="login">
                       <h1>Welcome Back!</h1>
 
-                      <form action="" method="post" autocomplete="off">
+                      <form method="post" autocomplete="off">
 
                         <div class="field-wrap">
                         <label for="email">Email Address 
