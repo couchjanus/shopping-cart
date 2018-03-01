@@ -1,38 +1,55 @@
 <?php
-require_once VIEWS.'shared/head.php';
-require_once VIEWS.'shared/navigation.php';
+    require_once VIEWS.'shared/head.php';
+    require_once VIEWS.'shared/navigation.php';
 ?>
-
+<!-- product Start -->
 <section class="product">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
+              <div class="breadcrumb"><?= $breadcrumb;?></div>
                 <div class="feature_header text-center">
-                    <h3 class="feature_title"><?=$title;?></h3>
-                    <h4 class="feature_sub"><?=$subtitle;?></h4>
+                    <h2 class="feature_title"><?=$title;?></h2>
+                    <div class="container">
+                        <div class="row">
+                          <h4>Search Blog</h4>
+                            <form action="/blog/search" method="post">
+                            <div id="custom-search-input">
+                              <div class="input-group col-md-12">
+                                <input type="text" class="search-query form-control" placeholder="Search" name="query" />
+                                <span class="input-group-btn">
+                                  <button class="btn btn-danger" type="submit">
+                                    <span class=" glyphicon glyphicon-search"></span>
+                                  </button>
+                                </span>
+                              </div>
+                            </div>
+                            </form>
+                          </div>
+                        </div>
                     <div class="divider"></div>
                 </div>
             </div>  <!-- Col-md-12 End -->
             <div class="items">
-            <?php 
-             if(count($posts)>0){
-                foreach ($posts as $post) {
-                  echo "<h2>".$post["title"]."</h2>"; 
-                  echo "<div class='added_at'> Added At: ".strip_tags($post["formated_date"])."</div>"; 
-
-                  echo "<p><a href=/blog/".$post["id"].">Read more</a></p>"; 
-                }
-             }
-             else{
-                echo "No posts yet.... ";
-             }
-           ?>
+             
+              <?php foreach($posts as $post): ?>
+               <h2 class="sub-heading-a u-align-center"><?php echo $post['title']?></h3>
+               <p class="body-a u-align-center"> Added At: <?php echo $post['formated_date'];?></p>
+               <p class="body-a u-align-center"><?php echo substr($post['content'], 0, 100);?>... <a href="/blog/<?php echo $post['id']; ?>">Read More</a></p>
+              <?php endforeach; ?>
+           
+            </div>
+            <div class="middle">
+              <?php //echo $data['pagination']->get();?>
             </div>
         </div>
-    </div> <!-- Conatiner end -->
-</section>  <!-- Section End -->
+        
+    </div> <!-- Conatiner product end -->
+</section>  <!-- Section product End -->
 
-<!-- End -->
+<!-- Our product End -->
 <div class="clearfix"></div>
 
-<?php require_once VIEWS.'shared/footer.php';
+<?php
+require_once VIEWS.'shared/footer.php';
+?>

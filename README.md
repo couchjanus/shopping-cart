@@ -1,504 +1,490 @@
 # shopping-cart
 
-# Сессии
-Сессии являются простым способом хранения информации для отдельных пользователей с уникальным идентификатором сессии. Это может использоваться для сохранения состояния между запросами страниц. 
+# Оператор SQL LIKE
 
-Идентификаторы сессий обычно отправляются браузеру через сессионный cookie и используются для получения имеющихся данных сессии. 
+MySQL условие LIKE позволяет использовать шаблоны в операторе WHERE для оператора SELECT, INSERT, UPDATE или DELETE. Это позволяет выполнять сопоставление шаблонов.
 
-Отсутствие идентификатора сессии или сессионного cookie сообщает PHP о том, что необходимо создать новую сессию и сгенерировать новый идентификатор сессии.
+## Синтаксис условия LIKE в MySQL:
+```sql
+expression LIKE pattern [ ESCAPE ‘escape_character’ ]
+```
 
-Когда сессия создана, PHP будет либо получать существующую сессию, используя переданный идентификатор (обычно из сессионного cookie) или, если ничего не передавалось, будет создана новая сессия. 
+### Параметры
 
-PHP заполнит суперглобальную переменную $_SESSION сессионной информацией после того, как будет запущена сессия. 
+- expression — символьное выражение, такое как столбец или поле.
+- pattern — символьное выражение, содержащее сопоставление шаблонов. 
 
-## session_start()
+Шаблоны, которые вы можете выбрать:
+- % — позволяет вам сопоставлять любую строку любой длины (включая нулевую длину)
+- _ — позволяет вам сопоставлять один символ
+- escape_character — необязательный. Это позволяет вам проверять для буквенных экземпляров символы подстановки, такие как % или _. Если вы не укажите escape_character, MySQL предположит, что «\» является escape_character.
 
-Сессии могут запускаться вручную с помощью функции session_start(). 
-Эта команда говорит серверу, что данная страница нуждается во всех переменных, которые связаны с данным пользователем (браузером). Сервер берёт эти переменные из файла и делает их доступными. 
+## Подстановочный знак процента
 
-Очень важно открыть сессию до того, как какие-либо данные будут посылаться пользователю; на практике это значит, что функцию session_start() желательно вызывать в самом начале страницы:
+Пример использования знака % (подстановочный знак процента)
+
+Найти все title, которые начинаются с Hell.
+```sql
+SELECT title 
+FROM posts 
+WHERE title LIKE 'Hell%';
+```
+Можно использовать % несколько раз в одной строке.
+```sql
+SELECT title 
+FROM posts 
+WHERE title LIKE '%ns%';
+```
+В этом примере мы ищем все заголовки, у которых title содержит символы ‘ns’.
+
+## Подстановочный знак подчеркивания
+
+Подстановочный знак _ означает только один символ.
+```sql
+SELECT * 
+FROM posts 
+WHERE title LIKE 'Ber_ard';
+```
+возвращает все записи, title которых составляет 7 символов, причем первые три символа — «Ber», а последние три символа — «ard». Например, он может вернуть все записи, title которых — ‘Bernard’, ‘Berzard’, ‘Bermard’, ‘Bersard’ и т.д.
+
+```sql
+SELECT *
+FROM posts
+WHERE id LIKE '12345_';
+```
+Вам может понадобиться найти номер учетной записи, но у вас есть только 5 из 6 цифр. В приведенном выше примере будет извлечено потенциально 10 записей (где отсутствующее значение могло бы равняться чему угодно от 0 до 9). Например, запрос может вернуть suppliers, чьи номера учетной записи: 123450, 123451, 123452, 123453, 123454, 123455, 123456, 123457, 123458, 123459
+
+## Пример использования оператора NOT
+
+условие LIKE для поиска posts, title которых не начинается с «B».
+
+```sql
+SELECT *
+FROM posts
+WHERE title NOT LIKE 'B%';
+```
+Помещая оператора NOT перед MySQL условием LIKE, вы получите всех posts, title которых не начинается с «B».
+
+## Пример использования символов Escape
+
+Предположим, вы хотели найти символы % или _ в MySQL условии LIKE. Вы можете сделать это, используя символ Escape.
+
+Обратите внимание, что вы можете определить только escape-символ как один символ (длина 1).
+
+```sql
+SELECT *
+FROM posts
+WHERE title LIKE 'B\%';
+```
+Поскольку мы не указали каким будет escape-символ, то MySQL предполагает, что «\» и является escape-символом. Т.к. MySQL предположил, что «\» это и есть escape-символ, что приведет к тому, что MySQL обработает символ % как литерал, вместо подстановочного знака. Затем этот запрос будет возвращать все posts, у которых title = ‘B\%’.
+
+Мы можем переопределить escape-символ по умолчанию в MySQL, предоставив модификатор ESCAPE следующим образом:
+```sql
+SELECT *
+FROM posts
+WHERE title LIKE 'Br!%' ESCAPE '!';
+```
+Этот пример MySQL условия LIKE идентифицирует символ ! как escape-символ. Escape-символ ! приведет к тому, что MySQL обрабатывает символ % как литерал. В результате в этом запросе также будут выбраны все posts, title которых Br%.
+
+Вот еще один более сложный пример использования escape-символов в MySQL условии LIKE.
+```sql
+SELECT *
+FROM posts
+WHERE title LIKE 'H%\%';
+```
+Этот пример условия LIKE MySQL возвращает все posts, чье title начинается с H и заканчивается на %. Например, он вернет значение  «Hello%». Поскольку мы не указывали escape-символ в условии LIKE, MySQL предполагает, что escape-символ «\», что приводит к тому, что MySQL обрабатывает второй символ % как литерал вместо подстановочного знака.
+
+Мы могли бы изменить это условие LIKE, указав escape-символ следующим образом:
+```sql
+SELECT *
+FROM posts
+WHERE title LIKE 'H%!%' ESCAPE '!';
+```	
+
+Этот пример MySQL условия LIKE возвращает всех posts, title которых начинается с H и заканчивается символом %. Например, он вернет значение, например «Hello%».
+
+Вы также можете использовать escape character с символом _ в MySQL условии LIKE.
+```sql
+SELECT *
+FROM posts
+WHERE title LIKE 'H%\_';
+```
+поскольку не предусмотрен модификатор ESCAPE, MySQL использует «\» в качестве символа escape, в результате чего символ _ обрабатывается как литерал вместо подстановочного знака. В этом примере будут возвращены все posts, title которых начинается с H и заканчивается на _. Например, запрос вернет значение, такое как «Hello_».
+
+## Справочное руководство по MySQL
+http://www.mysql.ru/docs/man/String_comparison_functions.html
+
+# class Post
 
 ```php
-
-<?php
-session_start();
-
-```
-
-Если директива session.auto_start установлена в 1, сессия автоматически запустится, в начале запроса.
-
-Запустите браузер, и откройте в нём Developer Tools, далее перейдите в Storage — вы должны увидеть заголовки которые нам прислал сервер:
-
-## Browser session cookie
-
-браузер хранит у себя cookie с именем `PHPSESSID`:
-
-```
-Name: PHPSESSID 
-Domain: 127.0.0.1
-Expires on: Session
-Value: 95bok2h8eu4u7prdkpbfpr9rqp
-Last accessed on: 27.02.2018
-HttpOnly: false
-```
-
-PHPSESSID – имя сессии по умолчанию, регулируется из конфига php.ini директивой session.name, при необходимости имя можно изменить в самом конфигурационном файле или с помощью функции session_name() 
-
-
-## Регистрация переменной с помощью $_SESSION.
-
-```php
-<?php
-session_start();
-if (!isset($_SESSION['count'])) {
-  $_SESSION['count'] = 0;
-} else {
-  $_SESSION['count']++;
-}
-?>
-```
-## Отмена объявления переменной с помощью $_SESSION.
-
-```php
-<?php
-session_start();
-unset($_SESSION['count']);
-?>
-
-
-```
-## Регистрация переменной
-
-После начала сессии можно задавать глобальные переменные. При присвоении какого-либо значения любому полю массива $_SESSION, переменная с таким же именем автоматически регистрируется, как переменная сессии. Этот массив доступен на всех страницах, использующих сессию.
-
-```php
-    public static function set($key,$value){
-		$_SESSION[SESSION_PREFIX.$key] = $value;
-	}
-```
-При использовании сессий вся информация хранится не на стороне клиента, а на стороне сервера. 
-
-В броузере клиента, хранится лишь уникальный идентификатор номера сессии, либо в форме cookie, либо в виде переменной в адресной строке броузера, какой из двух способов использовать для передачи идентификатора сессии между страницами интерпретатор PHP выбирает сам. Это безопасно, так как идентификатор сессии уникален, и подделать его практически невозможно.
-
-Чтобы идентифицировать пользователей, сервер использует уникальные пользовательские идентификаторы/userID, которые хранятся в куках. 
-
-```
-Value: 95bok2h8eu4u7prdkpbfpr9rqp
-
-```
-## session.save_path
-По умолчанию PHP использует внутренний обработчик files для сохранения сессий, который установлен в INI-переменной session.save_handler. Этот обработчик сохраняет данные на сервере в директории, указанной в конфигурационной директиве session.save_path.
-
-Для задания директории в которой будут сохраняться файлы сессий используется функция session_save_path():
-
-```php
-session_save_path($_SERVER['DOCUMENT_ROOT'].'/session');
+    public static function searchPost($query) 
+    {
+        $db = Connection::make();
+        $sql = "SELECT id, title, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date FROM posts WHERE status = 1 and ((title LIKE '%{$query}%') OR (content LIKE '%{$query}%'))";
+        $res = $db->prepare($sql);
+        $res->execute();
+        $posts = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $posts;
+    }
 
 ```
 
-Сессии, использующие файлы (по умолчанию в PHP), блокируют файл сессии сразу при открытии сессии функцией session_start() или косвенно при указании session.auto_start. После блокировки, ни один другой скрипт не может получить доступ к этому же файлу сессии, пока он не будет закрыт или при завершении скрипта или при вызове функции session_write_close().
+## Поиск по сайту на PHP и MySQL
 
+Пользователь выполняет POST запрос из формы поиска, этот запрос передается специальному скрипту-обработчику, который должен обработать поисковый запрос пользователя и возвратить результат.
 
-```php
+Сначала скрипт должен обработать должным образом запрос пользователя для обеспечения безопасности, затем выполняется запрос к базе данных, который возвращает в ассоциативном массиве результаты, которые должны будут выводиться на экран.
 
-private static $_sessionStarted = false;
-
-	public static function init(){
-
-		if(self::$_sessionStarted == false){
-			session_start();
-			self::$_sessionStarted = true;
-		}
-
-	}
-
-
-```
-- после вызова session_start() PHP ищет в cookie идентификатор сессии по имени прописанном в session.name – это PHPSESSID
-- если нет идентификатора – то он создаётся, и создаёт пустой файл сессии по пути session.save_path с именем sess_{session_id()}, в ответ сервера будет добавлены заголовки, для установки cookie {session_name()}={session_id()}
-- если идентификатор присутствует, то ищем файл сессии в папке session.save_path:
-- если не находим – создаём пустой файл с именем sess_{$_COOKIE[session_name()]} (идентификатор может содержать лишь символы из диапазонов a-z, A-Z, 0-9, запятую и знак минус)
-- если находим, читаем файл и распаковываем данные в супер-глобальную переменную $_SESSION
-- когда скрипт закончил свою работу, то все данные из $_SESSION запаковывают с использованием session_encode() в файл по пути session.save_path с именем sess_{session_id()}
-
-
-Когда PHP завершает работу, он автоматически сериализует содержимое суперглобальной переменной $_SESSION и отправит для сохранения, используя сессионный обработчик для записи сессии.
-
-Сессия обычно завершает свою работу, когда PHP заканчивает исполнять скрипт, но может быть завершена и вручную с помощью функции session_write_close().
-
-## session_destroy();
-По умолчанию сессия длится, пока пользователь не закроет окно браузера, и тогда она загибается автоматически. Но если вы хотите принудительно завершить сессию, её всегда можно замочить таким образом:
-
-
-```php
-		if(self::$_sessionStarted == true){
-			session_unset();
-			session_destroy();
-		}
-```
-
-Сессия заканчивается/(dies), если пользователь не запрашивает страниц в течение какого-то времени (стандартное значение - 20 минут). 
-
-## Управление сессиями 
-http://php.net/manual/ru/book.session.php
-
-Другие полезные функции для работы с сессиями:
-
-- unset($_SESSION['a']) - сессия "забывает" значение заданной сессионой переменной;
-- session_destroy() - сессия уничтожается (если пользователь покинул систему, нажав кнопку "выход");
-- session_set_cookie_params(int lifetime [, string path [, string domain]]) - с помощью этой функции можно установить, как долго будет "жить" сессия, задав unix_timestamp определяющий время "смерти" сессии. По умолчанию, сессия "живёт" до тех пор, пока клиент не закроет окно браузера.
-- session_write_close() - запись переменных сесии и закрытие ее. Это необходимо для открытия сайта в новом окне, если страница выполняет длительную обработу и заблокировала для вашего браузера файл сессий.
-
-## config/app.php
-
-```php
-
-define('SESSION_PREFIX', 'shop_');
-
-```
-# class Session
-
-```php
-<?php
-
-class Session {
-
-	private static $_sessionStarted = false;
-
-	public static function init(){
-
-		if(self::$_sessionStarted == false){
-			session_start();
-			self::$_sessionStarted = true;
-		}
-
-	}
-
-	public static function set($key,$value){
-		$_SESSION[SESSION_PREFIX.$key] = $value;
-	}
-
-	public static function get($key,$secondkey = false){
-
-		if($secondkey == true){
-
-			if(isset($_SESSION[SESSION_PREFIX.$key][$secondkey])){
-				return $_SESSION[SESSION_PREFIX.$key][$secondkey];
-			}
-
-		} else {
-
-			if(isset($_SESSION[SESSION_PREFIX.$key])){
-				return $_SESSION[SESSION_PREFIX.$key];
-			}
-
-		}
-
-		return false;
-
-	}
-
-	public static function display(){
-		return $_SESSION;
-	}
-
-	public static function destroy(){
-
-		if(self::$_sessionStarted == true){
-			session_unset();
-			session_destroy();
-		}
-
-	}
-
-}
-
-```
-
-## Логин в систему с сессиями
-
-### Форма входа в систему:
+Создадим форму поиска на странице blog:
 
 ```html
+<div class="row">
+  <h4>Search Blog</h4>
+    <form action="/blog/search" method="post">
+      <div id="custom-search-input">
+        <div class="input-group col-md-12">
+            <input type="text" class="search-query form-control" placeholder="Search" name="query" />
+            <span class="input-group-btn">
+                <button class="btn btn-danger" type="submit">
+                    <span class=" glyphicon glyphicon-search"></span>
+                </button>
+            </span>
+        </div>
+      </div>
+    </form>
+</div>
+```
+
+## Метод обработчик поискового запроса.
+
+## class BlogController
+
+```php
+    public function search()
+    {
+        //Флаг ошибок
+        $data['errors'] = false;
+        $result = false;
+        
+        if (isset($_POST) and !empty($_POST)) {
+        // обрабатываем запрос, чтобы он стал безопасным для базы. Такую обработку нужно делать обязательно, т.к. любая форма на Вашем сайте — это потенциальная уязвимость для злоумышленников.
+
+            $query = $_POST['query'];
+            $query = trim($query); 
+            $query = strip_tags($query);
+            $query = htmlspecialchars($query);
+            
+            // Если запрос пустой, то возвращаем соответствующее сообщение пользователю. 
+
+            if (!empty($query)) {
+                // Если запрос не пустой, проверяем его на размер.
+
+                // Если поисковый запрос имеет длину менее 3 или более 128 символов, также выводим соответствующие сообщения пользователю. 
+
+                if (strlen($query) < 3) {
+                    $data['errors'][] = 'Слишком короткий поисковый запрос.';
+                } 
+                else if (strlen($query) > 128) {
+                    $data['errors'][] = 'Слишком длинный поисковый запрос.';
+                } 
+                // Иначе, выполняем запрос к базе данных, который делает выборку $posts = Post::searchPost($query), в которой найдены совпадения нужных нам полей с поисковым запросом.
+
+                else { 
+                    $posts = Post::searchPost($query);
+                    $num_rows = count($posts);
+                    if ($num_rows > 0) { 
+                        $data['num_rows'] = 'По запросу <b>'.$query.'</b> найдено совпадений: '.$num_rows;
+                    } 
+                    else {
+                        $data['errors'][] = 'По вашему запросу ничего не найдено.';
+                    }
+                } 
+            } 
+            else {
+                $data['errors'][] = 'Задан пустой поисковый запрос.';
+            }
+        }   
+
+        if ($data['errors'] == false) {
+                $result = true;
+                $data['posts'] = $posts;
+        }
+
+        $data['success'] = $result;
+        $data['title'] = 'Search Post Page ';
+        $this->_view->render('blog/search', $data);
+    }    
+
+```
+
+## htmlspecialchars
+
+htmlspecialchars — Преобразует специальные символы в HTML-сущности
+
+В HTML некоторые символы имеют особый смысл и должны быть представлены в виде HTML-сущностей, чтобы сохранить их значение. Эта функция возвращает строку, над которой проведены эти преобразования. Если вам нужно преобразовать все возможные сущности, используйте htmlentities().
+
+Если входная строка, переданная в эту функцию и результирующий документ используют одинаковую кодировку символов, то этой функции достаточно, чтобы подготовить данные для вставки в большинство частей HTML документа. Однако, если данные содержат символы, не определенные в кодировке символов результирующего документа и вы ожидаете сохранения этих символов (как числовые или именованные сущности), то вам недостаточно будет этой и htmlentities() функций (которые только преобразуют подстроки с соответствующими сущностями). Необходимо использовать функцию mb_encode_numericentity().
+
+Производятся следующие преобразования
+
+```
+& (амперсанд) 	&amp;
+" (двойные кавычки) 	&quot;, если не установлена ENT_NOQUOTES
+' (одинарные кавычки) 	&#039; (для ENT_HTML401) или &apos; (для ENT_XML1, ENT_XHTML или ENT_HTML5), но только если установлена ENT_QUOTES
+< (меньше) 	&lt;
+> (больше) 	&gt;
+```
+http://php.net/manual/ru/function.htmlspecialchars.php
+
+## routes.php
+
+```php
+$router->get('blog', 'BlogController@index');
+$router->post('blog/search', 'BlogController@search');
+
+$router->get('blog/{id}', 'BlogController@view');
+```
+
+## views/blog/search
+
+```php
 
 <?php
 require_once VIEWS.'shared/head.php';
 require_once VIEWS.'shared/navigation.php';
 ?>
-
+ <!-- Start -->
 <section class="product">
-    <div class="container">
-        <div class="row">
-          <div class="col-md-12">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="feature_header text-center">
+          <h2 class="feature_title"><?= $title;?></h2>
 
-          <?php if (isset($data['errors']) && is_array($data['errors'])):?>
-            <div class="jumbotron">
-              <h4>Eroors:</h4>
-            </div>
-            <div class="row">
-              <ul class="errors">
-                  <?php foreach($data['errors'] as $error):?>
-                      <li> - <?php echo $error;?></li>
-                  <?php endforeach;?>
-              </ul>
-            </div>
-          <?php endif;?>
-
-        <div class="jumbotron">
-           <h1><?=$title;?></h1>
+          <div class="divider"></div>
         </div>
+      </div>  <!-- Col-md-12 End -->
+```
 
-      <div class="row">
-            <div class="form">
-                    <div id="login">
-                      <h1>Welcome Back!</h1>
+## Если поиск прошел успешно
+```php      
+      <div class="items">
+    
+        <?php if ($success == true) :?>
+          <h3><?= $num_rows;?></h3>
+          <ul>
+            <?php foreach($posts as $singleItem): ?>
+              <li>
+                <h3><?php echo $singleItem['title']?></h3>
+                  <p><?php echo $singleItem['formated_date'];?></p>
+                  <a href="/blog/<?php echo $singleItem['id']; ?>">Read More</a>
+              </li>
+            <?php endforeach; ?>
+          </ul> 
+```
+## Если возникли ошибки
+```php
 
-                      <form method="post" autocomplete="off">
-
-                        <div class="field-wrap">
-                        <label for="email">Email Address 
-                          <span class="req">*</span>
-                        </label>
-                        <input type="email" name="email" id="email" required autocomplete="new-password" placeholder = ''/>
-                      </div>
-
-                      <div class="field-wrap">
-                        <label>
-                          Password<span class="req">*</span>
-                        </label>
-                        <input type="password" name="password" required autocomplete="new-password"/>
-                      </div>
-
-                      <p class="forgot"><a href="#">Forgot Password?</a></p>
-
-                      <input type="submit" class="button button-block" value="Log In" />
-
-                      </form>
-                  </div><!-- content -->
-
-            </div> <!-- /form -->
+        <?php else : ?>
+          <ul>
+            <?php foreach($errors as $error): ?>
+              <li>
+                <?php echo $error;?>
+              </li>
+            <?php endforeach; ?>
+          </ul> 
+        <?php endif;?>
       </div>
     </div>
-  </div>
-</div>
-</section>
+  </div> <!-- Conatiner product end -->
+</section>  <!-- Section product End -->
+
+<!-- Our product End -->
+<div class="clearfix"></div>
+<?php require_once VIEWS.'shared/footer.php';
+
+```
+
+## Breadcrumb «хлебные крошки» на сайте
+
+«Хлебными крошками» в компьютерном мире является совокупность ссылок на разделы сайта, каталоги файловых систем и прочие сущности, к которым относится итоговый файл или страница сайта.
+
+Чаще всего под хлебными крошками понимают навигацию для пользователя, чтобы он понимал в каком разделе сайта он находится, а также для быстрого перехода по уровням меню.
+
+## breadcrumb PHP class
+
+```php
 
 <?php
-require_once VIEWS.'shared/footer.php';
+class Breadcrumb
+{
+    private $_breadcrumb; // содержит HTML-код
+
+    private $_separator = ' / '; // разделитель HTML между breadcrumb
+
+    private $_domain = DOMAIN; // ссылки указывают на на веб-сайт
+
+    // здесь создаем хлебную крошку
+
+    public function build($array)
+    {
+        $breadcrumbs = array_merge(array('Home' => ''), $array);
+
+        $count = 0;
+
+        foreach ($breadcrumbs as $title => $link) {
+            $this->_breadcrumb .= '
+            <span itemscope="" itemtype="">
+                <a href="'.$this->_domain. '/'.$link.'" itemprop="url">
+                <span itemprop="title">'.$title.'</span>
+                </a>
+            </span>';
+
+            $count++;
+
+            if ($count !== count($breadcrumbs)) {
+                $this->_breadcrumb .= $this->_separator;
+            }
+        }
+        return $this->_breadcrumb;
+    }
+}
 
 ```
-## Метод login
+
+## Генерация breadcrumb 
+
+Мы будем использовать ассоциативные массивы для передачи значений в формате ключ => заголовок при генерации breadcrumb: 
 
 ```php
+array ('title' => 'link');
+```
+## передача двух страниц:
+```php
+array ('Title 1' => 'page-1.html', 'Title 2' => 'page-2.html') // 
+```
 
-    public function login() 
-    {
-        $email = '';
-        $password = '';
+## добавим домашнюю страницу как первій элемент breadcrumb. 
+```php
+   $breadcrumbs = array_merge(array('Home' => ''), $array);
+```
+Это всегда будет первым элементом breadcrumb, добавим этот элемент в начало нашего массива с помощью array_merge. 
 
-        if (Session::get('logged') == true) {
-           
-            //перенаправляем в личный кабинет
-            header("Location: /profile"); 
+Устанавливаем переменную $_domain, которая содержит нашу основную ссылку на домен.
+```php
 
-        }
+define('DOMAIN', 'http://localhost:8000');
 
-        if (isset($_POST) and (!empty($_POST))) {
-            $email = trim(strip_tags($_POST['email']));
-            $password = trim(strip_tags($_POST['password']));
+private $_domain = DOMAIN; // ссылки указывают на на веб-сайт
 
-            //Флаг ошибок
-            $data['errors'] = false;
+```
+## breadcrumb HTML loop
 
-            //Валидация полей
-            if (!User::checkEmail($email)) {
-                $data['errors'][] = "Некорректный Email";
-            }
+Помещаем ключ $title в качестве заголовка breadcrumb, а значение $link в качестве ссылки breadcrumb.
+Генерируем HTML, присваиваем его переменной breadcrumb.
 
-            // Проверяем, существует ли пользователь
+```php
+     
+     $count = 0;
 
-            $userId = User::checkUserData($email, $password);
+        foreach ($breadcrumbs as $title => $link) {
+            $this->_breadcrumb .= '
+            <span itemscope="" itemtype="">
+                <a href="'.$this->_domain. '/'.$link.'" itemprop="url">
+                <span itemprop="title">'.$title.'</span>
+                </a>
+            </span>';
 
-            if ($userId == false) {
-                $data['errors'][] = "Пользователя с таким email или паролем не существует";
-            } else {
-                $this->user = User::get($userId);
-
-                // записываем пользователя в сессию
+            $count++;
             
-                User::auth($userId); 
+            // используя $this->_breadcrumb, проверяем, не является ли это последним сегментом, если последний, вставляем разделитель.
 
-                //перенаправляем в личный кабинет
-
-                header("Location: /profile"); 
+            if ($count !== count($breadcrumbs)) {
+                $this->_breadcrumb .= $this->_separator;
             }
         }
-        $data['title'] = 'Login Page ';
-        $this->_view->render('user/login', $data);
-
-    }
 
 ```
 
+## Создание breadcrumbs
 
-## Проверить корректность username и password
-
+### index
 ```php
 
-    /**
-     * Проверка на существовние введенных данных
-     *
-     * @param $email
-     * @param $password
-     * 
-     * @return bool
-     */
-    public static function checkUserData($email, $password)
+    public function index()
     {
+        $posts = Post::index();
+        $data['title'] = 'Blog Page ';
+        $data['subtitle'] = 'Lorem Ipsum не є випадковим набором літер';
+        $data['posts'] = $posts;
 
-        $db = Connection::make();
-        $sql = "SELECT * FROM users WHERE email = :email";
-        $res = $db->prepare($sql);
-        $res->bindParam(':email', $email, PDO::PARAM_STR);
-        $res->execute();
-        $user = $res->fetch();
-
-        if (!self::checkPw($password, $user['password'])) {
-            return $user['id'];
-        }
-        return false;
+    
+        $data['breadcrumb'] = $this->_breadcrumb->build(
+            array(
+                'All Posts' => 'blog',
+            )
+        );
+    
+        $this->_view->render('blog/index', $data);
     }
 
 ```
-
+### view
 
 ```php
+    public function view($vars)
+	{
+		extract($vars);
+		$post = Post::show($id);
+        $data['title'] = 'Blog Post ';
+        $data['subtitle'] = 'Lorem Ipsum не є випадковим набором літер';
+        $data['post'] = $post;
 
-    protected static function checkPw($userpassword, $dbpassword)
-    {
-        $resp = password_verify($userpassword, $dbpassword);
-        return $resp;
-    }
+        $data['breadcrumb'] = $this->_breadcrumb->build(
+            array(
+                'All Posts' => 'blog',
+                $post['title'] => 'blog/'.$post['id']
+            )
+        );
 
-```
-	 
-## Если корректны, устанавливаем значение ключей сессии
-
-```php
-
-    /**
-     *Запись пользователя в сессию
-     *
-     * @param $userId
-    */
-    public static function auth($userId)
-    {
-        Session::set('userId', $userId);
-        Session::set('logged', true);
+		$this->_view->render('blog/show', $data);
     }
 
 ```
 
-При работе с защищёнными файлами мы проверяем, вошёл ли пользователь с корректным логином. Если нет, the пользователь отправляется обратно к логин-форме:
-
-```php
-
-    /**
-     * Проверяем, авторизован ли пользователь при переходе в личный кабинет
-     *
-     * @return mixed
-    */
-    public static function checkLog()
-    {
-        //Если сессия есть, то возвращаем id пользователя
-
-        if ((Session::get('userId'))) {
-            return Session::get('userId');
-        }
-        
-        // Если пользователь не зашёл, отправить его/её к логин-форме
-        
-        header('Location: user/login');
-    }
-
-```
-
-### Проверяем наличие открытой сессии у пользователя
-
-```php
-    /**
-     * Проверяем наличие открытой сессии у пользователя для
-     * отображения на сайте необходимой информации
-     *
-     * @return bool
-    */
-    public static function isGuest()
-    {
-
-        if (Session::get('logged') == true) {
-            return false;
-        }
-        return true;
-    }
-
-```
-
-### navigation
+### views
 
 ```html
 
-<dropdown>
-    <input id="toggle-user" type="checkbox">
-        <ul class="animate">
-            <?php if(User::isGuest()):?>
-                <li class="animate"><a href="/register">SignUp<i class="fa fa-user-plus float-right"></i></a></li>
-                <li class="animate"><a href="/login">LogIn<i class="fa fa-sign-in float-right"></i></a></li>
-            <?php else:?>
-                <li class="animate"><a href="/logout">LogOut<i class="fa fa-sign-out float-right"></i></a></li>
-            <?php endif;?>
-        </ul>
-    </dropdown>
-```
+<div class="row">
+  <div class="col-md-12">
+    <div class="breadcrumb"><?= $breadcrumb;?></div>
+      <div class="feature_header text-center">
+        <h3 class="feature_title"><?=$title;?></h3>
 
-## Контроллер для работы с личным кабинетом
+        <h4 class="feature_sub"><?=$subtitle;?></h4>
+
+        <div class="divider"></div>
+
+```
+## class Controller
 
 ```php
 
-class ProfileController extends Controller
-{
-    private $_userId;
-    private $_user;
+class Controller {
 
-    public function __construct()
+
+    protected $_view;
+
+    protected $_breadcrumb;
+    
+    function __construct()
     {
-        parent::__construct();
+        $this->_view = new View();
 
-        //Получаем id пользователя из сессии
-        $this->_userId = User::checkLog();
-        
-        //Получаем всю информацию о пользователе из БД
-        $this->_user = User::getUserById($this->_userId);
+        $this->_breadcrumb = new Breadcrumb();
     }
+
 
 ```
 
-## Основная страница личного кабинета
-```php
-    /**
-    * Основная страница личного кабинета
-    *
-    * @return bool
-    */
-    public function index()
-    {
-        $data['title'] = 'Личный кабинет ';
-        $data['subtitle'] = 'Edit Your Private Things ';
-        $data['user'] = $this->_user;
-
-        if ($data['user']['role_id']==1) {
-            $this->_view->render('admin/index', $data);   
-        } else {
-            $this->_view->render('profile/index', $data);
-        }
-    }
-```

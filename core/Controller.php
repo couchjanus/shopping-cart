@@ -2,11 +2,15 @@
 
 class Controller {
 
+
     protected $_view;
+
+    protected $_breadcrumb;
     
     function __construct()
     {
         $this->_view = new View();
+        $this->_breadcrumb = new Breadcrumb();
     }
 
     // действие (action), вызываемое по умолчанию

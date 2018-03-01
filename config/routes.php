@@ -8,6 +8,7 @@ $router->get('contact', 'ContactController@index');
 $router->get('guestbook', 'GuestbookController@index');
 
 $router->get('blog', 'BlogController@index');
+$router->post('blog/search', 'BlogController@search');
 $router->get('blog/{id}', 'BlogController@view');
 
 $router->get('admin', 'Admin\DashboardController@index');

@@ -7,6 +7,8 @@
 
 class Post {
 
+    const SHOW_BY_DEFAULT = 4;
+
     public static function index() 
     {
         $con = Connection::make();
@@ -17,7 +19,8 @@ class Post {
         return $posts;
     }
 
-    public static function show($id){
+    public static function show($id)
+    {
         $con = Connection::make();
         $con->exec("set names utf8");
         $sql = "SELECT * FROM posts WHERE id = :id";
@@ -28,7 +31,8 @@ class Post {
         return $post;
     }
 
-    public static function store ($options) {
+    public static function store($options) 
+    {
 
         $db = Connection::make();
         $con->exec("set names utf8");
@@ -47,7 +51,8 @@ class Post {
         }
     }
 
-    public static function getStatusText ($status) {
+    public static function getStatusText($status) 
+    {
         switch ($status) {
             case '1':
                 return 'Отображается';
@@ -58,7 +63,8 @@ class Post {
         }
     }
 
-    public static function lastId () {
+    public static function lastId() 
+    {
         
         $con = Connection::make();
         $res = $con->prepare("SELECT id FROM posts ORDER BY id DESC LIMIT 1");
@@ -67,8 +73,8 @@ class Post {
 
     }
 
-    public static function getPostById ($postId) {
-
+    public static function getPostById($postId) 
+    {
         $con = Connection::make();
         $con->exec("set names utf8");
         $sql = "SELECT * FROM posts WHERE id = :id";
@@ -80,7 +86,8 @@ class Post {
     }
 
     
-    public static function update ($id, $options) {
+    public static function update($id, $options) 
+    {
 
         $con = Connection::make();
 
@@ -113,4 +120,67 @@ class Post {
         return $res->execute();
     }
 
- }
+    /**
+     * Получаем последние Posts
+     *
+     * @param int $page
+     * @return array
+     */
+    public static function getLatestPosts($page = 1) 
+    {
+
+        $limit = self::SHOW_BY_DEFAULT;
+        //Задаем смещение
+        $offset = ($page - 1) * self::SHOW_BY_DEFAULT;
+        $con = Connection::make();
+        $con->exec("set names utf8mb4");
+
+        $sql = "SELECT id, 
+                       title, 
+                       content, 
+                       DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s')AS formated_date, 
+                       status
+                  FROM posts
+                  WHERE status = 1
+                  ORDER BY id DESC
+                  LIMIT :limit OFFSET :offset
+                ";
+
+        //Подготавливаем данные
+        $res = $con->prepare($sql);
+        $res->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $res->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+        //Выполняем запрос
+        $res->execute();
+        //Получаем и возвращаем результат
+        $postList = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $postList;
+    }
+
+
+    public static function getTotalPosts() 
+    {
+
+        // Соединение с БД
+        $db = Connection::make();
+        // Текст запроса к БД
+        $sql = "SELECT count(id) AS count FROM posts WHERE status=1 ";
+        // Выполнение коменды
+        $res = $db->query($sql);
+        // Возвращаем значение count - количество
+        $row = $res->fetch();
+        return $row['count'];
+    }
+
+    public static function searchPost($query) 
+    {
+        $db = Connection::make();
+        $sql = "SELECT id, title, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date FROM posts WHERE status = 1 and ((title LIKE '%{$query}%') OR (content LIKE '%{$query}%'))";
+        $res = $db->prepare($sql);
+        $res->execute();
+        $posts = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $posts;
+    }
+
+}
