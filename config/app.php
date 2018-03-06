@@ -14,3 +14,5 @@
     define('LANGUAGE', 'uk');
     define('SESSION_PREFIX', 'shop_');
     define('DOMAIN', 'http://localhost:8000');
+    define('MEDIA', '/media/');
+    
