@@ -86,116 +86,149 @@
   </figure>
 
 </script>
+
+
+<script id="step1" type="text/template">
+  <div id="wrap">
+
+    <div class="step">
+      <div class="number">
+        <span>1</span>
+      </div>
+      <div class="title">
+        <h1>Order Information</h1>
+      </div>
+    </div>
+    
+    <div class="content order" id="address">
+      
+      <form class="go-right">
+        
+        <div>
+        <input type="name" name="user_name" value="" id="first_name" placeholder="Your Name" data-trigger="change" data-validation-minlength="1" data-type="name" data-required="true" data-error-message="Enter Your First and Last Name"/><label for="first_name">Your Name</label>
+        </div>
+
+        <div>
+        <input type="phone" name="telephone" value="" id="telephone" placeholder="Phone(555)-555-5555" data-trigger="change" data-validation-minlength="1" data-type="number" data-required="true" data-error-message="Enter Your Telephone Number"/><label for="telephone">Telephone</label>
+        </div>
+        <div class="content" id="final_products">
+        <div id="ordered">
+        <div class="totals">
+          <span class="subtitle">Subtotal <span id="sub_price">$45.00</span></span>
+          <span class="subtitle">Tax <span id="sub_tax">$2.00</span></span>
+          <span class="subtitle">Shipping <span id="sub_ship">$4.00</span></span>
+        </div>
+        <div class="final">
+          <span class="title">Total <span id="calculated_total">$51.00</span></span>
+        </div>
+        <br>
+        </div>
+        
+      </form>
+    <div class="complete">
+    
+          <a class="big_button" id="complete">Complete Order</a>
+          <span class="sub">By selecting this button you agree to the purchase and subsequent payment for this order.</span>
+    
+        </div>
+        
+        </div>
+    </div>
+  </div>
+</script>
   
   <script src="/js/app.js"></script>
 
-  <script type="text/javascript">
+  <script>
   
-  var data = [];
+$(function() {
 
-  var url = 'https://api.myjson.com/bins/ex0b3';
+try {
+    
+  var url = '/api/shop';
 
-    $.ajax({
-      url: url,
-      method: 'GET'
-    }).then(
-      function(json_data) {
+  fetch(url).then((response) => response.json())
+    .then((data) => {
 
-        console.log(json_data);
-        
-        for(var i in json_data)
-                data.push(json_data[i]);
+      var shoppingCart = [];
+      console.log(data);
+      function showCart(){
+        if (shoppingCart.length == 0) {
+          console.log("Your Shopping Cart is Empty!");
+          return;
+        }
 
-  var shoppingCart = [];
+      $("#cartBody").empty();
 
-  function showCart(){
-    if (shoppingCart.length == 0) {
-      console.log("Your Shopping Cart is Empty!");
-      return;
+      for (var i in shoppingCart) {
+        var $templateCart = $($('#cartItem').html());
+        var item = shoppingCart[i];
+        $templateCart.attr('product_id', item.Id);
+        $templateCart.find(".item-quantities").text(item.Quantity);
+        $templateCart.find(".item-quantities").after(' '+ item.Product); 
+        $templateCart.find('.item-price').text(item.Price);
+        $templateCart.find('.item-prices').text(item.Quantity * item.Price);
+        $templateCart.find('span.qty').attr('style', 'background-image:'+ 'url('+item.Picture+')');
+        $(".cart-items").append($templateCart);
+      }
+      updateTotal();
     }
 
-    $("#cartBody").empty();
-
-    for (var i in shoppingCart) {
-    
-      var $templateCart = $($('#cartItem').html());
-  
-      var item = shoppingCart[i];
-    
-      $templateCart.attr('product_id', item.Id);
-    
-      $templateCart.find(".item-quantities").text(item.Quantity);
-    
-      $templateCart.find(".item-quantities").after(' '+ item.Product); 
-    
-      $templateCart.find('.item-price').text(item.Price);
-    
-      $templateCart.find('.item-prices').text(item.Quantity * item.Price);
-
-      $templateCart.find('span.qty').attr('style', 'background-image:'+ 'url('+item.Picture+')');
-
-      $(".cart-items").append($templateCart);
-    }
-    updateTotal();
-  }
-
-  function updateTotal() {
-      var quantities = 0,
-      total = 0,
-      
-      $cartTotal = $('#cart_total span'),
-      items = $('.cart-items').children();
-
-      items.each(function (index, item) {
-          var $item = $(item);
-          total += parseFloat($item.find('.item-prices').text());
-      });
-
-      $cartTotal.text('$' + parseFloat(Math.round(total * 100) / 100).toFixed(2));
-
-      if (total === 0 ){
+    function updateTotal() {
+        var quantities = 0,
+        total = 0,
         
-        $('.shopping-cart').fadeOut(500, function() {
-                $(this).css({
-                    'backgroundColor':'',
-                    'borderRadius': '0%',
-                    'transform': 'scale(1, 1)'
-                    });
-            });
-      
-        $('.shopping-cart').fadeIn(500);        
-      }
-  }
+        $cartTotal = $('#cart_total span'),
+        items = $('.cart-items').children();
 
-  function saveCart() {
-  
-    if (window.localStorage)
-      {
-        localStorage.shoppingCart = JSON.stringify(shoppingCart);
+        items.each(function (index, item) {
+            var $item = $(item);
+            total += parseFloat($item.find('.item-prices').text());
+        });
+
+        $cartTotal.text('$' + parseFloat(Math.round(total * 100) / 100).toFixed(2));
+
+        if (total === 0 ){
+          
+          $('.shopping-cart').fadeOut(500, function() {
+                  $(this).css({
+                      'backgroundColor':'',
+                      'borderRadius': '0%',
+                      'transform': 'scale(1, 1)'
+                      });
+              });
         
-      }
-  }
-
-  $(function() {
-
-    // Safari, in Private Browsing Mode, looks like it supports localStorage but all calls to setItem
-    // throw QuotaExceededError. We're going to detect this and just silently drop any calls to setItem
-    // to avoid the entire page breaking, without having to do a check at each usage of Storage.
-    if (typeof localStorage === 'object') {
-        try {
-            localStorage.setItem('localStorage', 1);
-            localStorage.removeItem('localStorage');
-        } catch (e) {
-            Storage.prototype._setItem = Storage.prototype.setItem;
-            Storage.prototype.setItem = function() {};
-            alert('Your web browser does not support storing settings locally. In Safari, the most common cause of this is using "Private Browsing Mode". Some settings may not save or some features may not work properly for you.');
+          $('.shopping-cart').fadeIn(500);        
         }
     }
+
+    function saveCart() {
     
-    if (localStorage.shoppingCart){
+      if (window.localStorage)
+        {
+          localStorage.shoppingCart = JSON.stringify(shoppingCart);
+          
+        }
+    }
+      if (localStorage.shoppingCart){
 
       shoppingCart = JSON.parse(localStorage.shoppingCart);
     
+    }
+
+    function makeItem($template, product){
+
+      $template.find('.singleMember').attr('productId', product["id"]);
+
+
+      $template.find('.product-name').text(product.name.replace(/ /g, '\u00a0')).attr('productName', product["name"]);
+            
+      $template.find('img').attr('src', "/media/"+ product.picture);
+      $template.find('.product-price').text('$' + product["price"]).attr('productPrice', product["price"]);
+
+      $template.find('.productDescription').text( product["description"]);
+
+      return $template;
     }
 
     const cart_trigger = $('#cart-trigger'),
@@ -244,6 +277,13 @@
       });
     
       $('.addcart').click(function() {
+
+        let id = $(this).parents('.singleMember').attr("productId");
+        let price = $(this).parents(".singleMember").find(".product-price").attr("productPrice");
+        let name = $(this).parents(".singleMember").children(".product-name").text();
+        let quantity = $(this).parents(".singleMember").find(".quantity").val();
+        let picture = $(this).parents(".singleMember").find("img").attr('src');
+
         $(this).parents('.contentItem').css({
           'transform': 'rotateY(180deg)'
         });
@@ -299,16 +339,12 @@
       $('.icon').toggle();
     });
 
-    let id = $(this).parents('.singleMember').attr("productId");
-    let price = $(this).parents(".singleMember").find(".product-price").attr("productPrice");
-    let name = $(this).parents(".singleMember").children(".product-name").text();
-    let quantity = $(this).parents(".singleMember").find(".quantity").val();
-    let picture = $(this).parents(".singleMember").find("img").attr('src');            
+    
 
     for (let i in shoppingCart) {
       if(shoppingCart[i].Product == name)
         {
-         shoppingCart[i].Quantity += quantity;
+         shoppingCart[i].Quantity = parseInt(shoppingCart[i].Quantity) + parseInt(quantity);
          saveCart();
          return;
         }
@@ -403,19 +439,60 @@
   
   });
 
+  $('.dialog__trigger').on('click',function(){
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: 'check',
+            success: function(d) {
+                if(d.r == "fail") {
+                    window.location.href = d.url;
+                } else {
+                    console.log(d.msg);
+                    toggle_panel(cart, shadow_layer);
+                    $('.product-items').empty();
+                    let $template = $($('#step1').html());
+                    $(".product-items").append($template);
+                    $('#complete').on('click',function(){
+                      $.ajax({
+                           type: 'POST',
+                           url: 'cart',
+                           dataType: 'json',
+                           data: { 'val': JSON.stringify(shoppingCart) }
+                          })
+                          .then( function(data){
+                              console.log('succsess');
+                              localStorage.removeItem('shoppingCart');
+                              $("#cartBody").empty();
+                              shoppingCart = [];
+                              updateTotal();
+                              $(location).attr('href', 'profile')
+                           }
+                      );
+                
+                    });
+                }
+              }
+            });
+     });
 
- $(".plus").click(function() {
-       var val = parseInt($(this).prev().attr('value'));
-       $(this).prev().attr('value', val+1);
-       });
+     $(".plus").click(function() {
+           var val = parseInt($(this).prev().attr('value'));
+           $(this).prev().attr('value', val+1);
+           });
 
- $(".minus").click(function() {
-       var val = parseInt($(this).next().attr('value'));
-       $(this).next().attr('value', val-1);
-       });
+     $(".minus").click(function() {
+           var val = parseInt($(this).next().attr('value'));
+           $(this).next().attr('value', val-1);
+           });
+
+
+  });
+
+} catch (error) { throw error; };  
+
  });
 
- 
- });
- 
- </script>
+</script>
+
+  

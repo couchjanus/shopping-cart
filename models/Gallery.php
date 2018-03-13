@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Модель для работы с Picture
+ * Модель для работы с Gallery
  * 
 */
 
-class Picture
+class Gallery
 {
 
     const SHOW_BY_DEFAULT = 4;
@@ -14,7 +14,7 @@ class Picture
     {
         $con = Connection::make();
         $con->exec("set names utf8");
-        $sql = "SELECT * FROM pictures ORDER BY id ASC";
+        $sql = "SELECT * FROM galleries ORDER BY id ASC";
         $res = $con->query($sql);
         $pictures = $res->fetchAll(PDO::FETCH_ASSOC);
         return $pictures;
@@ -24,7 +24,7 @@ class Picture
     {
         $con = Connection::make();
         $con->exec("set names utf8");
-        $sql = "SELECT * FROM pictures WHERE id = :id";
+        $sql = "SELECT * FROM galleries WHERE id = :id";
         $res = $con->prepare($sql);
         $res->bindParam(':id', $id, PDO::PARAM_INT);
         $res->execute();
@@ -37,12 +37,12 @@ class Picture
 
         $db = Connection::make();
         $db->exec("set names utf8");
-        $sql = "INSERT INTO pictures(resource, filename, resource_id)
-                VALUES (:resource, :filename, :resource_id)";
+        $sql = "INSERT INTO galleries(title, description)
+                VALUES (:title, :description)";
         $res = $db->prepare($sql);
-        $res->bindParam(':resource', $options['resource'], PDO::PARAM_STR);
-        $res->bindParam(':filename', $options['filename'], PDO::PARAM_STR);
-        $res->bindParam(':resource_id', $options['resource_id'], PDO::PARAM_INT);
+        $res->bindParam(':title', $options['title'], PDO::PARAM_STR);
+        $res->bindParam(':description', $options['description'], PDO::PARAM_STR);
+        
         //Если запрос выполнен успешно
         if ($res->execute()) {
             return $db->lastInsertId();
@@ -54,7 +54,7 @@ class Picture
     public static function lastId() 
     {
         $con = Connection::make();
-        $res = $con->prepare("SELECT id FROM pictures ORDER BY id DESC LIMIT 1");
+        $res = $con->prepare("SELECT id FROM galleries ORDER BY id DESC LIMIT 1");
         $res->execute();
         return $res->fetch(PDO::FETCH_ASSOC)['id'];
 
@@ -64,7 +64,7 @@ class Picture
     {
         $con = Connection::make();
         $con->exec("set names utf8");
-        $sql = "SELECT * FROM pictures WHERE id = :id";
+        $sql = "SELECT * FROM galleries WHERE id = :id";
         $res = $con->prepare($sql);
         $res->bindParam(':id', $id, PDO::PARAM_INT);
         $res->execute();
@@ -81,7 +81,7 @@ class Picture
     public static function destroy($id) 
     {
         $con = Connection::make();
-        $sql = "DELETE FROM pictures WHERE id = :id";
+        $sql = "DELETE FROM galleries WHERE id = :id";
         $res = $con->prepare($sql);
         $res->bindParam(':id', $id, PDO::PARAM_INT);
         return $res->execute();

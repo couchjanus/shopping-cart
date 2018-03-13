@@ -63,3 +63,5 @@ $router->get('admin/gallery/create', 'Admin\gallery\GalleryController@create');
 $router->post('admin/gallery/create', 'Admin\gallery\GalleryController@create');
 $router->get('admin/gallery/delete/{id}', 'Admin\gallery\GalleryController@delete');
 $router->post('admin/gallery/delete/{id}', 'Admin\gallery\GalleryController@delete');
+
+$router->get('api/shop', 'HomeController@getProduct');

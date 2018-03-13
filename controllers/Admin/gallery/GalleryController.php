@@ -13,7 +13,8 @@ class GalleryController extends Controller
 
     public function index()
     {
-        $pictures = Picture::index();
+        // $pictures = Picture::index();
+        $pictures = Gallery::index();
         $data['title'] = 'Admin Gallery Page ';
         $data['pictures'] = $pictures;
         $this->_view->render('admin/gallery/index', $data);
@@ -24,8 +25,6 @@ class GalleryController extends Controller
         if (isset($_POST) and !empty($_POST)) {
             $options['title'] = trim(strip_tags($_POST['title']));
             $options['description'] = trim($_POST['description']);
-            
-            $options['resource'] = $this->_resource;
             
             // если была произведена отправка формы
             if (isset($_FILES['image'])) {
@@ -74,18 +73,19 @@ class GalleryController extends Controller
                     $type = pathinfo($_FILES['image']['name']);
                     
                     $name = uniqid('files_') .'.'. $type['extension'];
-                    // копируем файл из временной директории
-                    // copy($file_tmp, "media/".$name);
+           
                     move_uploaded_file($file_tmp, "media/".$name);
                       
-                    $options['filename'] = $name;
+                    $opts['filename'] = $name;
+                    $opts['resource_id'] = (int)Gallery::lastId();
                 } else {
                     print_r($errors);
                 }
             }
-  
-            Picture::store($options);
-        
+
+            $opts['resource'] = $this->_resource;
+            Picture::store($opts);
+            Gallery::store($options);
             $this->redirect('/admin/gallery');
         
         }

@@ -18,7 +18,7 @@ class Product {
 
         $con = Connection::make();
         $sql = "SELECT id, name, price FROM products
-                ORDER BY id ASC";
+                 ORDER BY id ASC";
 
         $res = $con->query($sql);
 
@@ -27,6 +27,24 @@ class Product {
 
     }
 
+    public static function getProducts() {
+
+        $con = Connection::make();
+
+        $sql = "SELECT t1.*, t2.filename as picture
+                FROM products t1
+                JOIN pictures t2
+                ON t2.resource = 'products' 
+                AND t1.id = t2.resource_id
+                ORDER BY id ASC";
+      
+
+        $res = $con->query($sql);
+
+        $products = $res->fetchAll(PDO::FETCH_ASSOC);
+        return $products;
+
+    }
 
     /**
      * Получаем последние товары
