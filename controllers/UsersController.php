@@ -114,4 +114,25 @@ class UsersController extends Controller
         return true;
     }
 
+    public function actionCheck()
+    {
+        if (!Session::get('logged') == true) {
+
+            $response = array(
+                    'r' => 'fail',
+                    'url' => 'login'
+                );
+        } else {
+                $response = array(
+                    'r' => 'success',
+                    'data' => User::get(Session::get('userId'))
+                );
+        }
+        echo json_encode($response);
+        exit;
+    }
+
+
+    
+
 }

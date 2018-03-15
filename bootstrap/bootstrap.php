@@ -19,6 +19,7 @@ require_once MODELS.'Meta.php';
 require_once MODELS.'User.php';
 require_once MODELS.'Picture.php';
 require_once MODELS.'Gallery.php';
+require_once MODELS.'Order.php';
 require_once CORE.'Session.php';
 require_once CORE.'Connection.php';
 require_once CORE.'View.php';

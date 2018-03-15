@@ -209,6 +209,22 @@ class User
         return false;
     }
 
+    public static function userName($id)
+    {
+        try {
+            $db = Connection::make();
+            $sql = "SELECT first_name, last_name FROM users WHERE id = :id";
+
+            $res = $db->prepare($sql);
+            $res->bindParam(':id', $id);
+            $res->execute();
+            $result = $res->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $result = "Error: " . $e->getMessage();
+        }
+        return $result;
+        
+    }
 
     /**
      * Проверяем поле Пароль на корректность

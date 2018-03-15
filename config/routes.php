@@ -65,3 +65,14 @@ $router->get('admin/gallery/delete/{id}', 'Admin\gallery\GalleryController@delet
 $router->post('admin/gallery/delete/{id}', 'Admin\gallery\GalleryController@delete');
 
 $router->get('api/shop', 'HomeController@getProduct');
+
+$router->post('check', 'UsersController@actionCheck');
+$router->post('cart', 'CartController@index');
+
+$router->get('admin/orders', 'Admin\shop\OrdersController@index');
+$router->get('admin/orders/view/{id}', 'Admin\shop\OrdersController@view');
+$router->get('admin/orders/edit/{id}', 'Admin\shop\OrdersController@edit');
+
+$router->get('admin/orders/delete/{id}', 'Admin\shop\OrdersController@delete');
+$router->post('admin/orders/edit/{id}', 'Admin\shop\OrdersController@edit');
+$router->post('admin/orders/delete/{id}', 'Admin\shop\OrdersController@delete');

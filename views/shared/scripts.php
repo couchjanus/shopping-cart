@@ -92,11 +92,9 @@
   <div id="wrap">
 
     <div class="step">
-      <div class="number">
-        <span>1</span>
-      </div>
       <div class="title">
         <h1>Order Information</h1>
+        <hr>
       </div>
     </div>
     
@@ -105,21 +103,23 @@
       <form class="go-right">
         
         <div>
-        <input type="name" name="user_name" value="" id="first_name" placeholder="Your Name" data-trigger="change" data-validation-minlength="1" data-type="name" data-required="true" data-error-message="Enter Your First and Last Name"/><label for="first_name">Your Name</label>
+        <label for="user_name">Your Name: </label>&nbsp;<input type="name" name="user_name" value="" id="user_name" placeholder="Your Name" data-trigger="change" data-validation-minlength="1" data-type="name" data-required="true" data-error-message="Enter Your First and Last Name"/>
         </div>
 
         <div>
-        <input type="phone" name="telephone" value="" id="telephone" placeholder="Phone(555)-555-5555" data-trigger="change" data-validation-minlength="1" data-type="number" data-required="true" data-error-message="Enter Your Telephone Number"/><label for="telephone">Telephone</label>
+        <label for="telephone">Telephone: </label>&nbsp;
+        <input type="phone" name="telephone" value="" id="telephone" placeholder="Phone(555)-555-5555" data-trigger="change" data-validation-minlength="1" data-type="number" data-required="true" data-error-message="Enter Your Telephone Number"/>
         </div>
         <div class="content" id="final_products">
         <div id="ordered">
-        <div class="totals">
-          <span class="subtitle">Subtotal <span id="sub_price">$45.00</span></span>
-          <span class="subtitle">Tax <span id="sub_tax">$2.00</span></span>
-          <span class="subtitle">Shipping <span id="sub_ship">$4.00</span></span>
-        </div>
+        <ul class="totals">
+          <li class="subtitle">Subtotal $<span id="sub_price">45.00</span></li>
+          <li class="subtitle">Tax $<span id="sub_tax">2.00</span></li>
+          <li class="subtitle">Shipping $<span id="sub_ship">4.00</span></li>
+        </ul>
         <div class="final">
-          <span class="title">Total <span id="calculated_total">$51.00</span></span>
+          <hr>
+          <span class="title"><b>Total <span id="calculated_total">$51.00</span></b></span>
         </div>
         <br>
         </div>
@@ -127,7 +127,7 @@
       </form>
     <div class="complete">
     
-          <a class="big_button" id="complete">Complete Order</a>
+          <a class="big_button btn btn-success" id="complete">Complete Order</a>
           <span class="sub">By selecting this button you agree to the purchase and subsequent payment for this order.</span>
     
         </div>
@@ -186,7 +186,7 @@ try {
             total += parseFloat($item.find('.item-prices').text());
         });
 
-        $cartTotal.text('$' + parseFloat(Math.round(total * 100) / 100).toFixed(2));
+        $cartTotal.text(parseFloat(Math.round(total * 100) / 100).toFixed(2));
 
         if (total === 0 ){
           
@@ -448,17 +448,25 @@ try {
                 if(d.r == "fail") {
                     window.location.href = d.url;
                 } else {
-                    console.log(d.msg);
+                    console.log(d.data);
                     toggle_panel(cart, shadow_layer);
                     $('.product-items').empty();
                     let $template = $($('#step1').html());
+                    $template.find('#sub_price').text($('#allTotal').text());
+                    $template.find('#user_name').val( d.data['name']);
+                   
+                    $template.find('#calculated_total').text(parseFloat($template.find('#sub_price').text())+parseFloat($template.find('#sub_tax').text())+parseFloat($template.find('#sub_ship').text()));
+                    
                     $(".product-items").append($template);
                     $('#complete').on('click',function(){
                       $.ajax({
                            type: 'POST',
                            url: 'cart',
                            dataType: 'json',
-                           data: { 'val': JSON.stringify(shoppingCart) }
+                           data: { 
+                             'val': JSON.stringify(shoppingCart),
+                             'customer': JSON.stringify({'user_name': $('#user_name').val(), 'telephone': $('#telephone').val()}),
+                             }
                           })
                           .then( function(data){
                               console.log('succsess');
