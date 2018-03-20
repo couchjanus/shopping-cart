@@ -120,7 +120,7 @@ class UsersController extends Controller
 
             $response = array(
                     'r' => 'fail',
-                    'url' => 'login'
+                    'url' => '/login'
                 );
         } else {
                 $response = array(

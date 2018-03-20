@@ -62,6 +62,7 @@ class Order {
       $sql = "SELECT * 
                FROM orders INNER JOIN users
                ON orders.user_id = users.id
+               
                ORDER BY orders.order_date DESC";
 
 
@@ -204,7 +205,7 @@ class Order {
         $db =  Connection::make();
 
         $sql = "SELECT id, DATE_FORMAT(`order_date`, '%d.%m.%Y %H:%i:%s') AS formated_date, status, products
-                  FROM orders WHERE user_id = $id
+                  FROM orders WHERE user_id = $id and orders.status < 4
                   ORDER BY id DESC
                ";
 

@@ -79,4 +79,42 @@ class ProfileController extends Controller
         $this->_view->render('profile/edit', $data);
              
     }
+
+     /**
+     * Просмотр истории заказов пользователя
+     *
+     * @return bool
+     */
+
+    public function ordersList()
+    {
+    
+        $orders = Order::getOrdersListByUserId($this->_userId);
+        $data['title'] = 'Личный кабинет ';
+        $data['subtitle'] = 'Ваши заказы ';
+        $data['user'] = $this->_user;
+        $data['orders'] = $orders;
+
+        $this->_view->render('profile/orders', $data);
+
+    }
+
+    public function ordersView($vars)
+    {
+    
+        extract($vars);
+        
+        $order = Order::getUserOrderById($id);
+        
+        $data['title'] = 'Личный кабинет ';
+        $data['subtitle'] = 'Ваш заказ #'.$order['id'];
+        
+        $data['user'] = $this->_user;
+        
+        $data['order'] = $order;
+
+        $this->_view->render('profile/order', $data);
+
+    }
+
 }

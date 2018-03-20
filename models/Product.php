@@ -14,7 +14,8 @@ class Product {
      * @return array
      */
 
-    public static function index() {
+    public static function index()
+    {
 
         $con = Connection::make();
         $sql = "SELECT id, name, price FROM products
@@ -27,7 +28,8 @@ class Product {
 
     }
 
-    public static function getProducts() {
+    public static function getProducts()
+    {
 
         $con = Connection::make();
 
@@ -52,7 +54,8 @@ class Product {
      * @param int $page
      * @return array
      */
-    public static function getLatestProducts ($page = 1) {
+    public static function getLatestProducts ($page = 1)
+    {
 
         $limit = self::SHOW_BY_DEFAULT;
 
@@ -88,7 +91,8 @@ class Product {
      * @param $options - характеристики товара
      * @return int|string
      */
-    public static function store ($options) {
+    public static function store ($options)
+    {
 
         $con = Connection::make();
 
@@ -111,7 +115,7 @@ class Product {
         
     }
 
-    public static function lastId () 
+    public static function lastId() 
     {
         $con = Connection::make();
         $res = $con->prepare("SELECT id FROM products ORDER BY id DESC LIMIT 1");
@@ -124,7 +128,8 @@ class Product {
      *
      * @return mixed
      */
-    public static function getTotalProducts () {
+    public static function getTotalProducts()
+    {
 
         // Соединение с БД
         $db = Connection::make();
@@ -145,7 +150,8 @@ class Product {
      * @param $productId
      * @return mixed
      */
-    public static function getProductById ($productId) {
+    public static function getProductById($productId)
+    {
 
         $con = Connection::make();
 
@@ -167,7 +173,8 @@ class Product {
      * @param $options
      * @return bool
      */
-    public static function update ($id, $options) {
+    public static function update($id, $options)
+    {
 
         $con = Connection::make();
 
@@ -195,6 +202,49 @@ class Product {
         $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
         $res->bindParam(':id', $id, PDO::PARAM_INT);
 
+        return $res->execute();
+    }
+
+    /**
+     * Выборка товаров по массиву id
+     *
+     * @param $arrayIds
+     * @return array
+     */
+    public static function getProductsByIds($arrayIds)
+    {
+
+        $con = Connection::make();
+
+        //Разбиваем пришедший массив в строку
+
+        $stringIds = "(".implode(',', $arrayIds).")";
+
+        $sql = "SELECT * FROM products WHERE id IN $stringIds";
+
+        $sth = $con->prepare($sql);
+        
+        $sth->execute();
+
+        $products = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+        return $products;
+    }
+
+    /**
+     * Удаление товара(админка)
+     *
+     * @param $id
+     * @return bool
+     */
+    public static function destroy($id)
+    {
+        $con = Connection::make();
+
+        $sql = "DELETE FROM products WHERE id = :id";
+
+        $res = $con->prepare($sql);
+        $res->bindParam(':id', $id, PDO::PARAM_INT);
         return $res->execute();
     }
 

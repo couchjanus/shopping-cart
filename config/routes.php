@@ -54,6 +54,14 @@ $router->post('register', 'UsersController@signup');
 
 $router->get('profile', 'ProfileController@index');
 $router->get('profile/edit', 'ProfileController@edit');
+$router->post('profile/edit', 'ProfileController@edit');
+
+$router->get('profile/orders', 'ProfileController@ordersList');
+
+$router->get('profile/orders/view/{id}', 'ProfileController@ordersView');
+$router->get('profile/orders/edit/{id}', 'ProfileController@ordersEdit');
+$router->get('profile/orders/delete/{id}', 'ProfileController@ordersDelete');
+
 
 $router->get('logout', 'UsersController@logout');
 $router->post('logout', 'UsersController@logout');

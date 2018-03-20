@@ -331,7 +331,7 @@ class User
             return Session::get('userId');
         }
 
-        header('Location: user/login');
+        header('Location: /login');
     }
 
     /**

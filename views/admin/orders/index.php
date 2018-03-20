@@ -4,13 +4,13 @@ require_once VIEWS.'shared/admin/header.php';
 ?>
     <div class="page-content">
       <div class="row">
-      <div class="col-md-2">
+      <div class="col-md-3">
         <?php
           require_once VIEWS.'shared/admin/_aside.php';
         ?>
 
       </div>
-      <div class="col-md-10">
+      <div class="col-md-9">
         <div class="content-box-large">
                 <div class="panel-heading">
                     <div class="panel-title"><h3><?= $title;?></h3></div>

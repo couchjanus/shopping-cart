@@ -12,11 +12,8 @@ class OrdersController extends Controller
      */
     public function index()
     {
-
-        $data['orders'] = Order::getOrders();
-       
+        $data['orders'] = Order::getOrdersList();
         $data['title'] = 'Admin Orders List Page ';
-        
         $this->_view->render('admin/orders/index', $data);
         
     }
@@ -29,42 +26,13 @@ class OrdersController extends Controller
      */
     public function view($vars)
     {
-        
         extract($vars);
-
         //Получаем заказ по id
-        $order = Order::getOrderById($id);
-
-        //Преобразуем JSON  строку продуктов и их кол-ва в массив
-
-        $productsInOrder = json_decode(json_decode($order['products'], true));
-
-        // print_r($productsInOrder);
-
-        //Выбираем ключи заказанных товаров
-        $productIds = array();
-
-        $productQuantity =  array();
-
-        for ($i=0; $i<count($productsInOrder); $i++) {
-            array_push($productIds, $productsInOrder[$i]->{'Id'});
-            array_push($productQuantity, array($productsInOrder[$i]->{'Id'} => $productsInOrder[$i] ->{'Quantity'}));
-        }
-
-        // print_r($productIds);
-        // print_r($productQuantity);
-
-        // Получаем список товаров по выбранным id
-
-        $products = Product::getProductsByIds($productIds);
-
-        // print_r($products);
-
-        $data['order'] = $order;
-        $data['pQuantity'] = $productQuantity;
-        $data['products'] = $products;
+        $order = Order::getUserOrderById($id);
+        $Products = json_decode(json_decode($order['products'], true));
         $data['title'] = 'Admin Order View Page ';
-        
+        $data['order'] = $order;
+        $data['products'] = (array)$Products;
         $this->_view->render('admin/orders/view', $data);
     }
 
@@ -74,7 +42,7 @@ class OrdersController extends Controller
      * @param $id
      * @return bool
      */
-    public function edit ($vars)
+    public function edit($vars)
     {
         extract($vars);
         //Получаем заказ по id
@@ -83,17 +51,14 @@ class OrdersController extends Controller
         //Если форма отправлена, принимаем данные и обрабатываем
         if (isset($_POST) and !empty($_POST)) {
             $status = $_POST['status'];
-
             //Записываем изменения
             Order::updateOrder($id, $status);
-
             //Перенаправляем на страницу просмотра данного заказа
             header("Location: /admin/orders/view/$id");
         }
 
         $data['order'] = $order;
-        $data['title'] = 'Admin Order Edit Page ';
-        
+        $data['title'] = 'Admin Edit Order ';
         $this->_view->render('admin/orders/edit', $data);
 
     }
