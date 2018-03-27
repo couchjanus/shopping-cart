@@ -1,298 +1,111 @@
 # shopping-cart
 
-## Просмотр истории заказов пользователя
+## class App
 
-```php
-/**
-     * Просмотр истории заказов для пользователя(личный кабинет)
-     *
-     * @param $id
-     * @return array
-     */
-    public static function getOrdersListByUserId($id)
-    {
-
-        // Соединение с БД
-        $db =  Connection::make();
-
-        $sql = "SELECT id, DATE_FORMAT(`order_date`, '%d.%m.%Y %H:%i:%s') AS formated_date, status, products
-                  FROM orders WHERE user_id = $id
-                  ORDER BY id DESC
-               ";
-
-        // Выполняем запрос
-        $res= $db->query($sql);
-
-        return $res->fetchAll(PDO::FETCH_ASSOC);
-    }
-```
-
-## class ProfileController
-
-```php
-
-class ProfileController extends Controller
-{
-    private $_userId;
-    private $_user;
-
-    public function __construct()
-    {
-        parent::__construct();
-        //Получаем id пользователя из сессии
-        $this->_userId = User::checkLog();
-        //Получаем всю информацию о пользователе из БД
-        $this->_user = User::getUserById($this->_userId);
-    }
-
-     /**
-     * Просмотр истории заказов пользователя
-     *
-     * @return bool
-     */
-
-    public function ordersList()
-    {
-    
-        $orders = Order::getOrdersListByUserId($this->_userId);
-        $data['title'] = 'Личный кабинет ';
-        $data['subtitle'] = 'Ваши заказы ';
-        $data['user'] = $this->_user;
-        $data['orders'] = $orders;
-
-        $this->_view->render('profile/orders', $data);
-
-    }
-
-```
-
-## Выбираем заказ по его id
-
-```php
-
-/**
-     * Выбираем заказ по его id
-     *
-     * @param $id
-     * @return mixed
-     */
-    public static function getUserOrderById($id)
-    {
-        // Соединение с БД
-        $db =  Connection::make();
-
-        $sql = "SELECT * FROM orders WHERE id = :id";
-
-
-        $res = $db->prepare($sql);
-        
-        $res->bindParam(':id', $id, PDO::PARAM_INT);
-
-        // Выполняем запрос
-        $res->execute();
-
-        // Возвращаем данные
-        return $res->fetch(PDO::FETCH_ASSOC);
-    }
-```
-## Просмотр заказов пользователя
-
-```php
-    public function ordersView($vars)
-    {
-    
-        extract($vars);
-        
-        $order = Order::getUserOrderById($id);
-        
-        $data['title'] = 'Личный кабинет ';
-        $data['subtitle'] = 'Ваш заказ #'.$order['id'];
-        
-        $data['user'] = $this->_user;
-        
-        $data['order'] = $order;
-
-        $this->_view->render('profile/order', $data);
-
-    }
-
-```
-## routes
-
-```php
-
-$router->get('profile', 'ProfileController@index');
-$router->get('profile/edit', 'ProfileController@edit');
-$router->post('profile/edit', 'ProfileController@edit');
-
-$router->get('profile/orders', 'ProfileController@ordersList');
-
-$router->get('profile/orders/view/{id}', 'ProfileController@ordersView');
-$router->get('profile/orders/edit/{id}', 'ProfileController@ordersEdit');
-$router->get('profile/orders/delete/{id}', 'ProfileController@ordersDelete');
-
-```
-
-
-## json_decode — Декодирует строку JSON
-```php
-mixed json_decode ( string $json [, bool $assoc = FALSE [, int $depth = 512 [, int $options = 0 ]]] )
-```
-Принимает закодированную в JSON строку и преобразует ее в переменную PHP.
-
-- json -  Строка (string) json для декодирования.
-- assoc - Если TRUE, возвращаемые объекты будут преобразованы в ассоциативные массивы.
-- depth - Указывает глубину рекурсии.
-- options - Битовая маска опций декодирования JSON. В настоящий момент поддерживается только две опции. Первая из них - JSON_BIGINT_AS_STRING, позволяет конвертировать большие целые числа в строки, а не в числа с плавающей точкой (float), что происходит по умолчанию. Вторая опция - JSON_OBJECT_AS_ARRAY, действует так же, как если был задан assoc равным TRUE.
-
-Возвращает данные json, преобразованные в соответствующие типы PHP. Значения true, false и null возвращаются как TRUE, FALSE и NULL соответственно. NULL также возвращается, если json не может быть преобразован или закодированные данные содержат вложенных уровней больше, чем допустимый предел для рекурсий.
-
-Эта функция работает только со строками в кодировке UTF-8.
-PHP реализует надмножество JSON, который описан в первоначальном » RFC 7159.
-
-
-### Примеры использования json_decode()
-```php
-<?php
-$json = '{"a":1,"b":2,"c":3,"d":4,"e":5}';
-
-var_dump(json_decode($json));
-var_dump(json_decode($json, true));
-
-?>
-```
-## order 
-
-```php
-
-<?php 
-    // Преобразуем JSON  строку продуктов в массив
-    $Products = json_decode(json_decode($order['products'], true));
-                                        
-    for ($i=0; $i<count($Products); $i++) {
-        $productArr = (array)$Products[$i];
-        echo '<a href="/products/'.$productArr['Id'].'">';
-        echo '<img src = "'.$productArr['Picture'].'" width=70 height=40>'.$productArr['Product']."</a></br>";
-        echo "<span>Кол-во: </span>" . $productArr['Quantity'].'</br>';
-        echo '<span>Цена: </span>' . $productArr['Price']. ' грн</br>';
-     
-        //считаем общую сумму всех товаров в заказе, с учетом их кол-ва
-        echo '<span>Сумма: </span>' .  $productArr['Price'] * $productArr['Quantity']. ' грн</br>';
-        //подсчитываем сумму по каждому товару и пишем в массив
-        $arr[] = $productArr['Price'] * $productArr['Quantity'];
-    }
-    $totalValue = array_sum($arr);
-?>
-```
-
-## array_sum — Вычисляет сумму значений массива
-```php
-
-number array_sum ( array $array )
-
-```
-
-array - Входной массив.
-
-Возвращает сумму значений в виде целого числа или числа с плавающей точкой; 0, если array пуст.
-
-
-###  Пример использования array_sum()
 ```php
 
 <?php
-$a = array(2, 4, 6, 8);
-echo "sum(a) = " . array_sum($a) . "\n";
+class App {
 
-$b = array("a" => 1.2, "b" => 2.3, "c" => 3.4);
-echo "sum(b) = " . array_sum($b) . "\n";
-?>
+    private $result = NULL;
 
-Результат выполнения данного примера:
-
-sum(a) = 20
-sum(b) = 6.9
-```
-## total
-
-```php
-
-<tr class="total_price">
-    <td colspan="4"><?php echo '<span>Сумма заказа: ' . $totalValue.' грн</span>';?></td>
-</tr>
-<?php
-    //Очищаем массив
-    $arr = array();
-?>
-```
-
-## все заказы пользователей
-
-```php
-/**
-     * отображает все заказы пользователей
-     *
-     * @return bool
-     */
-    public function index()
-    {
-        $data['orders'] = Order::getOrdersList();
-        $data['title'] = 'Admin Orders List Page ';
-        $this->_view->render('admin/orders/index', $data);
-        
+    public function __construct(){
+        // Запускаем сессию
+        Session::init();
     }
 ```
 
-## Просмотр конкретного заказа
 
-```php
-    /**
-     * Просмотр конкретного заказа
-     *
-     * @param $id заказа
-     * @return bool
-     */
-    public function view($vars)
-    {
-        extract($vars);
-        //Получаем заказ по id
-        $order = Order::getUserOrderById($id);
-        $Products = json_decode(json_decode($order['products'], true));
-        $data['title'] = 'Admin Order View Page ';
-        $data['order'] = $order;
-        $data['products'] = (array)$Products;
-        $this->_view->render('admin/orders/view', $data);
-    }
+## Автозагрузка классов
+
+- автозагрузчик — функция или метод, реализующие логику автоматического поиска и загрузки скрипта с объявлением класса по его имени;
+- стек автозагрузки — массив, используемый системой, для хранения всех автозагрузчиков в порядке их добавления;
+- SPL — стандартная библиотека PHP http://www.php.net/manual/en/book.spl.php.
+
+
+
+## Функция __autoload()
+
+Стандартная функция __autoload() появилась предназначена для автоматической загрузки скриптов с объявлениями классов, вместо бесконечных инструкций require(). 
+
+Несмотря на преимущества, предоставляемые этой функцией, она имеет ряд существенных недостатков:
+
+- для регистрации нескольких автозагрузчиков необходимо весь код помещать в тело единственной функции;
+- нет возможности динамически активировать/деактивировать автозагрузчики.
+
+
+## __autoload
 
 ```
 
-## Изменение заказа
+void __autoload ( string $class )
+```
+
+- class - Имя загружаемого класса
+
+Эта функция не возвращает значения после выполнения.
+
+## SPL-функции
+
+SPL-функции для автоматической загрузки классов:
+- spl_autoload_call — принудительно загружает класс по его имени, используя все доступные в системе автозагрузчики;
+- spl_autoload_extensions — возвращает/модифицирует расширения файлов, из которых происходит загрузка неинициализированных классов;
+- spl_autoload_functions — возвращает список всех зарегистрированных автозагрузчиков в системе;
+- spl_autoload_register — регистрация собственного автозагрузчика в стеке автозагрузки;
+- spl_autoload_unregister — удаление автозагрузчика из стека автозагрузки;
+- spl_autoload — основная функция автоматической загрузки классов,  вызывается при обращении к классу, который еще не инициализирован. 
+
+## Автозагрузка классов
+
+Функция spl_autoload_register() позволяет зарегистрировать необходимое количество автозагрузчиков, для автоматической загрузки ранее не определенных классов и интерфейсов. 
+
+Вызов этой функции позволяет загрузить класс прежде, чем интерпретатор закончит выполнение скрипта с ошибкой.
+spl_autoload_register() предоставляет гораздо более гибкую альтернативу, позволяя регистрировать необходимое количество автозагрузчиков, например для корректной работы сторонних библиотек. 
+В связи с этим, использование __autoload() не рекомендуется и она может быть объявлена устаревшей в будущем.
+
+## spl_autoload_register
+```
+bool spl_autoload_register ([ callable $autoload_function [, bool $throw = true [, bool $prepend = false ]]] )
+```
+Регистрирует функцию в spl очереди метода __autoload. В результате очередь будет активирована, даже если ранее она был выключена.
+
+Если в вашем скрипте реализована функция __autoload(), ее необходимо явно зарегистрировать в очереди __autoload. Это необходимо, так как spl_autoload_register() полностью заменяет механизм кэширования __autoload() функциями spl_autoload() и spl_autoload_call().
+
+spl_autoload_register() позволяет задать несколько реализаций метода автозагрузки описаний классов и интерфейсов. 
+Она создает очередь из функций автозагрузки в порядке их определения в скрипте, тогда как встроенная функция __autoload() может иметь только одну реализацию.
+
+
+## Подключаем файлы ядра
 
 ```php
-    /**
-     * Изменение заказа
-     *
-     * @param $id
-     * @return bool
-     */
-    public function edit($vars)
-    {
-        extract($vars);
-        //Получаем заказ по id
-        $order = Order::getOrderById($id);
+// подключаем файлы ядра
 
-        //Если форма отправлена, принимаем данные и обрабатываем
-        if (isset($_POST) and !empty($_POST)) {
-            $status = $_POST['status'];
-            //Записываем изменения
-            Order::updateOrder($id, $status);
-            //Перенаправляем на страницу просмотра данного заказа
-            header("Location: /admin/orders/view/$id");
-        }
-
-        $data['order'] = $order;
-        $data['title'] = 'Admin Edit Order ';
-        $this->_view->render('admin/orders/edit', $data);
-
+function autoloadsystem($class) {
+    $filename = ROOT . "/core/" . $class . ".php";
+    if(file_exists($filename)){
+       require $filename;
     }
+```
+## Подключаем модели
+
+
+```php
+    $filename = ROOT . "/models/" . $class . ".php";
+    if(file_exists($filename)){
+       require $filename;
+    }
+ }
+```
+## Регистрируем автозагрузчик
+
+```php
+require_once realpath(__DIR__).'/../config/app.php';
+
+require_once realpath(__DIR__).'/./autoload.php';
+
+// Регистрируем автозагрузчик
+spl_autoload_register("autoloadsystem");
+
+$app = new App();
+$app->init();
 ```
