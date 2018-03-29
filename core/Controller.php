@@ -1,16 +1,25 @@
 <?php
 
-class Controller {
-
+class Controller
+{
 
     protected $_view;
 
     protected $_breadcrumb;
-    
+    protected $_twig;
+    private $_loader;
+
     function __construct()
     {
         $this->_view = new View();
         $this->_breadcrumb = new Breadcrumb();
+
+        // Specify our Twig templates location
+        $this->_loader = new Twig_Loader_Filesystem(ROOT.'/templates');
+
+        // Instantiate our Twig
+        $this->_twig = new Twig_Environment($this->_loader);
+
     }
 
     // действие (action), вызываемое по умолчанию

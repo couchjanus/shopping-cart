@@ -1,0 +1,133 @@
+{% extends "layouts/app.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="feature_header text-center">
+                <br><br><br><br>
+                <h3 class="feature_title">{{ title|striptags }}</h3>
+                <div class="divider"></div>
+                <h4 class="feature_sub">Hello There</h4>
+                <div class="divider"></div>
+            </div>
+
+            {% set list = ['foo', 'baz', 'bar'] %}
+
+            {{ list[2] }}
+
+            {{ random(['apple', 'orange', 'citrus']) }} {# врнет 'orange' #}
+            {{ random('ABC') }}                         {# вернет: C #}
+            {{ random() }}                              {# вернет: 15386094 (работает как PHP функция mt_rand) #}
+            {{ random(5) }}                             {# вернет: 3 #}
+
+            {% filter upper %}
+                This text becomes uppercase
+            {% endfilter %}
+
+
+            {% for i in range(0, 3) %}
+                {{ i }},
+            {% endfor %}
+
+
+            {% for i in range(low=1, high=10, step=2) %}
+                {{ i }},
+            {% endfor %}
+
+
+            {# the first argument is the date format, which defaults to the global date format if null is passed #}
+            {{ "now"|date(null, "Europe/Paris") }}
+
+            {# or skip the format value by using a named argument for the timezone #}
+            {{ "now"|date(timezone="Europe/Paris") }}
+
+            {{ "now"|date("d/m/Y H:i", timezone="Europe/Paris") }}
+
+            <h3>Members</h3>
+            {% set users = ['foo', 'baz', 'bar'] %}
+
+            {% set users = [
+                {'id': 0, 'username': 'Bar'},
+                {'id': 1, 'username': 'Foo'},
+                {'id': 2, 'username': 'Bax'},
+                ]
+                %}
+
+            {% if users|length > 0 %}
+
+                {% for user in users %}
+                    {{ user.username|e }}
+                {% endfor %}
+
+            {% endif %}
+            
+            
+            <h3>{{ title|raw }}</h3>
+            
+            <h3>Greeting</h3>
+            {% set greeting = 'Hello' %}
+            {% set name = 'Fabien' %}
+        
+            {{ greeting ~ name|lower }}   {# Hello fabien #}
+        
+            {# use parenthesis to change precedence #}
+            {{ (greeting ~ name)|lower }} {# hello fabien #}
+
+
+            <h3>Литеры</h3>
+
+            {# keys as string #}
+            { 'foo': 'foo', 'bar': 'bar' }
+        
+            {# keys as names (equivalent to the previous hash) -- as of Twig 1.5 #}
+            { foo: 'foo', bar: 'bar' }
+        
+            {# keys as integer #}
+            { 2: 'foo', 4: 'bar' }
+        
+            {# keys as expressions (the expression must be enclosed into parentheses) -- as of Twig 1.5 #}
+            { (1 + 1): 'foo', (a ~ 'b'): 'bar' }	
+        
+
+            <h3>Сравнения</h3>
+
+            {% if 'Fabien' starts with 'F' %}
+            <H4>starts Fabien</H4>
+            
+            {% endif %}
+
+            {% if 'Fabien' ends with 'n' %}
+            <H4>ends Fabien</H4>
+            {% endif %}
+
+            <h3>Оператор содержания</h3>
+
+            {# returns true #}
+
+            {{ 1 in [1, 2, 3] }}
+
+            {{ 'cd' in 'abcde' }}
+
+
+            {% spaceless %}
+    
+
+            foo bar
+
+            {% endspaceless %} 
+            
+            {# output will be
+
+            foo bar
+
+            #}
+
+
+
+        </div>  <!-- Col-md-12 End -->
+    </div>
+</div> <!-- Conatiner product end -->
+
+{% endblock %}
