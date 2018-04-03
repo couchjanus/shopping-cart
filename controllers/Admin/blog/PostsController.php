@@ -14,7 +14,8 @@ class PostsController extends Controller {
     }
 
 
-    public function create () {
+    public function create() 
+    {
       //Принимаем данные из формы
       if (isset($_POST) and !empty($_POST)) {
           $options['title'] = trim(strip_tags($_POST['title']));
@@ -22,6 +23,7 @@ class PostsController extends Controller {
           $options['status'] = trim(strip_tags($_POST['status']));
 
           Post::store($options);
+          
           $post_id = (int)Post::lastId();
 
           $this->metas['resource_id'] = $post_id;
@@ -41,7 +43,7 @@ class PostsController extends Controller {
       }
       $data['title'] = 'Admin Add Post ';
 
-      $this->_view->render('admin/posts/create',$data);
+      $this->_view->render('admin/posts/create', $data);
 
   }
 

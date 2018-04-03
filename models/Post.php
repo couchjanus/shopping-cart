@@ -5,15 +5,16 @@
  * 
 */
 
-class Post {
+class Post
+{
 
     const SHOW_BY_DEFAULT = 4;
 
     public static function index() 
     {
         $con = Connection::make();
-        $con->exec("set names utf8");
-        $sql = "SELECT id, title, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status FROM posts ORDER BY id ASC";
+        // $con->exec("set names utf8");
+        $sql = "SELECT id, title, slug, content, DATE_FORMAT(`created_at`, '%d.%m.%Y %H:%i:%s') AS formated_date, status FROM posts ORDER BY id ASC";
         $res = $con->query($sql);
         $posts = $res->fetchAll(PDO::FETCH_ASSOC);
         return $posts;
@@ -22,7 +23,7 @@ class Post {
     public static function show($id)
     {
         $con = Connection::make();
-        $con->exec("set names utf8");
+        // $con->exec("set names utf8");
         $sql = "SELECT * FROM posts WHERE id = :id";
         $res = $con->prepare($sql);
         $res->bindParam(':id', $id, PDO::PARAM_INT);
@@ -35,11 +36,15 @@ class Post {
     {
 
         $db = Connection::make();
-        $con->exec("set names utf8");
-        $sql = "INSERT INTO posts(title, content, status)
-                VALUES (:title, :content, :status)";
+        // $con->exec("set names utf8");
+        $sql = "INSERT INTO posts(title, slug, content, status)
+                VALUES (:title, :slug, :content, :status)";
         $res = $db->prepare($sql);
+        
+        $slug = Slug::makeSlug($options['title'], array('transliterate' => true));
+        
         $res->bindParam(':title', $options['title'], PDO::PARAM_STR);
+        $res->bindParam(':slug', $slug, PDO::PARAM_STR);
         $res->bindParam(':content', $options['content'], PDO::PARAM_STR);
         $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
 
@@ -50,6 +55,28 @@ class Post {
             return 0;
         }
     }
+
+
+    // public static function store($options) 
+    // {
+
+    //     $db = Connection::make();
+    //     $con->exec("set names utf8");
+    //     $sql = "INSERT INTO posts(title, content, status)
+    //             VALUES (:title, :content, :status)";
+    //     $res = $db->prepare($sql);
+    //     $res->bindParam(':title', $options['title'], PDO::PARAM_STR);
+    //     $res->bindParam(':content', $options['content'], PDO::PARAM_STR);
+    //     $res->bindParam(':status', $options['status'], PDO::PARAM_INT);
+
+    //     //Если запрос выполнен успешно
+    //     if ($res->execute()) {
+    //         return $db->lastInsertId();
+    //     } else {
+    //         return 0;
+    //     }
+    // }
+
 
     public static function getStatusText($status) 
     {
@@ -85,6 +112,17 @@ class Post {
         return $post;
     }
 
+    public static function getPostBySlug($slug) 
+    {
+        $con = Connection::make();
+        
+        $sql = "SELECT * FROM posts WHERE slug = :slug";
+        $res = $con->prepare($sql);
+        $res->bindParam(':slug', $slug, PDO::PARAM_STR);
+        $res->execute();
+        $post = $res->fetch(PDO::FETCH_ASSOC);
+        return $post;
+    }
     
     public static function update($id, $options) 
     {

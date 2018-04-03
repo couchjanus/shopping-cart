@@ -36,6 +36,24 @@ class BlogController extends Controller
 
 		$this->_view->render('blog/show', $data);
     }
+
+    public function show($vars)
+	{
+		extract($vars);
+		$post = Post::getPostBySlug($slug);
+        $data['title'] = 'Blog Post ';
+        $data['subtitle'] = 'Lorem Ipsum не є випадковим набором літер';
+        $data['post'] = $post;
+
+        $data['breadcrumb'] = $this->_breadcrumb->build(
+            array(
+                'All Posts' => 'blog',
+                $post['title'] => 'blog/'.$post['slug']
+            )
+        );
+
+		$this->_view->render('blog/show', $data);
+    }
     public function search()
     {
         //Флаг ошибок
